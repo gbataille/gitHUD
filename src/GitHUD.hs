@@ -4,7 +4,7 @@ module GitHUD (
 
 import System.Process (readProcess)
 import Text.Parsec (runParser, Parsec)
-import Text.Parsec.Char (anyChar, char, newline, noneOf, space)
+import Text.Parsec.Char (anyChar, char, newline, noneOf, space, oneOf)
 import Text.Parsec.Prim (many, (<?>), try)
 import Text.Parsec.Combinator (manyTill, choice)
 import Text.Parsec.Error (ParseError)
@@ -18,6 +18,7 @@ data GitFileState = LocalMod
                   | IndexAdd
                   | IndexDel
                   | Untracked
+                  | Conflict
                   deriving (Show)
 
 data GitRepoState = GitRepoState { localMod :: Int
@@ -27,6 +28,7 @@ data GitRepoState = GitRepoState { localMod :: Int
                                  , indexAdd :: Int
                                  , indexDel :: Int
                                  , untracked :: Int
+                                 , conflict :: Int
                                  } deriving (Show)
 
 zeroRepoState = GitRepoState { localMod = 0
@@ -36,6 +38,7 @@ zeroRepoState = GitRepoState { localMod = 0
                              , indexAdd = 0
                              , indexDel = 0
                              , untracked = 0
+                             , conflict = 0
                              }
 
 githud :: IO ()
@@ -70,6 +73,7 @@ linesStateFolder repoS (IndexMod) = repoS { indexMod = (indexMod repoS) + 1 }
 linesStateFolder repoS (IndexAdd) = repoS { indexAdd = (indexAdd repoS) + 1 }
 linesStateFolder repoS (IndexDel) = repoS { indexDel = (indexDel repoS) + 1 }
 linesStateFolder repoS (Untracked) = repoS { untracked = (untracked repoS) + 1 }
+linesStateFolder repoS (Conflict) = repoS { conflict = (conflict repoS) + 1 }
 
 gitLines :: GitHUDParser GitFileState
 gitLines = do
@@ -80,7 +84,8 @@ gitLines = do
 fileState :: GitHUDParser GitFileState
 fileState = do
     state <- choice [
-        localModState
+        conflictState
+        , localModState
         , localAddState
         , localDelState
         , indexModState
@@ -91,47 +96,53 @@ fileState = do
     many $ noneOf "\n"
     return state
 
+conflictState :: GitHUDParser GitFileState
+conflictState = try $ do
+    oneOf "DAU"
+    oneOf "DAU"
+    return Conflict
+
 localModState :: GitHUDParser GitFileState
 localModState = try $ do
     space
     char 'M'
-    return $ LocalMod
+    return LocalMod
 
 localAddState :: GitHUDParser GitFileState
 localAddState = try $ do
     space
     char 'A'
-    return $ LocalAdd
+    return LocalAdd
 
 localDelState :: GitHUDParser GitFileState
 localDelState = try $ do
     space
     char 'D'
-    return $ LocalDel
+    return LocalDel
 
 indexModState :: GitHUDParser GitFileState
 indexModState = try $ do
     char 'M'
     space
-    return $ IndexMod
+    return IndexMod
 
 indexAddState :: GitHUDParser GitFileState
 indexAddState = try $ do
     char 'A'
     space
-    return $ IndexAdd
+    return IndexAdd
 
 indexDelState :: GitHUDParser GitFileState
 indexDelState = try $ do
     char 'D'
     space
-    return $ IndexDel
+    return IndexDel
 
 untrackedFile :: GitHUDParser GitFileState
 untrackedFile = try $ do
     char '?'
     char '?'
-    return $ Untracked
+    return Untracked
 
 outputParsed :: Either ParseError String -> IO ()
 outputParsed (Left error) = print error
