@@ -45,24 +45,22 @@ githud :: IO ()
 githud = do
   -- TODO: gbataille - Check that we are in a git repo
   out <- gitPorcelainStatus
-  let parsed = runParser porcelainStatusParser () "" out
-  outputParsed parsed
+  let repoState = runParser porcelainStatusParser () "" out
+  outputRepoState repoState
 
 -- | Assumes that we are in a git repo
 gitPorcelainStatus :: IO String
 gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
-porcelainStatusParser :: GitHUDParser String
-porcelainStatusParser = gitRepoStateToString . gitLinesToRepoState . many $ gitLines
+porcelainStatusParser :: GitHUDParser GitRepoState
+porcelainStatusParser = gitLinesToRepoState . many $ gitLines
 
-gitRepoStateToString :: GitHUDParser GitRepoState -> GitHUDParser String
-gitRepoStateToString repoStateP = do
-    repoState <- repoStateP
-    let repoStateStr = " " ++
-                       show (localMod repoState) ++ "M " ++
-                       show (localAdd repoState) ++ "A " ++
-                       show (localDel repoState) ++ "D "
-    return repoStateStr
+gitRepoStateToString :: GitRepoState -> String
+gitRepoStateToString repoState =
+    " " ++
+    show (localMod repoState) ++ "M " ++
+    show (localAdd repoState) ++ "A " ++
+    show (localDel repoState) ++ "D "
 
 gitLinesToRepoState :: GitHUDParser [GitFileState] -> GitHUDParser GitRepoState
 gitLinesToRepoState linesP = do
@@ -148,6 +146,6 @@ untrackedFile = try $ do
     char '?'
     return Untracked
 
-outputParsed :: Either ParseError String -> IO ()
-outputParsed (Left error) = print error
-outputParsed (Right str) = print str
+outputRepoState :: Either ParseError GitRepoState -> IO ()
+outputRepoState (Left error) = print error
+outputRepoState (Right repoState) = print . gitRepoStateToString $ repoState
