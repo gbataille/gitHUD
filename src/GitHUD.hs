@@ -26,15 +26,20 @@ gitRepoStateToString repoState =
 
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do
-  putStr (show (localDel repoState))
-  setSGR [SetColor Foreground Vivid Red]
-  putStr "D"
-  setSGR [Reset]
-  putStr (show (localMod repoState))
-  setSGR [SetColor Foreground Vivid Red]
-  putStr "M "
-  setSGR [Reset]
-  putStr (show (localAdd repoState))
-  setSGR [SetColor Foreground Vivid White]
-  putStr "A "
+  showElem localDel repoState Red Vivid "D" False
+  showElem localMod repoState Red Vivid "M" True
+  showElem localAdd repoState White Vivid "A" True
+
+showElem :: (GitRepoState -> Int)
+         -> GitRepoState
+         -> Color
+         -> ColorIntensity
+         -> String
+         -> Bool                 -- ^ whether to add a space
+         -> IO ()
+showElem elem repoState color intensity letter space = do
+  putStr (show (elem repoState))
+  setSGR [SetColor Foreground intensity color]
+  putStr letter
+  if space then (putStr " ") else (putStr "")
   setSGR [Reset]
