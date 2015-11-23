@@ -1,7 +1,6 @@
 module GitHUD.Parse (
   gitParse
-  , GitRepoState()
-  , localAdd, localDel, localMod
+  , GitRepoState(..)
   ) where
 
 import Text.Parsec (runParser, Parsec)
@@ -38,12 +37,16 @@ zeroRepoState = GitRepoState { localMod = 0
                              , indexMod = 0
                              , indexAdd = 0
                              , indexDel = 0
-                             , untracked = 0
                              , conflict = 0
                              }
 
+-- | In case of error, return zeroRepoState, i.e. no changes
 gitParse :: String -> GitRepoState
-gitParse out = either (\_ -> zeroRepoState) (id) (runParser porcelainStatusParser () "" out)
+gitParse out = (either
+               (\_ -> zeroRepoState)
+               (id)
+               (runParser porcelainStatusParser () "" out)
+               )
 
 porcelainStatusParser :: GitHUDParser GitRepoState
 porcelainStatusParser = gitLinesToRepoState . many $ gitLines

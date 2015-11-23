@@ -3,6 +3,7 @@ module GitHUD (
     ) where
 
 import System.Process (readProcess)
+import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
 import GitHUD.Parse
 
 githud :: IO ()
@@ -24,4 +25,16 @@ gitRepoStateToString repoState =
     show (localDel repoState) ++ "D "
 
 outputRepoState :: GitRepoState -> IO ()
-outputRepoState repoState = print . gitRepoStateToString $ repoState
+outputRepoState repoState = do
+  putStr (show (localDel repoState))
+  setSGR [SetColor Foreground Vivid Red]
+  putStr "D"
+  setSGR [Reset]
+  putStr (show (localMod repoState))
+  setSGR [SetColor Foreground Vivid Red]
+  putStr "M "
+  setSGR [Reset]
+  putStr (show (localAdd repoState))
+  setSGR [SetColor Foreground Vivid White]
+  putStr "A "
+  setSGR [Reset]
