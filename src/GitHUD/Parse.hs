@@ -4,10 +4,9 @@ module GitHUD.Parse (
   ) where
 
 import Text.Parsec (runParser, Parsec)
-import Text.Parsec.Char (anyChar, char, newline, noneOf, space, oneOf)
+import Text.Parsec.Char (newline, noneOf, oneOf)
 import Text.Parsec.Prim (many, (<?>), try)
-import Text.Parsec.Combinator (manyTill, choice)
-import Text.Parsec.Error (ParseError)
+import Text.Parsec.Combinator (choice)
 
 type GitHUDParser = Parsec String ()
 
@@ -17,7 +16,6 @@ data GitFileState = LocalMod
                   | IndexMod
                   | IndexAdd
                   | IndexDel
-                  | Untracked
                   | Conflict
                   deriving (Show)
 
@@ -29,7 +27,7 @@ data GitRepoState = GitRepoState { localMod :: Int
                                  , indexDel :: Int
                                  , conflict :: Int
                                  } deriving (Show)
-
+zeroRepoState :: GitRepoState
 zeroRepoState = GitRepoState { localMod = 0
                              , localAdd = 0
                              , localDel = 0
@@ -51,9 +49,9 @@ porcelainStatusParser :: GitHUDParser GitRepoState
 porcelainStatusParser = gitLinesToRepoState . many $ gitLines
 
 gitLinesToRepoState :: GitHUDParser [GitFileState] -> GitHUDParser GitRepoState
-gitLinesToRepoState linesP = do
-    lines <- linesP
-    return $ foldl linesStateFolder zeroRepoState lines
+gitLinesToRepoState gitFileStateP = do
+    gitFileState <- gitFileStateP
+    return $ foldl linesStateFolder zeroRepoState gitFileState
 
 linesStateFolder :: GitRepoState -> GitFileState -> GitRepoState
 linesStateFolder repoS (LocalMod) = repoS { localMod = (localMod repoS) + 1 }
