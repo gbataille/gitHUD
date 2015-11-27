@@ -3,9 +3,13 @@ import Test.Tasty
 -- import Test.Tasty.QuickCheck as QC
 
 import Test.GitHUD.Parse.Status
+import Test.GitHUD.Parse.Branch
 
 main :: IO ()
-main = defaultMain statusTests
+main = defaultMain tests
+
+tests :: TestTree
+tests = testGroup "Tests" [statusTests, branchTests]
 --
 -- tests :: TestTree
 -- tests = testGroup "Tests" [properties, unitTests]
