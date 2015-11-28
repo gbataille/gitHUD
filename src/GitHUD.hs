@@ -2,7 +2,8 @@ module GitHUD (
     githud
     ) where
 
-import System.Process (readProcess)
+import System.Process (readProcessWithExitCode)
+import System.Exit (ExitCode(ExitSuccess))
 import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
 
 import GitHUD.Parse.Status
@@ -16,28 +17,39 @@ githud = do
   -- Running git commands
   localBranchName <- removeEndingNewline <$> gitLocalBranchName
   porcelainStatus <- gitPorcelainStatus
-  remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
-  remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
-
-  -- Parsing git command output
-  let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
   let repoState = gitParseStatus porcelainStatus
-  commitsToPushStr <- gitRevToPush fullRemoteBranchName
-  let commitsToPush = getCount commitsToPushStr
-  commitsToPullStr <- gitRevToPull fullRemoteBranchName
-  let commitsToPull = getCount commitsToPullStr
 
-  -- Output
   outputGitRepoIndicator
   outputLocalBranchName localBranchName
-  outputCommitsToPullPush commitsToPull commitsToPush
+
+  remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
+  if (remoteName == "")
+    then return ()
+    else do
+      remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
+
+      let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
+      commitsToPushStr <- gitRevToPush fullRemoteBranchName
+      let commitsToPush = getCount commitsToPushStr
+      commitsToPullStr <- gitRevToPull fullRemoteBranchName
+      let commitsToPull = getCount commitsToPullStr
+
+      outputCommitsToPullPush commitsToPull commitsToPush
+
   outputRepoState repoState
+
+readProcessWithIgnoreExitCode :: FilePath -> [String] -> String -> IO String
+readProcessWithIgnoreExitCode command options stdin = do
+  (exCode, stdout, _) <- readProcessWithExitCode command options stdin
+  if (exCode == ExitSuccess)
+    then return stdout
+    else return ""
 
 removeEndingNewline :: String -> String
 removeEndingNewline str = concat . lines $ str
 
 gitLocalBranchName :: IO String
-gitLocalBranchName = readProcess "git" ["symbolic-ref", "--short", "HEAD"] ""
+gitLocalBranchName = readProcessWithIgnoreExitCode "git" ["symbolic-ref", "--short", "HEAD"] ""
 
 gitRemoteTrackingConfigKey :: String -> String
 gitRemoteTrackingConfigKey localBranchName = "branch." ++ localBranchName ++ ".remote"
@@ -48,25 +60,25 @@ gitRemoteBranchConfigKey localBranchName = "branch." ++ localBranchName ++ ".mer
 gitRemoteName :: String         -- ^ local branch name
               -> IO String
 gitRemoteName localBranchName =
-  readProcess "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
+  readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
 
 gitRemoteBranchName :: String     -- ^ remote name
                     -> IO String
 gitRemoteBranchName remoteName =
-  readProcess "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
+  readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
 
 
 -- | Assumes that we are in a git repo
 gitPorcelainStatus :: IO String
-gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
+gitPorcelainStatus = readProcessWithIgnoreExitCode "git" ["status", "--porcelain"] ""
 
 gitRevToPush :: String -> IO String
 gitRevToPush remoteBranchName =
-  readProcess "git" ["rev-list", "--right-only", "--count", branchTillHEAD remoteBranchName] ""
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", branchTillHEAD remoteBranchName] ""
 
 gitRevToPull :: String -> IO String
 gitRevToPull remoteBranchName =
-  readProcess "git" ["rev-list", "--left-only", "--count", branchTillHEAD remoteBranchName] ""
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", branchTillHEAD remoteBranchName] ""
 
 branchTillHEAD :: String -> String
 branchTillHEAD remoteBranchName = remoteBranchName ++ "...HEAD"
