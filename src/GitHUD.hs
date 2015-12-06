@@ -114,7 +114,7 @@ outputcommitsToPush commitCount = do
   if commitCount > 0
     then do
       putStr . show $ commitCount
-      showStrInColor Green Vivid "\8593 "
+      showStrInColor Green Vivid "\8593"
     else return ()
 
 outputcommitsToPull :: Int -> IO ()
@@ -122,7 +122,7 @@ outputcommitsToPull commitCount = do
   if commitCount > 0
     then do
       putStr . show $ commitCount
-      showStrInColor Red Vivid "\8595 "
+      showStrInColor Red Vivid "\8595"
     else return ()
 
 outputCommitsToPullPush :: Int          -- ^ commits to pull
