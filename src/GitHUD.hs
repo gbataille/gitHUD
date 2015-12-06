@@ -97,16 +97,16 @@ gitRevToPush :: String          -- ^ from revision
              -> String          -- ^ to revision
              -> IO String
 gitRevToPush fromCommit toCommit =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", diffFromTo fromCommit toCommit] ""
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
 
 gitRevToPull :: String          -- ^ from revision
              -> String          -- ^ to revision
              -> IO String
 gitRevToPull fromCommit toCommit =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", diffFromTo fromCommit toCommit] ""
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
 
-diffFromTo :: String -> String -> String
-diffFromTo fromCommit toCommit = fromCommit ++ "..." ++ toCommit
+mergeBaseDiffFromTo :: String -> String -> String
+mergeBaseDiffFromTo fromCommit toCommit = fromCommit ++ "..." ++ toCommit
 
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: IO ()
