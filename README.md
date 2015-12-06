@@ -23,7 +23,8 @@ how I created gitHUD
 
 # Benefits
 
-- gitHUD is fast
+- gitHUD is fast (on my system, about twice as fast as git-radar, with exec
+  times below 100ms). And I have a couple more ideas to make it better
 - gitHUD is easily maintainable through proper test coverage
 
 The only downside compared to git-radar is that you need to compile it on your
