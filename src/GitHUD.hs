@@ -41,6 +41,9 @@ githud = do
 
       outputRepoState repoState
 
+      -- Necessary to properly terminate the output
+      putStrLn ""
+
     else return ()
 
 checkInGitDirectory :: IO Bool
