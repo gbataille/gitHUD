@@ -10,14 +10,14 @@ import Text.Parsec.Prim (many)
 getCount :: String -> Int
 getCount numberString =
   either
-  (\_ -> 0)
-  (id)
-  (parse countParser "" numberString)
+    (const 0)
+    id
+    (parse countParser "" numberString)
 
 countParser :: Parser Int
 countParser = do
   number <- many anyChar
-  if (number == [])
+  if null number
     then return 0
     else return (read number)
 

@@ -39,11 +39,11 @@ zeroRepoState = GitRepoState { localMod = 0
 
 -- | In case of error, return zeroRepoState, i.e. no changes
 gitParseStatus :: String -> GitRepoState
-gitParseStatus out = (either
-               (\_ -> zeroRepoState)
-               (id)
-               (parse porcelainStatusParser "" out)
-               )
+gitParseStatus out = 
+  either
+   (const zeroRepoState)
+   id
+   (parse porcelainStatusParser "" out)
 
 porcelainStatusParser :: Parser GitRepoState
 porcelainStatusParser = gitLinesToRepoState . many $ gitLines
