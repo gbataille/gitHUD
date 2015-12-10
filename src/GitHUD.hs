@@ -34,6 +34,7 @@ githud = do
       -- Running git commands with the concurrent API
       forkIO $ gitLocalBranchName ivLocalBranch
       forkIO $ gitPorcelainStatus ivGitStatus
+      forkIO $ gitStashCount ivStashCount
 
       -- Retrieving the values of the git commands
       repoState <- gitParseStatus <$> takeMVar ivGitStatus
@@ -74,7 +75,6 @@ githud = do
 
       outputRepoState repoState
 
-      forkIO $ gitStashCount ivStashCount
       stashCountStr <- takeMVar ivStashCount
       outputStashCount stashCountStr
 
