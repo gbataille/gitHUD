@@ -5,14 +5,15 @@ module GitHUD (
 import System.Process (readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 import GHC.IO.Handle (hGetLine)
 import System.Exit (ExitCode(ExitSuccess))
-import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar (MVar, newEmptyMVar, takeMVar, putMVar)
 import Control.Monad (when)
+import System.Console.ANSI (ColorIntensity(..), Color(..))
 
 import GitHUD.Parse.Status
 import GitHUD.Parse.Branch
 import GitHUD.Parse.Count
+import GitHUD.Terminal.Base (showStrInColor)
 
 githud :: IO ()
 githud = do
@@ -273,12 +274,3 @@ showNumState :: Int
 showNumState num color intensity letter = do
     putStr (show num)
     showStrInColor color intensity letter
-
-showStrInColor :: Color
-               -> ColorIntensity
-               -> String
-               -> IO ()
-showStrInColor color intensity str = do
-    setSGR [SetColor Foreground intensity color]
-    putStr str
-    setSGR [Reset]

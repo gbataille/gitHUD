@@ -19,7 +19,9 @@ library
                     , GitHUD.Parse.Status
                     , GitHUD.Parse.Branch
                     , GitHUD.Parse.Count
-  build-depends:      base >= 4.8.1 && < 5
+                    , GitHUD.Terminal.Base
+                    , GitHUD.Terminal.ANSI
+  build-depends:      base >= 4.7 && < 5
                     , process
                     , parsec >= 3.1.9 && < 4
                     , ansi-terminal >= 0.6.2.3 && < 0.7
