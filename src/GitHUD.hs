@@ -76,7 +76,7 @@ outputRCommits pull push = do
           putStr " "
           (putStr . show) pull
         else (
-          when (push < 0) $ do
+          when (push > 0) $ do
             putStr "m "
             showStrInColor Green Vivid "\8594"
             putStr " "
