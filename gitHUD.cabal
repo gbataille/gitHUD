@@ -16,6 +16,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:     src
   exposed-modules:    GitHUD
+                    , GitHUD.Process
                     , GitHUD.Parse.Status
                     , GitHUD.Parse.Branch
                     , GitHUD.Parse.Count

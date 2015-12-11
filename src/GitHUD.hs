@@ -9,6 +9,7 @@ import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar (MVar, newEmptyMVar, takeMVar, putMVar)
 import Control.Monad (when)
 
+import GitHUD.Process (readProcessWithIgnoreExitCode)
 import GitHUD.Terminal.Types (ColorIntensity(..), Color(..))
 import GitHUD.Parse.Status
 import GitHUD.Parse.Branch
@@ -21,53 +22,52 @@ githud = do
   when isGit $ do
     -- TODO - gbataille : build a datastructure
     -- Preparing MVars
-    ivLocalBranch <- newEmptyMVar
-    ivGitStatus <- newEmptyMVar
-    ivRemoteName <- newEmptyMVar
-    ivRemoteBranchName <- newEmptyMVar
-    ivCommitsToPull <- newEmptyMVar
-    ivCommitsToPush <- newEmptyMVar
-    ivRemoteCommitsToPull <- newEmptyMVar
-    ivRemoteCommitsToPush <- newEmptyMVar
-    ivStashCount <- newEmptyMVar
+    mvLocalBranch <- newEmptyMVar
+    mvGitStatus <- newEmptyMVar
+    mvRemoteName <- newEmptyMVar
+    mvRemoteBranchName <- newEmptyMVar
+    mvCommitsToPull <- newEmptyMVar
+    mvCommitsToPush <- newEmptyMVar
+    mvRemoteCommitsToPull <- newEmptyMVar
+    mvRemoteCommitsToPush <- newEmptyMVar
+    mvStashCount <- newEmptyMVar
 
     --
     -- Running git commands with the concurrent API
-    forkIO $ gitLocalBranchName ivLocalBranch
-    forkIO $ gitPorcelainStatus ivGitStatus
-    forkIO $ gitStashCount ivStashCount
+    forkIO $ gitLocalBranchName mvLocalBranch
+    forkIO $ gitPorcelainStatus mvGitStatus
+    forkIO $ gitStashCount mvStashCount
 
     -- Retrieving the values of the git commands
-    repoState <- gitParseStatus <$> takeMVar ivGitStatus
-    localBranchName <- removeEndingNewline <$> (takeMVar ivLocalBranch)
+    repoState <- gitParseStatus <$> takeMVar mvGitStatus
+    localBranchName <- removeEndingNewline <$> (takeMVar mvLocalBranch)
 
-    forkIO $ gitRemoteName localBranchName ivRemoteName
-    remoteName <- removeEndingNewline <$> (takeMVar ivRemoteName)
+    forkIO $ gitRemoteName localBranchName mvRemoteName
+    remoteName <- removeEndingNewline <$> (takeMVar mvRemoteName)
 
     outputGitRepoIndicator
-
 
     if (remoteName == "")
       then outputLocalBranchName localBranchName
       else do
-        forkIO $ gitRemoteBranchName localBranchName ivRemoteBranchName
-        remoteBranch <- removeEndingNewline <$> (takeMVar ivRemoteBranchName)
+        forkIO $ gitRemoteBranchName localBranchName mvRemoteBranchName
+        remoteBranch <- removeEndingNewline <$> (takeMVar mvRemoteBranchName)
 
         let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
 
-        forkIO $ gitRevToPush "origin/master" fullRemoteBranchName ivRemoteCommitsToPush
-        forkIO $ gitRevToPull "origin/master" fullRemoteBranchName ivRemoteCommitsToPull
-        forkIO $ gitRevToPush fullRemoteBranchName "HEAD" ivCommitsToPush
-        forkIO $ gitRevToPull fullRemoteBranchName "HEAD" ivCommitsToPull
+        forkIO $ gitRevToPush "origin/master" fullRemoteBranchName mvRemoteCommitsToPush
+        forkIO $ gitRevToPull "origin/master" fullRemoteBranchName mvRemoteCommitsToPull
+        forkIO $ gitRevToPush fullRemoteBranchName "HEAD" mvCommitsToPush
+        forkIO $ gitRevToPull fullRemoteBranchName "HEAD" mvCommitsToPull
 
-        rCommitsToMergeStr <- takeMVar ivRemoteCommitsToPush
+        rCommitsToMergeStr <- takeMVar mvRemoteCommitsToPush
         let rCommitsToMerge = getCount rCommitsToMergeStr
-        rCommitsToRMaserStr <- takeMVar ivRemoteCommitsToPull
+        rCommitsToRMaserStr <- takeMVar mvRemoteCommitsToPull
         let rCommitsToRMaser = getCount rCommitsToRMaserStr
 
-        commitsToPushStr <- takeMVar ivCommitsToPush
+        commitsToPushStr <- takeMVar mvCommitsToPush
         let commitsToPush = getCount commitsToPushStr
-        commitsToPullStr <- takeMVar ivCommitsToPull
+        commitsToPullStr <- takeMVar mvCommitsToPull
         let commitsToPull = getCount commitsToPullStr
 
         outputRCommits rCommitsToMerge rCommitsToRMaser
@@ -76,7 +76,7 @@ githud = do
 
     outputRepoState repoState
 
-    stashCountStr <- takeMVar ivStashCount
+    stashCountStr <- takeMVar mvStashCount
     outputStashCount stashCountStr
 
     -- Necessary to properly terminate the output
@@ -86,13 +86,6 @@ checkInGitDirectory :: IO Bool
 checkInGitDirectory = do
   (exCode, _, _) <- readProcessWithExitCode "git" ["rev-parse", "--git-dir"] ""
   return (exCode == ExitSuccess)
-
-readProcessWithIgnoreExitCode :: FilePath -> [String] -> String -> IO String
-readProcessWithIgnoreExitCode command options stdin = do
-  (exCode, stdout, _) <- readProcessWithExitCode command options stdin
-  if (exCode == ExitSuccess)
-    then return stdout
-    else return ""
 
 removeEndingNewline :: String -> String
 removeEndingNewline str = concat . lines $ str
@@ -109,14 +102,14 @@ gitRemoteBranchConfigKey :: String -> String
 gitRemoteBranchConfigKey localBranchName = "branch." ++ localBranchName ++ ".merge"
 
 gitRemoteName :: String         -- ^ local branch name
-              -> MVar String   -- ^ the output ivar
+              -> MVar String   -- ^ the output mvar
               -> IO ()
 gitRemoteName localBranchName out = do
   remoteName <- readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
   putMVar out remoteName
 
 gitRemoteBranchName :: String     -- ^ remote name
-                    -> MVar String     -- ^ The output ivar
+                    -> MVar String     -- ^ The output mvar
                     -> IO ()
 gitRemoteBranchName remoteName out = do
   remoteBranch <- readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
@@ -131,7 +124,7 @@ gitPorcelainStatus out = do
 
 gitRevToPush :: String          -- ^ from revision
              -> String          -- ^ to revision
-             -> MVar String      -- ^ The output ivar
+             -> MVar String      -- ^ The output mvar
              -> IO ()
 gitRevToPush fromCommit toCommit out = do
   revToPush <- readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
@@ -139,13 +132,13 @@ gitRevToPush fromCommit toCommit out = do
 
 gitRevToPull :: String          -- ^ from revision
              -> String          -- ^ to revision
-             -> MVar String      -- ^ The output ivar
+             -> MVar String      -- ^ The output mvar
              -> IO ()
 gitRevToPull fromCommit toCommit out = do
   revToPull <- readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
   putMVar out revToPull
 
-gitStashCount :: MVar String     -- ^ The output ivar
+gitStashCount :: MVar String     -- ^ The output mvar
               -> IO ()
 gitStashCount out = do
   ( _, Just hGitStashList, _, _) <- createProcess
@@ -173,13 +166,15 @@ outputLocalBranchName localBranchName = do
   putStr "]"
   putStr " "
 
-outputcommitsToPush :: Int -> IO ()
+outputcommitsToPush :: Int
+                    -> IO ()
 outputcommitsToPush commitCount = do
   when (commitCount > 0) $ do
     putStr . show $ commitCount
     showStrInColor Green Vivid "\8593"
 
-outputcommitsToPull :: Int -> IO ()
+outputcommitsToPull :: Int
+                    -> IO ()
 outputcommitsToPull commitCount = do
   when (commitCount > 0) $ do
     putStr . show $ commitCount
@@ -230,14 +225,16 @@ outputCommitsToPullPush pull push = do
 
   when ((pull > 0) || (push > 0)) $ putStr " "
 
-outputStashCount :: String -> IO ()
+outputStashCount :: String
+                 -> IO ()
 outputStashCount stashCountStr = do
   let stashCount = getCount stashCountStr
   when (stashCount /= 0) $ do
     putStr . show $ stashCount
     showStrInColor Green Vivid "≡ "
 
-outputRepoState :: GitRepoState -> IO ()
+outputRepoState :: GitRepoState
+                -> IO ()
 outputRepoState repoState = do
   inda <- showElem indexAdd repoState Green Vivid "A"
   indd <- showElem indexDel repoState Green Vivid "D"
@@ -263,7 +260,7 @@ showElem :: (GitRepoState -> Int)
 showElem elemFunc repoState color intensity letter = do
   let num = elemFunc repoState
   if num > 0
-    then ((showNumState num color intensity letter) >> (return True))
+    then ((showNumState num color intensity letter ) >> (return True))
     else (return False)
 
 showNumState :: Int
