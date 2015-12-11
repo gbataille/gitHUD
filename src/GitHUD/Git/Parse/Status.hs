@@ -1,7 +1,5 @@
-module GitHUD.Parse.Status (
+module GitHUD.Git.Parse.Status (
   gitParseStatus
-  , zeroRepoState
-  , GitLocalRepoChanges(..)
   ) where
 
 import Text.Parsec (parse)
@@ -9,6 +7,8 @@ import Text.Parsec.String (Parser)
 import Text.Parsec.Char (newline, noneOf, oneOf)
 import Text.Parsec.Prim (many, (<?>), try)
 import Text.Parsec.Combinator (choice)
+
+import GitHUD.Git.Types (zeroLocalRepoChanges, GitLocalRepoChanges(..))
 
 data GitFileState = LocalMod
                   | LocalAdd
@@ -19,29 +19,11 @@ data GitFileState = LocalMod
                   | Conflict
                   deriving (Show)
 
-data GitLocalRepoChanges = GitLocalRepoChanges { localMod :: Int
-                                 , localAdd :: Int
-                                 , localDel :: Int
-                                 , indexMod :: Int
-                                 , indexAdd :: Int
-                                 , indexDel :: Int
-                                 , conflict :: Int
-                                 } deriving (Show, Eq)
-zeroRepoState :: GitLocalRepoChanges
-zeroRepoState = GitLocalRepoChanges { localMod = 0
-                             , localAdd = 0
-                             , localDel = 0
-                             , indexMod = 0
-                             , indexAdd = 0
-                             , indexDel = 0
-                             , conflict = 0
-                             }
-
 -- | In case of error, return zeroRepoState, i.e. no changes
 gitParseStatus :: String -> GitLocalRepoChanges
 gitParseStatus out = 
   either
-   (const zeroRepoState)
+   (const zeroLocalRepoChanges)
    id
    (parse porcelainStatusParser "" out)
 
@@ -51,7 +33,7 @@ porcelainStatusParser = gitLinesToRepoState . many $ gitLines
 gitLinesToRepoState :: Parser [GitFileState] -> Parser GitLocalRepoChanges
 gitLinesToRepoState gitFileStateP = do
     gitFileState <- gitFileStateP
-    return $ foldl linesStateFolder zeroRepoState gitFileState
+    return $ foldl linesStateFolder zeroLocalRepoChanges gitFileState
 
 linesStateFolder :: GitLocalRepoChanges -> GitFileState -> GitLocalRepoChanges
 linesStateFolder repoS (LocalMod) = repoS { localMod = (localMod repoS) + 1 }

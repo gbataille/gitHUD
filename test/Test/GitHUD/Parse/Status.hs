@@ -1,11 +1,11 @@
-module Test.GitHUD.Parse.Status (
+module Test.GitHUD.Git.Parse.Status (
   statusTests
   ) where
 
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import GitHUD.Parse.Status
+import GitHUD.Git.Parse.Status
 
 statusTests :: TestTree
 statusTests = testGroup "Status Parser Test"

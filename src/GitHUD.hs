@@ -11,9 +11,10 @@ import Control.Monad (when)
 
 import GitHUD.Process (readProcessWithIgnoreExitCode)
 import GitHUD.Terminal.Types (ColorIntensity(..), Color(..))
-import GitHUD.Parse.Status
-import GitHUD.Parse.Branch
-import GitHUD.Parse.Count
+import GitHUD.Git.Parse.Status (gitParseStatus)
+import GitHUD.Git.Types (GitLocalRepoChanges(..))
+import GitHUD.Git.Parse.Branch
+import GitHUD.Git.Parse.Count
 import GitHUD.Terminal.Base (showStrInColor)
 
 githud :: IO ()
