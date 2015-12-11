@@ -18,6 +18,9 @@ library
   exposed-modules:    GitHUD
                     , GitHUD.Process
                     , GitHUD.Git.Types
+                    , GitHUD.Git.Common
+                    , GitHUD.Git.Command
+                    , GitHUD.Git.Parse.Base
                     , GitHUD.Git.Parse.Status
                     , GitHUD.Git.Parse.Branch
                     , GitHUD.Git.Parse.Count
@@ -49,8 +52,8 @@ test-suite gitHUD-test
                     , gitHUD
   ghc-options:        -threaded -rtsopts -with-rtsopts=-N
   default-language:   Haskell2010
-  Other-modules:      Test.GitHUD.Parse.Status
-                    , Test.GitHUD.Parse.Branch
+  Other-modules:      Test.GitHUD.Git.Parse.Status
+                    , Test.GitHUD.Git.Parse.Branch
   Ghc-Options:        -rtsopts -Wall -fno-warn-unused-do-bind -threaded
 
 source-repository head

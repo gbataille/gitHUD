@@ -1,6 +1,8 @@
 module GitHUD.Git.Types (
-  zeroLocalRepoChanges
-  , GitLocalRepoChanges(..)
+  GitLocalRepoChanges(..)
+  , zeroLocalRepoChanges
+  , GitRepoState(..)
+  , zeroGitRepoState
   ) where
 
 data GitLocalRepoChanges = GitLocalRepoChanges { localMod :: Int
@@ -22,3 +24,30 @@ zeroLocalRepoChanges = GitLocalRepoChanges { localMod = 0
                              , conflict = 0
                              }
 
+data GitRepoState =
+  GitRepoState {
+    gitLocalRepoChanges :: GitLocalRepoChanges
+    , gitLocalBranch :: String
+    , gitRemote :: String
+    , gitRemoteTrackingBranch :: String
+    , gitStashCount :: Int
+    , gitCommitsToPull :: Int
+    , gitCommitsToPush :: Int
+    , gitRemoteCommitsToPull :: Int
+    , gitRemoteCommitsToPush :: Int
+  }
+  deriving (Eq, Show)
+
+zeroGitRepoState :: GitRepoState
+zeroGitRepoState =
+  GitRepoState {
+    gitLocalRepoChanges = zeroLocalRepoChanges
+    , gitLocalBranch = ""
+    , gitRemote = ""
+    , gitRemoteTrackingBranch = ""
+    , gitStashCount = 0
+    , gitCommitsToPull = 0
+    , gitCommitsToPush = 0
+    , gitRemoteCommitsToPull = 0
+    , gitRemoteCommitsToPush = 0
+  }
