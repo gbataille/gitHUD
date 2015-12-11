@@ -1,4 +1,4 @@
-module GitHUD.Parse.Branch (
+module GitHUD.Git.Parse.Branch (
   buildFullyQualifiedRemoteBranchName
   ) where
 

@@ -1,11 +1,11 @@
-module Test.GitHUD.Parse.Branch (
+module Test.GitHUD.Git.Parse.Branch (
   branchTests
   ) where
 
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import GitHUD.Parse.Branch
+import GitHUD.Git.Parse.Branch
 
 branchTests :: TestTree
 branchTests = testGroup "Branch Parser Test"

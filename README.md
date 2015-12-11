@@ -21,6 +21,25 @@ how I created gitHUD
 * Compile them with stack (haskell)
 * Call the gitHUD executable in your prompt definition ($PS1 ou $PROMPT)
 
+My PROMPT variable
+
+```
+%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%} %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(~/.local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
+```
+
+# ZSH
+
+ZSH has some fancy way of managing prompt when you do things like
+autocompletion and the like. For that it needs to know the size of the prompt.
+Special characters used to express the color of the prompt need to be
+surrounded by special markup for them not to be counted.
+
+To make it work with ZSH, add a "zsh" parameter:
+
+```
+gitHUD zsh
+```
+
 # Benefits
 
 - gitHUD is fast (on my system, about twice as fast as git-radar, with exec
