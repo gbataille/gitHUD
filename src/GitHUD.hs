@@ -2,20 +2,20 @@ module GitHUD (
     githud
     ) where
 
-import System.Process (readProcessWithExitCode)
-import System.Exit (ExitCode(ExitSuccess))
 import Control.Monad (when)
 
 import GitHUD.Terminal.Types (ColorIntensity(..), Color(..))
 import GitHUD.Git.Types
 import GitHUD.Terminal.Base (showStrInColor)
 import GitHUD.Git.Parse.Base
+import GitHUD.Git.Command (checkInGitDirectory)
 
 githud :: IO ()
 githud = do
   isGit <- checkInGitDirectory
   when isGit $ do
     repoState <- getGitRepoState
+
     outputGitRepoIndicator
     outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
     outputLocalBranchName (gitLocalBranch repoState)
@@ -25,11 +25,6 @@ githud = do
 
     -- Necessary to properly terminate the output
     putStrLn ""
-
-checkInGitDirectory :: IO Bool
-checkInGitDirectory = do
-  (exCode, _, _) <- readProcessWithExitCode "git" ["rev-parse", "--git-dir"] ""
-  return (exCode == ExitSuccess)
 
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: IO ()
