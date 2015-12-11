@@ -72,13 +72,13 @@ outputRCommits pull push = do
       if (pull > 0)
         then do
           putStr "m "
-          showStrInColor Green Vivid "\8592"
+          showStrInColor Green Vivid "\8594"
           putStr " "
           (putStr . show) pull
         else (
           when (push > 0) $ do
             putStr "m "
-            showStrInColor Green Vivid "\8594"
+            showStrInColor Green Vivid "\8592"
             putStr " "
             (putStr . show) push
         )
