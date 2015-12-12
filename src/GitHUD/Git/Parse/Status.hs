@@ -121,7 +121,11 @@ skipLine :: Parser GitFileState
 skipLine = anyChar >> return Skip
 
 conflictState :: Parser GitFileState
-conflictState = twoCharParser "DAU" "DAU" Conflict
+conflictState = choice [
+  (twoCharParser "D" "DU" Conflict)
+  , (twoCharParser "A" "AU" Conflict)
+  , (twoCharParser "U" "AUD" Conflict)
+  ] <?> "conflict parser"
 
 localModState :: Parser GitFileState
 localModState = twoCharParser "MARC " "M" LocalMod
