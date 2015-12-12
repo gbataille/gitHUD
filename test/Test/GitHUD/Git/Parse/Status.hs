@@ -45,6 +45,28 @@ statusTests = testGroup "Status Parser Test"
       complexStatusString
       @?= (zeroLocalRepoChanges { localAdd = 1, localDel = 1, localMod = 1,
                            indexAdd = 1, indexMod = 1, indexDel = 1, conflict = 3 })
+
+    , testCase "with a renamed file in the index" $
+      gitParseStatus "R  test\n" @?= (zeroLocalRepoChanges { renamed = 1 })
+
+    , testCase "with a file renamed in the index and modified locally" $
+      gitParseStatus "RM test\n" @?= (zeroLocalRepoChanges { localMod = 1, renamed = 1 })
+
+    , testCase "with a file renamed in the index and deleted locally" $
+      gitParseStatus "RD test\n" @?= (zeroLocalRepoChanges { localDel = 1, renamed = 1 })
+
+    , testCase "with a file modified in the index and deleted locally" $
+      gitParseStatus "MD test\n" @?= (zeroLocalRepoChanges { localDel = 1, indexMod = 1 })
+
+    , testCase "with a file changed in the index AND locally" $
+      gitParseStatus "MM test\n" @?= (zeroLocalRepoChanges { localMod = 1, indexMod = 1 })
+
+    , testCase "with a file added in the index AND modified locally" $
+      gitParseStatus "AM test\n" @?= (zeroLocalRepoChanges { localMod = 1, indexAdd = 1 })
+
+    , testCase "with a file added in the index AND deleted locally" $
+      gitParseStatus "AD test\n" @?= (zeroLocalRepoChanges { localDel = 1, indexAdd = 1 })
+
   ]
 
 complexStatusString :: String
