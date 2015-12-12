@@ -37,6 +37,7 @@ buildOutput :: GitRepoState
             -> ShellOutput
 buildOutput repoState = do
   outputGitRepoIndicator
+  outputUpstreamAbsence (gitRemoteTrackingBranch repoState)
   outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
   outputLocalBranchName (gitLocalBranch repoState)
   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
@@ -48,6 +49,13 @@ outputGitRepoIndicator :: ShellOutput
 outputGitRepoIndicator = do
   liftIO . putChar $ '\57504'
   liftIO . putChar $ ' '
+
+outputUpstreamAbsence :: String -> ShellOutput
+outputUpstreamAbsence remoteTrackingBranch =
+  when (remoteTrackingBranch == "") $ do
+    liftIO . putStr $ "upstream "
+    showStrInColor Red Vivid "\9889"
+    liftIO . putChar $ ' '
 
 outputLocalBranchName :: String -> ShellOutput
 outputLocalBranchName localBranchName = do
