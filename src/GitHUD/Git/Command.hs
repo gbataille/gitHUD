@@ -6,6 +6,7 @@ module GitHUD.Git.Command (
   , gitCmdRevToPush
   , gitCmdRevToPull
   , gitCmdStashCount
+  , gitCmdCommitShortSHA
   , checkInGitDirectory
   ) where
 
@@ -75,3 +76,8 @@ gitCmdStashCount out = do
   count <- hGetLine hCountStr
   putMVar out count
 
+gitCmdCommitShortSHA :: MVar String
+                  -> IO ()
+gitCmdCommitShortSHA out = do
+  shortSHA <- readProcessWithIgnoreExitCode "git" ["rev-parse", "--short", "HEAD"] ""
+  putMVar out shortSHA

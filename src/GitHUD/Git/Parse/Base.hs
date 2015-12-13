@@ -21,22 +21,26 @@ getGitRepoState = do
   mvGitStatus <- newEmptyMVar
   mvRemoteName <- newEmptyMVar
   mvStashCount <- newEmptyMVar
+  mvCommitShortSHA <- newEmptyMVar
 
   forkIO $ gitCmdLocalBranchName mvLocalBranch
   forkIO $ gitCmdPorcelainStatus mvGitStatus
   forkIO $ gitCmdStashCount mvStashCount
+  forkIO $ gitCmdCommitShortSHA mvCommitShortSHA
 
   localBranchName <- removeEndingNewline <$> (takeMVar mvLocalBranch)
   forkIO $ gitCmdRemoteName localBranchName mvRemoteName
 
-  remoteName <- removeEndingNewline <$> (takeMVar mvRemoteName)
+  remoteName <- removeEndingNewline <$> takeMVar mvRemoteName
   repoState <- gitParseStatus <$> takeMVar mvGitStatus
   stashCountStr <- takeMVar mvStashCount
+  commitShortSHA <- removeEndingNewline <$> takeMVar mvCommitShortSHA
 
   fillGitRemoteRepoState zeroGitRepoState {
     gitLocalRepoChanges = repoState
     , gitRemote = remoteName
     , gitLocalBranch = localBranchName
+    , gitCommitShortSHA = commitShortSHA
     , gitStashCount = (getCount stashCountStr)
   }
 

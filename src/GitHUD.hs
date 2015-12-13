@@ -36,7 +36,7 @@ buildOutput repoState = do
   outputGitRepoIndicator
   outputUpstreamAbsence (gitRemoteTrackingBranch repoState)
   outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
-  outputLocalBranchName (gitLocalBranch repoState)
+  outputLocalBranchName (gitLocalBranch repoState) (gitCommitShortSHA repoState)
   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
   outputRepoState (gitLocalRepoChanges repoState)
   outputStashCount (gitStashCount repoState)
@@ -55,13 +55,22 @@ outputUpstreamAbsence remoteTrackingBranch =
     showStrInColor Red Vivid "\9889"
     liftIO . putChar $ ' '
 
-outputLocalBranchName :: String -> ShellOutput
-outputLocalBranchName localBranchName = do
-  liftIO $ do
-    putStr $ "["
-    mapM_ putStr (lines localBranchName)
-    putStr $ "]"
-    putStr $ " "
+outputLocalBranchName :: String       -- ^ the local branch name
+                      -> String         -- ^ the HEAD commit short sha
+                      -> ShellOutput
+outputLocalBranchName localBranchName commitSHA = do
+  if (localBranchName /= "")
+    then liftIO $ do
+      putStr "["
+      mapM_ putStr (lines localBranchName)
+      putStr "]"
+      putStr " "
+    else do
+      liftIO . putStr $ "["
+      showStrInColor Yellow Vivid "detached@"
+      showStrInColor Yellow Vivid commitSHA
+      liftIO . putStr $ "]"
+      liftIO . putStr $ " "
 
 outputcommitsToPush :: Int
                     -> ShellOutput
