@@ -6,10 +6,10 @@ import Control.Monad.Reader
 import System.Environment (getArgs)
 
 import GitHUD.Terminal.Types
-import GitHUD.Terminal.Base (showStrInColor)
+import GitHUD.Terminal.Base
 import GitHUD.Git.Types
 import GitHUD.Git.Parse.Base
-import GitHUD.Git.Command (checkInGitDirectory)
+import GitHUD.Git.Command
 
 githud :: IO ()
 githud = do
@@ -83,20 +83,20 @@ outputRCommits :: Int          -- ^ commits to pull
 outputRCommits pull push = do
   if (pull > 0) && (push > 0)
     then do
-      liftIO . putStr $ "m "
+      liftIO . putStr $ "\120366 "
       liftIO . putStr . show $ pull
       showStrInColor Green Vivid "\8644"
       liftIO . putStr . show $ push
     else (
       if (pull > 0)
         then do
-          liftIO . putStr $ "m "
+          liftIO . putStr $ "\120366 "
           showStrInColor Green Vivid "\8594"
           liftIO . putStr $ " "
           liftIO . putStr . show $ pull
         else (
           when (push > 0) $ do
-            liftIO . putStr $ "m "
+            liftIO . putStr $ "\120366 "
             showStrInColor Green Vivid "\8592"
             liftIO . putStr $ " "
             liftIO . putStr . show $ push
