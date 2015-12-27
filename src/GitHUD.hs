@@ -28,6 +28,7 @@ githud = do
       ivCommitsToPush <- IVar.new
       ivRemoteCommitsToPull <- IVar.new
       ivRemoteCommitsToPush <- IVar.new
+      ivStashCount <- IVar.new
 
       --
       -- Running git commands with the concurrent API
@@ -47,28 +48,34 @@ githud = do
       if (remoteName == "")
         then outputLocalBranchName localBranchName
         else do
-          remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
+          forkIO $ gitRemoteBranchName localBranchName ivRemoteBranchName
+          let remoteBranch = removeEndingNewline (IVar.read ivRemoteBranchName)
+
           let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
 
-          rCommitsToMergeStr <- gitRevToPush "origin/master" fullRemoteBranchName
+          forkIO $ gitRevToPush "origin/master" fullRemoteBranchName ivRemoteCommitsToPush
+          forkIO $ gitRevToPull "origin/master" fullRemoteBranchName ivRemoteCommitsToPull
+          forkIO $ gitRevToPush fullRemoteBranchName "HEAD" ivCommitsToPush
+          forkIO $ gitRevToPull fullRemoteBranchName "HEAD" ivCommitsToPull
+
+          let rCommitsToMergeStr = IVar.read ivRemoteCommitsToPush
           let rCommitsToMerge = getCount rCommitsToMergeStr
-          rCommitsToRMaserStr <- gitRevToPull "origin/master" fullRemoteBranchName
+          let rCommitsToRMaserStr = IVar.read ivRemoteCommitsToPull
           let rCommitsToRMaser = getCount rCommitsToRMaserStr
 
-          outputRCommits rCommitsToMerge rCommitsToRMaser
-
-          outputLocalBranchName localBranchName
-
-          commitsToPushStr <- gitRevToPush fullRemoteBranchName "HEAD"
+          let commitsToPushStr = IVar.read ivCommitsToPush
           let commitsToPush = getCount commitsToPushStr
-          commitsToPullStr <- gitRevToPull fullRemoteBranchName "HEAD"
+          let commitsToPullStr = IVar.read ivCommitsToPull
           let commitsToPull = getCount commitsToPullStr
 
+          outputRCommits rCommitsToMerge rCommitsToRMaser
+          outputLocalBranchName localBranchName
           outputCommitsToPullPush commitsToPull commitsToPush
 
       outputRepoState repoState
 
-      stashCountStr <- gitStashCount
+      forkIO $ gitStashCount ivStashCount
+      let stashCountStr = IVar.read ivStashCount
       outputStashCount stashCountStr
 
       -- Necessary to properly terminate the output
@@ -110,9 +117,11 @@ gitRemoteName localBranchName out = do
   IVar.write out remoteName
 
 gitRemoteBranchName :: String     -- ^ remote name
-                    -> IO String
-gitRemoteBranchName remoteName =
-  readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
+                    -> IVar.IVar String     -- ^ The output ivar
+                    -> IO ()
+gitRemoteBranchName remoteName out = do
+  remoteBranch <- readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
+  IVar.write out remoteBranch
 
 
 -- | Assumes that we are in a git repo
@@ -123,25 +132,31 @@ gitPorcelainStatus out = do
 
 gitRevToPush :: String          -- ^ from revision
              -> String          -- ^ to revision
-             -> IO String
-gitRevToPush fromCommit toCommit =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+             -> IVar.IVar String      -- ^ The output ivar
+             -> IO ()
+gitRevToPush fromCommit toCommit out = do
+  revToPush <- readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+  IVar.write out revToPush
 
 gitRevToPull :: String          -- ^ from revision
              -> String          -- ^ to revision
-             -> IO String
-gitRevToPull fromCommit toCommit =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+             -> IVar.IVar String      -- ^ The output ivar
+             -> IO ()
+gitRevToPull fromCommit toCommit out = do
+  revToPull <- readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+  IVar.write out revToPull
 
-gitStashCount :: IO String
-gitStashCount = do
+gitStashCount :: IVar.IVar String     -- ^ The output ivar
+              -> IO ()
+gitStashCount out = do
   ( _, Just hGitStashList, _, _) <- createProcess
     (proc "git" ["stash", "list"])
     { std_out = CreatePipe }
   ( _, Just hCountStr, _, _) <- createProcess
     (proc "wc" ["-l"])
     { std_in = UseHandle hGitStashList, std_out = CreatePipe }
-  hGetLine hCountStr
+  count <- hGetLine hCountStr
+  IVar.write out count
 
 mergeBaseDiffFromTo :: String -> String -> String
 mergeBaseDiffFromTo fromCommit toCommit = fromCommit ++ "..." ++ toCommit
