@@ -9,8 +9,9 @@ import GitHUD.Parse.Status
 githud :: IO ()
 githud = do
   -- TODO: gbataille - Check that we are in a git repo
-  out <- gitPorcelainStatus
-  let repoState = gitParseStatus out
+  porcelainStatus <- gitPorcelainStatus
+  let repoState = gitParseStatus porcelainStatus
+
   outputGitRepoIndicator
   outputBranchName
   outputRepoState repoState
