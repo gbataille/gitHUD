@@ -6,14 +6,21 @@ module GitHUD.Git.Command (
   , gitCmdRevToPush
   , gitCmdRevToPull
   , gitCmdStashCount
+  , checkInGitDirectory
   ) where
 
 import Control.Concurrent.MVar (MVar, putMVar)
-import System.Process (proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
+import System.Process (readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 import GHC.IO.Handle (hGetLine)
+import System.Exit (ExitCode(ExitSuccess))
 
 import GitHUD.Process (readProcessWithIgnoreExitCode)
 import GitHUD.Git.Common
+
+checkInGitDirectory :: IO Bool
+checkInGitDirectory = do
+  (exCode, _, _) <- readProcessWithExitCode "git" ["rev-parse", "--git-dir"] ""
+  return (exCode == ExitSuccess)
 
 gitCmdLocalBranchName :: MVar String -> IO ()
 gitCmdLocalBranchName out = do
