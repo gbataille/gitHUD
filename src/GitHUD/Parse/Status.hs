@@ -1,5 +1,6 @@
 module GitHUD.Parse.Status (
   gitParseStatus
+  , zeroRepoState
   , GitRepoState(..)
   ) where
 
@@ -26,7 +27,7 @@ data GitRepoState = GitRepoState { localMod :: Int
                                  , indexAdd :: Int
                                  , indexDel :: Int
                                  , conflict :: Int
-                                 } deriving (Show)
+                                 } deriving (Show, Eq)
 zeroRepoState :: GitRepoState
 zeroRepoState = GitRepoState { localMod = 0
                              , localAdd = 0
