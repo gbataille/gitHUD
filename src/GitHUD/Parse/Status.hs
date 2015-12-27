@@ -4,12 +4,11 @@ module GitHUD.Parse.Status (
   , GitRepoState(..)
   ) where
 
-import Text.Parsec (runParser, Parsec)
+import Text.Parsec (parse)
+import Text.Parsec.String (Parser)
 import Text.Parsec.Char (newline, noneOf, oneOf)
 import Text.Parsec.Prim (many, (<?>), try)
 import Text.Parsec.Combinator (choice)
-
-type GitHUDParser = Parsec String ()
 
 data GitFileState = LocalMod
                   | LocalAdd
@@ -43,13 +42,13 @@ gitParseStatus :: String -> GitRepoState
 gitParseStatus out = (either
                (\_ -> zeroRepoState)
                (id)
-               (runParser porcelainStatusParser () "" out)
+               (parse porcelainStatusParser "" out)
                )
 
-porcelainStatusParser :: GitHUDParser GitRepoState
+porcelainStatusParser :: Parser GitRepoState
 porcelainStatusParser = gitLinesToRepoState . many $ gitLines
 
-gitLinesToRepoState :: GitHUDParser [GitFileState] -> GitHUDParser GitRepoState
+gitLinesToRepoState :: Parser [GitFileState] -> Parser GitRepoState
 gitLinesToRepoState gitFileStateP = do
     gitFileState <- gitFileStateP
     return $ foldl linesStateFolder zeroRepoState gitFileState
@@ -63,13 +62,13 @@ linesStateFolder repoS (IndexAdd) = repoS { indexAdd = (indexAdd repoS) + 1 }
 linesStateFolder repoS (IndexDel) = repoS { indexDel = (indexDel repoS) + 1 }
 linesStateFolder repoS (Conflict) = repoS { conflict = (conflict repoS) + 1 }
 
-gitLines :: GitHUDParser GitFileState
+gitLines :: Parser GitFileState
 gitLines = do
     state <- fileState
     newline
     return state
 
-fileState :: GitHUDParser GitFileState
+fileState :: Parser GitFileState
 fileState = do
     state <- choice [
         conflictState
@@ -87,29 +86,29 @@ fileState = do
 twoCharParser :: [Char]           -- ^ List of allowed first Char to be matched
               -> [Char]           -- ^ List of allowed second Char to be matched
               -> GitFileState   -- ^ the GitFileState to return as output
-              -> GitHUDParser GitFileState
+              -> Parser GitFileState
 twoCharParser first second state = try $ do
   oneOf first
   oneOf second
   return state
 
-conflictState :: GitHUDParser GitFileState
+conflictState :: Parser GitFileState
 conflictState = twoCharParser "DAU" "DAU" Conflict
 
-localModState :: GitHUDParser GitFileState
+localModState :: Parser GitFileState
 localModState = twoCharParser " " "M" LocalMod
 
-localAddState :: GitHUDParser GitFileState
+localAddState :: Parser GitFileState
 localAddState = twoCharParser "?" "?" LocalAdd
 
-localDelState :: GitHUDParser GitFileState
+localDelState :: Parser GitFileState
 localDelState = twoCharParser " " "D" LocalDel
 
-indexModState :: GitHUDParser GitFileState
+indexModState :: Parser GitFileState
 indexModState = twoCharParser "M" " " IndexMod
 
-indexAddState :: GitHUDParser GitFileState
+indexAddState :: Parser GitFileState
 indexAddState = twoCharParser "A" " " IndexAdd
 
-indexDelState :: GitHUDParser GitFileState
+indexDelState :: Parser GitFileState
 indexDelState = twoCharParser "D" " " IndexDel
