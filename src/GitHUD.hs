@@ -6,6 +6,8 @@ import System.Process (readProcessWithExitCode, proc, StdStream(CreatePipe, UseH
 import GHC.IO.Handle (hGetLine)
 import System.Exit (ExitCode(ExitSuccess))
 import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
+import qualified Data.IVar.Simple as IVar
+import Control.Concurrent (forkIO)
 
 import GitHUD.Parse.Status
 import GitHUD.Parse.Branch
@@ -13,19 +15,35 @@ import GitHUD.Parse.Count
 
 githud :: IO ()
 githud = do
-  -- TODO: gbataille - Check that we are in a git repo
   isGit <- checkInGitDirectory
   if isGit
     then do
+      -- TODO - gbataille : build a datastructure
+      -- Preparing IVars
+      ivLocalBranch <- IVar.new
+      ivGitStatus <- IVar.new
+      ivRemoteName <- IVar.new
+      ivRemoteBranchName <- IVar.new
+      ivCommitsToPull <- IVar.new
+      ivCommitsToPush <- IVar.new
+      ivRemoteCommitsToPull <- IVar.new
+      ivRemoteCommitsToPush <- IVar.new
+
       --
-      -- Running git commands
-      localBranchName <- removeEndingNewline <$> gitLocalBranchName
-      porcelainStatus <- gitPorcelainStatus
-      let repoState = gitParseStatus porcelainStatus
+      -- Running git commands with the concurrent API
+      forkIO $ gitLocalBranchName ivLocalBranch
+      forkIO $ gitPorcelainStatus ivGitStatus
+
+      -- Retrieving the values of the git commands
+      let repoState = gitParseStatus $ IVar.read ivGitStatus
+      let localBranchName = removeEndingNewline (IVar.read ivLocalBranch)
+
+      forkIO $ gitRemoteName localBranchName ivRemoteName
+      let remoteName = removeEndingNewline (IVar.read ivRemoteName)
 
       outputGitRepoIndicator
 
-      remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
+
       if (remoteName == "")
         then outputLocalBranchName localBranchName
         else do
@@ -73,8 +91,10 @@ readProcessWithIgnoreExitCode command options stdin = do
 removeEndingNewline :: String -> String
 removeEndingNewline str = concat . lines $ str
 
-gitLocalBranchName :: IO String
-gitLocalBranchName = readProcessWithIgnoreExitCode "git" ["symbolic-ref", "--short", "HEAD"] ""
+gitLocalBranchName :: IVar.IVar String -> IO ()
+gitLocalBranchName out = do
+  localBranch <- readProcessWithIgnoreExitCode "git" ["symbolic-ref", "--short", "HEAD"] ""
+  IVar.write out localBranch
 
 gitRemoteTrackingConfigKey :: String -> String
 gitRemoteTrackingConfigKey localBranchName = "branch." ++ localBranchName ++ ".remote"
@@ -83,9 +103,11 @@ gitRemoteBranchConfigKey :: String -> String
 gitRemoteBranchConfigKey localBranchName = "branch." ++ localBranchName ++ ".merge"
 
 gitRemoteName :: String         -- ^ local branch name
-              -> IO String
-gitRemoteName localBranchName =
-  readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
+              -> IVar.IVar String   -- ^ the output ivar
+              -> IO ()
+gitRemoteName localBranchName out = do
+  remoteName <- readProcessWithIgnoreExitCode "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
+  IVar.write out remoteName
 
 gitRemoteBranchName :: String     -- ^ remote name
                     -> IO String
@@ -94,8 +116,10 @@ gitRemoteBranchName remoteName =
 
 
 -- | Assumes that we are in a git repo
-gitPorcelainStatus :: IO String
-gitPorcelainStatus = readProcessWithIgnoreExitCode "git" ["status", "--porcelain"] ""
+gitPorcelainStatus :: IVar.IVar String -> IO ()
+gitPorcelainStatus out = do
+  porcelainStatus <- readProcessWithIgnoreExitCode "git" ["status", "--porcelain"] ""
+  IVar.write out porcelainStatus
 
 gitRevToPush :: String          -- ^ from revision
              -> String          -- ^ to revision
