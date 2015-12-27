@@ -11,7 +11,26 @@ githud = do
   -- TODO: gbataille - Check that we are in a git repo
   out <- gitPorcelainStatus
   let repoState = gitParseStatus out
+  outputGitRepoIndicator
+  outputBranchName
   outputRepoState repoState
+
+-- | Requires patched fonts for Powerline (Monaco Powerline)
+outputGitRepoIndicator :: IO ()
+outputGitRepoIndicator = do
+  putChar '\57504'
+  putChar ' '
+
+gitBranchName :: IO String
+gitBranchName = readProcess "git" ["symbolic-ref", "--short", "HEAD"] ""
+
+outputBranchName :: IO ()
+outputBranchName = do
+  branchName <- gitBranchName
+  putStr "["
+  mapM_ putStr (lines branchName)
+  putStr "]"
+  putStr " "
 
 -- | Assumes that we are in a git repo
 gitPorcelainStatus :: IO String
