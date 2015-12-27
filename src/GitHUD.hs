@@ -2,7 +2,8 @@ module GitHUD (
     githud
     ) where
 
-import System.Process (readProcessWithExitCode)
+import System.Process (readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
+import GHC.IO.Handle (hGetLine)
 import System.Exit (ExitCode(ExitSuccess))
 import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
 
@@ -48,6 +49,9 @@ githud = do
           outputCommitsToPullPush commitsToPull commitsToPush
 
       outputRepoState repoState
+
+      stashCountStr <- gitStashCount
+      outputStashCount stashCountStr
 
       -- Necessary to properly terminate the output
       putStrLn ""
@@ -104,6 +108,16 @@ gitRevToPull :: String          -- ^ from revision
              -> IO String
 gitRevToPull fromCommit toCommit =
   readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+
+gitStashCount :: IO String
+gitStashCount = do
+  ( _, Just hGitStashList, _, _) <- createProcess
+    (proc "git" ["stash", "list"])
+    { std_out = CreatePipe }
+  ( _, Just hCountStr, _, _) <- createProcess
+    (proc "wc" ["-l"])
+    { std_in = UseHandle hGitStashList, std_out = CreatePipe }
+  hGetLine hCountStr
 
 mergeBaseDiffFromTo :: String -> String -> String
 mergeBaseDiffFromTo fromCommit toCommit = fromCommit ++ "..." ++ toCommit
@@ -191,6 +205,15 @@ outputCommitsToPullPush pull push = do
   if (pull > 0) || (push > 0)
     then putStr " "
     else return ()
+
+outputStashCount :: String -> IO ()
+outputStashCount stashCountStr = do
+  let stashCount = getCount stashCountStr
+  if (stashCount == 0)
+    then return ()
+    else do
+      putStr . show $ stashCount
+      showStrInColor Green Vivid "≡ "
 
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do
