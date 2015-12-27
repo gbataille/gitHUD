@@ -71,7 +71,7 @@ githud = do
         commitsToPullStr <- takeMVar mvCommitsToPull
         let commitsToPull = getCount commitsToPullStr
 
-        outputRCommits rCommitsToMerge rCommitsToRMaser
+        outputRCommits rCommitsToRMaser rCommitsToMerge
         outputLocalBranchName localBranchName
         outputCommitsToPullPush commitsToPull commitsToPush
 
