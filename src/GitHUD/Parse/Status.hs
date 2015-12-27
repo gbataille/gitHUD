@@ -1,5 +1,5 @@
-module GitHUD.Parse (
-  gitParse
+module GitHUD.Parse.Status (
+  gitParseStatus
   , GitRepoState(..)
   ) where
 
@@ -38,8 +38,8 @@ zeroRepoState = GitRepoState { localMod = 0
                              }
 
 -- | In case of error, return zeroRepoState, i.e. no changes
-gitParse :: String -> GitRepoState
-gitParse out = (either
+gitParseStatus :: String -> GitRepoState
+gitParseStatus out = (either
                (\_ -> zeroRepoState)
                (id)
                (runParser porcelainStatusParser () "" out)
