@@ -16,6 +16,9 @@ flags: {}
 # Extra package databases containing global packages
 extra-package-dbs: []
 
+ghc-options:
+  "*": -Wall -Werror -fno-warn-unused-do-bind
+
 # Control whether we use the GHC we find on the path
 # system-ghc: true
 
