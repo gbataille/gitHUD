@@ -2,6 +2,7 @@ module GitHUD.Git.Parse.Base (
   getGitRepoState
   ) where
 
+import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar (newEmptyMVar, takeMVar)
 

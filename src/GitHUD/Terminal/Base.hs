@@ -3,6 +3,7 @@ module GitHUD.Terminal.Base (
   ) where
 
 import Control.Monad.Reader
+import Data.Monoid (mappend)
 
 import GitHUD.Terminal.Types
 
