@@ -27,7 +27,6 @@ data GitRepoState = GitRepoState { localMod :: Int
                                  , indexMod :: Int
                                  , indexAdd :: Int
                                  , indexDel :: Int
-                                 , untracked :: Int
                                  , conflict :: Int
                                  } deriving (Show)
 
@@ -63,7 +62,6 @@ linesStateFolder repoS (LocalDel) = repoS { localDel = (localDel repoS) + 1 }
 linesStateFolder repoS (IndexMod) = repoS { indexMod = (indexMod repoS) + 1 }
 linesStateFolder repoS (IndexAdd) = repoS { indexAdd = (indexAdd repoS) + 1 }
 linesStateFolder repoS (IndexDel) = repoS { indexDel = (indexDel repoS) + 1 }
-linesStateFolder repoS (Untracked) = repoS { untracked = (untracked repoS) + 1 }
 linesStateFolder repoS (Conflict) = repoS { conflict = (conflict repoS) + 1 }
 
 gitLines :: GitHUDParser GitFileState
@@ -82,7 +80,6 @@ fileState = do
         , indexModState
         , indexAddState
         , indexDelState
-        , untrackedFile
         ] <?> "file state"
     many $ noneOf "\n"
     return state
@@ -104,7 +101,7 @@ localModState :: GitHUDParser GitFileState
 localModState = twoCharParser " " "M" LocalMod
 
 localAddState :: GitHUDParser GitFileState
-localAddState = twoCharParser " " "A" LocalAdd
+localAddState = twoCharParser "?" "?" LocalAdd
 
 localDelState :: GitHUDParser GitFileState
 localDelState = twoCharParser " " "D" LocalDel
@@ -117,7 +114,3 @@ indexAddState = twoCharParser "A" " " IndexAdd
 
 indexDelState :: GitHUDParser GitFileState
 indexDelState = twoCharParser "D" " " IndexDel
-
-untrackedFile :: GitHUDParser GitFileState
-untrackedFile = twoCharParser "?" "?" Untracked
-
