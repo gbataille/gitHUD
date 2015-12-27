@@ -7,6 +7,7 @@ import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), Color
 
 import GitHUD.Parse.Status
 import GitHUD.Parse.Branch
+import GitHUD.Parse.Count
 
 githud :: IO ()
 githud = do
@@ -14,18 +15,22 @@ githud = do
   --
   -- Running git commands
   localBranchName <- removeEndingNewline <$> gitLocalBranchName
-  porcelainStatus <- removeEndingNewline <$> gitPorcelainStatus
+  porcelainStatus <- gitPorcelainStatus
   remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
   remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
 
   -- Parsing git command output
   let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
   let repoState = gitParseStatus porcelainStatus
+  commitsToPushStr <- gitRevToPush fullRemoteBranchName
+  let commitsToPush = getCount commitsToPushStr
+  commitsToPullStr <- gitRevToPull fullRemoteBranchName
+  let commitsToPull = getCount commitsToPullStr
 
   -- Output
-  putStrLn fullRemoteBranchName
   outputGitRepoIndicator
   outputLocalBranchName localBranchName
+  outputCommitsToPullPush commitsToPull commitsToPush
   outputRepoState repoState
 
 removeEndingNewline :: String -> String
@@ -55,6 +60,17 @@ gitRemoteBranchName remoteName =
 gitPorcelainStatus :: IO String
 gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
+gitRevToPush :: String -> IO String
+gitRevToPush remoteBranchName =
+  readProcess "git" ["rev-list", "--right-only", "--count", branchTillHEAD remoteBranchName] ""
+
+gitRevToPull :: String -> IO String
+gitRevToPull remoteBranchName =
+  readProcess "git" ["rev-list", "--left-only", "--count", branchTillHEAD remoteBranchName] ""
+
+branchTillHEAD :: String -> String
+branchTillHEAD remoteBranchName = remoteBranchName ++ "...HEAD"
+
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: IO ()
 outputGitRepoIndicator = do
@@ -67,6 +83,45 @@ outputLocalBranchName localBranchName = do
   mapM_ putStr (lines localBranchName)
   putStr "]"
   putStr " "
+
+outputcommitsToPush :: Int -> IO ()
+outputcommitsToPush commitCount = do
+  if commitCount > 0
+    then do
+      putStr . show $ commitCount
+      showStrInColor Green Vivid "\8593 "
+    else return ()
+
+outputcommitsToPull :: Int -> IO ()
+outputcommitsToPull commitCount = do
+  if commitCount > 0
+    then do
+      putStr . show $ commitCount
+      showStrInColor Red Vivid "\8595 "
+    else return ()
+
+outputCommitsToPullPush :: Int          -- ^ commits to pull
+                        -> Int          -- ^ commits to push
+                        -> IO ()
+outputCommitsToPullPush pull push = do
+  if (pull > 0) && (push > 0)
+    then do
+      putStr (show pull)
+      showStrInColor Green Vivid "\8645"
+      putStr (show push)
+    else (
+      if (pull > 0)
+        then outputcommitsToPull pull
+        else (
+          if (push < 0)
+            then outputcommitsToPush push
+            else return ()
+        )
+    )
+
+  if (pull > 0) || (push > 0)
+    then putStr " "
+    else return ()
 
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do
@@ -109,7 +164,13 @@ showNumState :: Int
          -> IO ()
 showNumState num color intensity letter = do
     putStr (show num)
-    setSGR [SetColor Foreground intensity color]
-    putStr letter
-    setSGR [Reset]
+    showStrInColor color intensity letter
 
+showStrInColor :: Color
+               -> ColorIntensity
+               -> String
+               -> IO ()
+showStrInColor color intensity str = do
+    setSGR [SetColor Foreground intensity color]
+    putStr str
+    setSGR [Reset]
