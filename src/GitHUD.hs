@@ -19,27 +19,33 @@ gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do
-  showElem indexAdd repoState Green Vivid "A"
-  showElem indexDel repoState Green Vivid "D"
-  showElem indexMod repoState Green Vivid "M"
-  putStr " "
-  showElem localDel repoState Red Vivid "D"
-  showElem localMod repoState Red Vivid "M"
-  putStr " "
-  showElem localAdd repoState White Vivid "A"
-  putStr " "
+  ia <- showElem indexAdd repoState Green Vivid "A"
+  id <- showElem indexDel repoState Green Vivid "D"
+  im <- showElem indexMod repoState Green Vivid "M"
+  if (ia || id || im)
+    then putStr " "
+    else return ()
+  ld <- showElem localDel repoState Red Vivid "D"
+  lm <- showElem localMod repoState Red Vivid "M"
+  if (ld || lm)
+    then putStr " "
+    else return ()
+  la <- showElem localAdd repoState White Vivid "A"
+  if (la)
+    then putStr " "
+    else return ()
 
 showElem :: (GitRepoState -> Int)
          -> GitRepoState
          -> Color
          -> ColorIntensity
          -> String
-         -> IO ()
+         -> IO Bool
 showElem elem repoState color intensity letter = do
   let num = elem repoState
   if num > 0
-    then showNumState num color intensity letter
-    else putStr ""
+    then ((showNumState num color intensity letter) >> (return True))
+    else (return False)
 
 showNumState :: Int
          -> Color
