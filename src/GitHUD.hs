@@ -58,7 +58,11 @@ porcelainStatusParser = gitRepoStateToString . gitLinesToRepoState . many $ gitL
 gitRepoStateToString :: GitHUDParser GitRepoState -> GitHUDParser String
 gitRepoStateToString repoStateP = do
     repoState <- repoStateP
-    return $ show repoState
+    let repoStateStr = " " ++
+                       show (localMod repoState) ++ "M " ++
+                       show (localAdd repoState) ++ "A " ++
+                       show (localDel repoState) ++ "D "
+    return repoStateStr
 
 gitLinesToRepoState :: GitHUDParser [GitFileState] -> GitHUDParser GitRepoState
 gitLinesToRepoState linesP = do
