@@ -1,6 +1,8 @@
 As you might have guessed from its name, gitHUD is a heads up display for the
 command line that will show git information
 
+![Example]
+
 # Why gitHUD?
 
 I was really psyched a few months ago by
@@ -41,3 +43,4 @@ Well, my thanks to [git-radar](https://github.com/michaeldfallen/git-radar) for 
 reviews
 
 
+[Example]: https://raw.githubusercontent.com/gbataille/gitHUD/master/images/prompt.png
