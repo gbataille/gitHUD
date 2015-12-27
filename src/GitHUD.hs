@@ -17,29 +17,38 @@ githud = do
 gitPorcelainStatus :: IO String
 gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
-gitRepoStateToString :: GitRepoState -> String
-gitRepoStateToString repoState =
-    " " ++
-    show (localMod repoState) ++ "M " ++
-    show (localAdd repoState) ++ "A " ++
-    show (localDel repoState) ++ "D "
-
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do
-  showElem localDel repoState Red Vivid "D" False
-  showElem localMod repoState Red Vivid "M" True
-  showElem localAdd repoState White Vivid "A" True
+  showElem indexAdd repoState Green Vivid "A"
+  showElem indexDel repoState Green Vivid "D"
+  showElem indexMod repoState Green Vivid "M"
+  putStr " "
+  showElem localDel repoState Red Vivid "D"
+  showElem localMod repoState Red Vivid "M"
+  putStr " "
+  showElem localAdd repoState White Vivid "A"
+  putStr " "
 
 showElem :: (GitRepoState -> Int)
          -> GitRepoState
          -> Color
          -> ColorIntensity
          -> String
-         -> Bool                 -- ^ whether to add a space
          -> IO ()
-showElem elem repoState color intensity letter space = do
-  putStr (show (elem repoState))
-  setSGR [SetColor Foreground intensity color]
-  putStr letter
-  if space then (putStr " ") else (putStr "")
-  setSGR [Reset]
+showElem elem repoState color intensity letter = do
+  let num = elem repoState
+  if num > 0
+    then showNumState num color intensity letter
+    else putStr ""
+
+showNumState :: Int
+         -> Color
+         -> ColorIntensity
+         -> String
+         -> IO ()
+showNumState num color intensity letter = do
+    putStr (show num)
+    setSGR [SetColor Foreground intensity color]
+    putStr letter
+    setSGR [Reset]
+
