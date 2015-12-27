@@ -1,4 +1,4 @@
-module GitHUD.Parse.Count (
+module GitHUD.Git.Parse.Count (
   getCount
   ) where
 
