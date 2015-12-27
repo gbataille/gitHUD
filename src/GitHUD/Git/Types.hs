@@ -3,6 +3,7 @@ module GitHUD.Git.Types (
   , zeroLocalRepoChanges
   , GitRepoState(..)
   , zeroGitRepoState
+  , mergeGitLocalRepoChanges
   ) where
 
 data GitLocalRepoChanges = GitLocalRepoChanges { localMod :: Int
@@ -23,6 +24,18 @@ zeroLocalRepoChanges = GitLocalRepoChanges { localMod = 0
                              , indexDel = 0
                              , conflict = 0
                              }
+
+mergeGitLocalRepoChanges :: GitLocalRepoChanges -> GitLocalRepoChanges -> GitLocalRepoChanges
+mergeGitLocalRepoChanges a b =
+  GitLocalRepoChanges {
+    localMod   = (localMod a) + (localMod b)
+    , localAdd = (localAdd a) + (localAdd b)
+    , localDel = (localDel a) + (localDel b)
+    , indexMod = (indexMod a) + (indexMod b)
+    , indexAdd = (indexAdd a) + (indexAdd b)
+    , indexDel = (indexDel a) + (indexDel b)
+    , conflict = (conflict a) + (conflict b)
+  }
 
 data GitRepoState =
   GitRepoState {
