@@ -16,5 +16,8 @@ getCount numberString =
 
 countParser :: Parser Int
 countParser = do
-  read <$> many anyChar
+  number <- many anyChar
+  if (number == [])
+    then return 0
+    else return (read number)
 
