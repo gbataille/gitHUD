@@ -130,16 +130,16 @@ localAddState :: Parser GitFileState
 localAddState = twoCharParser "?" "?" LocalAdd
 
 localDelState :: Parser GitFileState
-localDelState = twoCharParser "DAM " "D" LocalDel
+localDelState = twoCharParser "MARC " "D" LocalDel
 
 indexModState :: Parser GitFileState
-indexModState = twoCharParser "M" "DAM " IndexMod
+indexModState = twoCharParser "M" "DM " IndexMod
 
 indexAddState :: Parser GitFileState
-indexAddState = twoCharParser "A" "DAM " IndexAdd
+indexAddState = twoCharParser "A" "DM " IndexAdd
 
 indexDelState :: Parser GitFileState
-indexDelState = twoCharParser "D" "DAM " IndexDel
+indexDelState = twoCharParser "D" "M " IndexDel
 
 renamedState :: Parser GitFileState
 renamedState = twoCharParser "R" "DM " Renamed
