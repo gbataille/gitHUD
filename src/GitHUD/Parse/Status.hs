@@ -1,7 +1,7 @@
 module GitHUD.Parse.Status (
   gitParseStatus
   , zeroRepoState
-  , GitRepoState(..)
+  , GitLocalRepoChanges(..)
   ) where
 
 import Text.Parsec (parse)
@@ -19,7 +19,7 @@ data GitFileState = LocalMod
                   | Conflict
                   deriving (Show)
 
-data GitRepoState = GitRepoState { localMod :: Int
+data GitLocalRepoChanges = GitLocalRepoChanges { localMod :: Int
                                  , localAdd :: Int
                                  , localDel :: Int
                                  , indexMod :: Int
@@ -27,8 +27,8 @@ data GitRepoState = GitRepoState { localMod :: Int
                                  , indexDel :: Int
                                  , conflict :: Int
                                  } deriving (Show, Eq)
-zeroRepoState :: GitRepoState
-zeroRepoState = GitRepoState { localMod = 0
+zeroRepoState :: GitLocalRepoChanges
+zeroRepoState = GitLocalRepoChanges { localMod = 0
                              , localAdd = 0
                              , localDel = 0
                              , indexMod = 0
@@ -38,22 +38,22 @@ zeroRepoState = GitRepoState { localMod = 0
                              }
 
 -- | In case of error, return zeroRepoState, i.e. no changes
-gitParseStatus :: String -> GitRepoState
+gitParseStatus :: String -> GitLocalRepoChanges
 gitParseStatus out = 
   either
    (const zeroRepoState)
    id
    (parse porcelainStatusParser "" out)
 
-porcelainStatusParser :: Parser GitRepoState
+porcelainStatusParser :: Parser GitLocalRepoChanges
 porcelainStatusParser = gitLinesToRepoState . many $ gitLines
 
-gitLinesToRepoState :: Parser [GitFileState] -> Parser GitRepoState
+gitLinesToRepoState :: Parser [GitFileState] -> Parser GitLocalRepoChanges
 gitLinesToRepoState gitFileStateP = do
     gitFileState <- gitFileStateP
     return $ foldl linesStateFolder zeroRepoState gitFileState
 
-linesStateFolder :: GitRepoState -> GitFileState -> GitRepoState
+linesStateFolder :: GitLocalRepoChanges -> GitFileState -> GitLocalRepoChanges
 linesStateFolder repoS (LocalMod) = repoS { localMod = (localMod repoS) + 1 }
 linesStateFolder repoS (LocalAdd) = repoS { localAdd = (localAdd repoS) + 1 }
 linesStateFolder repoS (LocalDel) = repoS { localDel = (localDel repoS) + 1 }

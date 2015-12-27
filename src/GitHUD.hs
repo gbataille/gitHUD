@@ -233,7 +233,7 @@ outputStashCount stashCountStr = do
     putStr . show $ stashCount
     showStrInColor Green Vivid "≡ "
 
-outputRepoState :: GitRepoState
+outputRepoState :: GitLocalRepoChanges
                 -> IO ()
 outputRepoState repoState = do
   inda <- showElem indexAdd repoState Green Vivid "A"
@@ -251,8 +251,8 @@ outputRepoState repoState = do
   confl <- showElem conflict repoState Green Vivid "C"
   when (confl) $ putStr " "
 
-showElem :: (GitRepoState -> Int)
-         -> GitRepoState
+showElem :: (GitLocalRepoChanges -> Int)
+         -> GitLocalRepoChanges
          -> Color
          -> ColorIntensity
          -> String
