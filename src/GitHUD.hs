@@ -4,12 +4,39 @@ module GitHUD (
 
 import System.Process (readProcess)
 import Text.Parsec (runParser, Parsec)
-import Text.Parsec.Char (anyChar, newline, noneOf)
-import Text.Parsec.Prim (many)
-import Text.Parsec.Combinator (manyTill)
+import Text.Parsec.Char (anyChar, char, newline, noneOf, space)
+import Text.Parsec.Prim (many, (<?>), try)
+import Text.Parsec.Combinator (manyTill, choice)
 import Text.Parsec.Error (ParseError)
 
-type GitParser = Parsec String () String
+type GitHUDParser = Parsec String ()
+
+data GitFileState = LocalMod
+                  | LocalAdd
+                  | LocalDel
+                  | IndexMod
+                  | IndexAdd
+                  | IndexDel
+                  | Untracked
+                  deriving (Show)
+
+data GitRepoState = GitRepoState { localMod :: Int
+                                 , localAdd :: Int
+                                 , localDel :: Int
+                                 , indexMod :: Int
+                                 , indexAdd :: Int
+                                 , indexDel :: Int
+                                 , untracked :: Int
+                                 } deriving (Show)
+
+zeroRepoState = GitRepoState { localMod = 0
+                             , localAdd = 0
+                             , localDel = 0
+                             , indexMod = 0
+                             , indexAdd = 0
+                             , indexDel = 0
+                             , untracked = 0
+                             }
 
 githud :: IO ()
 githud = do
@@ -22,14 +49,89 @@ githud = do
 gitPorcelainStatus :: IO String
 gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
-porcelainStatusParser :: GitParser
-porcelainStatusParser = concat <$> many gitLines
+porcelainStatusParser :: GitHUDParser String
+porcelainStatusParser = gitRepoStateToString . gitLinesToRepoState . many $ gitLines
 
-gitLines :: GitParser
+gitRepoStateToString :: GitHUDParser GitRepoState -> GitHUDParser String
+gitRepoStateToString repoStateP = do
+    repoState <- repoStateP
+    return $ show repoState
+
+gitLinesToRepoState :: GitHUDParser [GitFileState] -> GitHUDParser GitRepoState
+gitLinesToRepoState linesP = do
+    lines <- linesP
+    return $ foldl linesStateFolder zeroRepoState lines
+
+linesStateFolder :: GitRepoState -> GitFileState -> GitRepoState
+linesStateFolder repoS (LocalMod) = repoS { localMod = (localMod repoS) + 1 }
+linesStateFolder repoS (LocalAdd) = repoS { localAdd = (localAdd repoS) + 1 }
+linesStateFolder repoS (LocalDel) = repoS { localDel = (localDel repoS) + 1 }
+linesStateFolder repoS (IndexMod) = repoS { indexMod = (indexMod repoS) + 1 }
+linesStateFolder repoS (IndexAdd) = repoS { indexAdd = (indexAdd repoS) + 1 }
+linesStateFolder repoS (IndexDel) = repoS { indexDel = (indexDel repoS) + 1 }
+linesStateFolder repoS (Untracked) = repoS { untracked = (untracked repoS) + 1 }
+
+gitLines :: GitHUDParser GitFileState
 gitLines = do
-    line <- many $ noneOf "\n"
+    state <- fileState
     newline
-    return line
+    return state
+
+fileState :: GitHUDParser GitFileState
+fileState = do
+    state <- choice [
+        localModState
+        , localAddState
+        , localDelState
+        , indexModState
+        , indexAddState
+        , indexDelState
+        , untrackedFile
+        ] <?> "file state"
+    many $ noneOf "\n"
+    return state
+
+localModState :: GitHUDParser GitFileState
+localModState = try $ do
+    space
+    char 'M'
+    return $ LocalMod
+
+localAddState :: GitHUDParser GitFileState
+localAddState = try $ do
+    space
+    char 'A'
+    return $ LocalAdd
+
+localDelState :: GitHUDParser GitFileState
+localDelState = try $ do
+    space
+    char 'D'
+    return $ LocalDel
+
+indexModState :: GitHUDParser GitFileState
+indexModState = try $ do
+    char 'M'
+    space
+    return $ IndexMod
+
+indexAddState :: GitHUDParser GitFileState
+indexAddState = try $ do
+    char 'A'
+    space
+    return $ IndexAdd
+
+indexDelState :: GitHUDParser GitFileState
+indexDelState = try $ do
+    char 'D'
+    space
+    return $ IndexDel
+
+untrackedFile :: GitHUDParser GitFileState
+untrackedFile = try $ do
+    char '?'
+    char '?'
+    return $ Untracked
 
 outputParsed :: Either ParseError String -> IO ()
 outputParsed (Left error) = print error
