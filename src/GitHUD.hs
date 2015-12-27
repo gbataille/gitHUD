@@ -128,7 +128,8 @@ outputRepoState repoState = do
   showElem indexAdd repoState Green Vivid "A"
   showElem indexDel repoState Green Vivid "D"
   showElem indexMod repoState Green Vivid "M"
-  when ((indexAdd repoState > 0) || (indexDel repoState > 0) || (indexMod repoState > 0)) . liftIO . putStr $ " "
+  showElem renamed  repoState Green Vivid "R"
+  when ((indexAdd repoState > 0) || (indexDel repoState > 0) || (indexMod repoState > 0) || (renamed repoState > 0)) . liftIO . putStr $ " "
 
   showElem localDel repoState Red Vivid "D"
   showElem localMod repoState Red Vivid "M"

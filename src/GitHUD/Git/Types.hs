@@ -12,6 +12,7 @@ data GitLocalRepoChanges = GitLocalRepoChanges { localMod :: Int
                                  , indexMod :: Int
                                  , indexAdd :: Int
                                  , indexDel :: Int
+                                 , renamed  :: Int
                                  , conflict :: Int
                                  } deriving (Show, Eq)
 
@@ -22,6 +23,7 @@ zeroLocalRepoChanges = GitLocalRepoChanges { localMod = 0
                              , indexMod = 0
                              , indexAdd = 0
                              , indexDel = 0
+                             , renamed  = 0
                              , conflict = 0
                              }
 
@@ -34,6 +36,7 @@ mergeGitLocalRepoChanges a b =
     , indexMod = (indexMod a) + (indexMod b)
     , indexAdd = (indexAdd a) + (indexAdd b)
     , indexDel = (indexDel a) + (indexDel b)
+    , renamed  = (renamed a) + (renamed b)
     , conflict = (conflict a) + (conflict b)
   }
 

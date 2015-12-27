@@ -16,6 +16,7 @@ data GitFileState = LocalMod
                   | IndexMod
                   | IndexAdd
                   | IndexDel
+                  | Renamed
                   | Conflict
                   | Skip            -- ^ Used to skip an output. Necessary because we are parsing twice the output, ignoring certain lines on each pass
                   deriving (Show)
@@ -65,7 +66,8 @@ linesStateFolder repoS (IndexMod) = repoS { indexMod = (indexMod repoS) + 1 }
 linesStateFolder repoS (IndexAdd) = repoS { indexAdd = (indexAdd repoS) + 1 }
 linesStateFolder repoS (IndexDel) = repoS { indexDel = (indexDel repoS) + 1 }
 linesStateFolder repoS (Conflict) = repoS { conflict = (conflict repoS) + 1 }
-linesStateFolder repoS (Skip) = repoS
+linesStateFolder repoS (Renamed)  = repoS { renamed = (renamed repoS) + 1 }
+linesStateFolder repoS (Skip)     = repoS
 
 gitLocalLines :: Parser GitFileState
 gitLocalLines = do
@@ -82,7 +84,9 @@ gitIndexLines = do
 indexFileState :: Parser GitFileState
 indexFileState = do
     state <- choice [
-        indexModState
+        conflictState
+        , renamedState
+        , indexModState
         , indexAddState
         , indexDelState
         -- Fallthrough to skip the lines indicating local modifications
@@ -94,8 +98,7 @@ indexFileState = do
 localFileState :: Parser GitFileState
 localFileState = do
     state <- choice [
-        conflictState
-        , localModState
+        localModState
         , localAddState
         , localDelState
         -- Fallthrough to skip the lines indicating index modifications
@@ -121,7 +124,7 @@ conflictState :: Parser GitFileState
 conflictState = twoCharParser "DAU" "DAU" Conflict
 
 localModState :: Parser GitFileState
-localModState = twoCharParser "DAM " "M" LocalMod
+localModState = twoCharParser "MARC " "M" LocalMod
 
 localAddState :: Parser GitFileState
 localAddState = twoCharParser "?" "?" LocalAdd
@@ -137,3 +140,6 @@ indexAddState = twoCharParser "A" "DAM " IndexAdd
 
 indexDelState :: Parser GitFileState
 indexDelState = twoCharParser "D" "DAM " IndexDel
+
+renamedState :: Parser GitFileState
+renamedState = twoCharParser "R" "DM " Renamed
