@@ -3,7 +3,17 @@ command line that will show git information
 
 ![Example]
 
-# Why gitHUD?
+* [Why gitHUD?](#why_githud?)
+* [Install](#install)
+* [Setup](#setup)
+* [ZSH](#zsh)
+* [Benefits](#benefits)
+* [Dependencies](#dependencies)
+* [Benchmarks](#benchmarks)
+* [Thanks](#thanks)
+
+Why gitHUD?
+-----------
 
 I was really psyched a few months ago by
 [git-radar](https://github.com/michaeldfallen/git-radar). Git-radar does the exact
@@ -15,19 +25,72 @@ prompt.
 At that time, I was looking for an exercise to implement in Haskell, so that's
 how I created gitHUD
 
-# Install
+Install
+-------
+
+Whatever the way you install gitHUD, don't forget to complete the [Setup](#setup)
+
+### Mac OSX with brew
+
+* link my tap
+
+```
+brew tag gbataille/homebrew-gba
+```
+
+* install githud
+
+```
+brew install githud
+```
+
+### With Cabal
+
+gitHUD is available on hackage. Therefore just get it as usual
+
+```
+cabal install gitHUD
+```
+
+### With stack
+
+gitHUD is available on hackage, but not in the stack list of curated packages.
+to install it with stack, you need to add it to the extra-deps in your
+stack.yml file
+
+``` stack.yaml
+extra-deps:
+- gitHUD-1.0.0.0
+```
+
+then you can run
+
+```
+stack install gitHUD
+```
+
+### From sources
 
 * Get the source
-* Compile them with stack (haskell)
-* Call the gitHUD executable in your prompt definition ($PS1 ou $PROMPT)
+* Compile them (haskell)
 
-My PROMPT variable
+
+Setup
+-----
+
+If you simply call the githud executable, you'll get a short status of your
+repository. It's meant to be called each time you display your prompt.
+Therefore you want to put it in your PS1 env variable.
+
+For example, in my `.bashrc` file, with the executable at
+`~/.local/bin/gitHUD`
 
 ```
-%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%} %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(~/.local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
+export PS1="\[\033[0;37m\][\A]\[\033[0m\] \[\033[0;36m\]\u\[\033[0m\] \W\[\033[0;32m\]\$(~/.local/bin/gitHUD)\[\033[0m\]\$ "
 ```
 
-# ZSH
+ZSH
+---
 
 ZSH has some fancy way of managing prompt when you do things like
 autocompletion and the like. For that it needs to know the size of the prompt.
@@ -40,23 +103,39 @@ To make it work with ZSH, add a "zsh" parameter:
 gitHUD zsh
 ```
 
-# Benefits
+Invoking it from the command line will show you those `%{` character.
+
+Putting it together in my `.zshrc`, I have the following PROMPT variable with
+the executable at `~/.local/bin/gitHUD`
+
+
+```
+%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%} %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(~/.local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
+```
+
+Benefits
+--------
 
 - gitHUD is fast (on my system, about twice as fast as git-radar, with exec
   times below 100ms). And I have a couple more ideas to make it better
 - gitHUD is easily maintainable through proper test coverage
 
 The only downside compared to git-radar is that you need to compile it on your
-platform, or I need to provide a packaged version (that's in my todo list)
+platform, as opposed to being just shell.
 
-# Dependencies
+On Mac, it's now easy since I packaged it as a brew bottle. For Linux, I'm
+waiting for contributions to put it in RPM or DEB packages :)
+
+Dependencies
+------------
 
 Until I make it configurable, I have hardcoded a "repository" character at the
 start of the output that can be found in the [patched
 fonts](https://github.com/powerline/fonts) for
 [Powerline](https://github.com/powerline/powerline)
 
-# Benchmarks
+Benchmarks
+----------
 
 So of course, I wanted to check that whatever I was doing was useful. So I did
 a couple of benchmark with the Haskell criterion library. It's based on my
@@ -74,7 +153,8 @@ For information: I ran that on a Macbook Pro 13", 2014, fully boosted, running
 with iTerm 2, tmux, oh-my-zsh, inside a git repo with quite some information
 to parse
 
-# Thanks
+Thanks
+------
 
 Well, my thanks to [git-radar](https://github.com/michaeldfallen/git-radar) for the great idea, and to
 [guibou](https://github.com/guibou) for the code
