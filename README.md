@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/gbataille/gitHUD.svg?branch=master)](https://travis-ci.org/gbataille/gitHUD)
+[![Release](https://img.shields.io/github/release/gbataille/gitHUD.svg)](https://github.com/gbataille/gitHUD/releases)
+[![Hackage](https://img.shields.io/hackage/v/gitHUD.svg)](https://hackage.haskell.org/package/gitHUD)
+[![Hackage](https://img.shields.io/hackage-deps/v/gitHUD.svg)](https://hackage.haskell.org/package/gitHUD)
+
 As you might have guessed from its name, gitHUD is a heads up display for the
 command line that will show git information
 
