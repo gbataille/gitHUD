@@ -143,17 +143,24 @@ outputRCommits :: Int          -- ^ commits to pull
 outputRCommits pull push = do
   if (pull > 0) && (push > 0)
     then do
+      putStr "m "
       putStr (show pull)
-      showStrInColor Green Vivid "\8645"
+      showStrInColor Green Vivid "\8644"
       putStr (show push)
     else (
       if (pull > 0)
         then do
           putStr "m "
+          showStrInColor Green Vivid "\8592"
+          putStr " "
           (putStr . show) pull
         else (
           if (push < 0)
-            then outputcommitsToPush push
+            then do
+              putStr "m "
+              showStrInColor Green Vivid "\8594"
+              putStr " "
+              (putStr . show) push
             else return ()
         )
     )
