@@ -20,7 +20,7 @@ library
                     , GitHUD.Parse.Branch
                     , GitHUD.Parse.Count
                     , GitHUD.Terminal.Base
-                    , GitHUD.Terminal.ANSI
+                    , GitHUD.Terminal.Types
   build-depends:      base >= 4.7 && < 5
                     , process
                     , parsec >= 3.1.9 && < 4

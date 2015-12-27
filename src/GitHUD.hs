@@ -8,8 +8,8 @@ import System.Exit (ExitCode(ExitSuccess))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.MVar (MVar, newEmptyMVar, takeMVar, putMVar)
 import Control.Monad (when)
-import System.Console.ANSI (ColorIntensity(..), Color(..))
 
+import GitHUD.Terminal.Types (ColorIntensity(..), Color(..))
 import GitHUD.Parse.Status
 import GitHUD.Parse.Branch
 import GitHUD.Parse.Count
