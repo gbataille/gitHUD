@@ -21,7 +21,7 @@ data GitFileState = LocalMod
 
 -- | In case of error, return zeroRepoState, i.e. no changes
 gitParseStatus :: String -> GitLocalRepoChanges
-gitParseStatus out = 
+gitParseStatus out =
   either
    (const zeroLocalRepoChanges)
    id
@@ -78,19 +78,19 @@ conflictState :: Parser GitFileState
 conflictState = twoCharParser "DAU" "DAU" Conflict
 
 localModState :: Parser GitFileState
-localModState = twoCharParser " " "M" LocalMod
+localModState = twoCharParser "DAM " "M" LocalMod
 
 localAddState :: Parser GitFileState
 localAddState = twoCharParser "?" "?" LocalAdd
 
 localDelState :: Parser GitFileState
-localDelState = twoCharParser " " "D" LocalDel
+localDelState = twoCharParser "DAM " "D" LocalDel
 
 indexModState :: Parser GitFileState
-indexModState = twoCharParser "M" " " IndexMod
+indexModState = twoCharParser "M" "DAM " IndexMod
 
 indexAddState :: Parser GitFileState
-indexAddState = twoCharParser "A" " " IndexAdd
+indexAddState = twoCharParser "A" "DAM " IndexAdd
 
 indexDelState :: Parser GitFileState
-indexDelState = twoCharParser "D" " " IndexDel
+indexDelState = twoCharParser "D" "DAM " IndexDel
