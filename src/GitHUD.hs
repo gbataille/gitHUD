@@ -18,9 +18,7 @@ githud = do
   isGit <- checkInGitDirectory
   when isGit $ do
     repoState <- getGitRepoState
-
     runReaderT (buildOutput repoState) shell
-
     -- Necessary to properly terminate the output
     putStrLn ""
 
