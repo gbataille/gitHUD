@@ -23,18 +23,26 @@ githud = do
       let repoState = gitParseStatus porcelainStatus
 
       outputGitRepoIndicator
-      outputLocalBranchName localBranchName
 
       remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
       if (remoteName == "")
-        then return ()
+        then outputLocalBranchName localBranchName
         else do
           remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
-
           let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
-          commitsToPushStr <- gitRevToPush fullRemoteBranchName
+
+          rCommitsToMergeStr <- gitRevToPush "origin/master" fullRemoteBranchName
+          let rCommitsToMerge = getCount rCommitsToMergeStr
+          rCommitsToRMaserStr <- gitRevToPull "origin/master" fullRemoteBranchName
+          let rCommitsToRMaser = getCount rCommitsToRMaserStr
+
+          outputRCommits rCommitsToMerge rCommitsToRMaser
+
+          outputLocalBranchName localBranchName
+
+          commitsToPushStr <- gitRevToPush fullRemoteBranchName "HEAD"
           let commitsToPush = getCount commitsToPushStr
-          commitsToPullStr <- gitRevToPull fullRemoteBranchName
+          commitsToPullStr <- gitRevToPull fullRemoteBranchName "HEAD"
           let commitsToPull = getCount commitsToPullStr
 
           outputCommitsToPullPush commitsToPull commitsToPush
@@ -85,16 +93,20 @@ gitRemoteBranchName remoteName =
 gitPorcelainStatus :: IO String
 gitPorcelainStatus = readProcessWithIgnoreExitCode "git" ["status", "--porcelain"] ""
 
-gitRevToPush :: String -> IO String
-gitRevToPush remoteBranchName =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", branchTillHEAD remoteBranchName] ""
+gitRevToPush :: String          -- ^ from revision
+             -> String          -- ^ to revision
+             -> IO String
+gitRevToPush fromCommit toCommit =
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", diffFromTo fromCommit toCommit] ""
 
-gitRevToPull :: String -> IO String
-gitRevToPull remoteBranchName =
-  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", branchTillHEAD remoteBranchName] ""
+gitRevToPull :: String          -- ^ from revision
+             -> String          -- ^ to revision
+             -> IO String
+gitRevToPull fromCommit toCommit =
+  readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", diffFromTo fromCommit toCommit] ""
 
-branchTillHEAD :: String -> String
-branchTillHEAD remoteBranchName = remoteBranchName ++ "...HEAD"
+diffFromTo :: String -> String -> String
+diffFromTo fromCommit toCommit = fromCommit ++ "..." ++ toCommit
 
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: IO ()
@@ -123,6 +135,31 @@ outputcommitsToPull commitCount = do
     then do
       putStr . show $ commitCount
       showStrInColor Red Vivid "\8595"
+    else return ()
+
+outputRCommits :: Int          -- ^ commits to pull
+               -> Int          -- ^ commits to push
+               -> IO ()
+outputRCommits pull push = do
+  if (pull > 0) && (push > 0)
+    then do
+      putStr (show pull)
+      showStrInColor Green Vivid "\8645"
+      putStr (show push)
+    else (
+      if (pull > 0)
+        then do
+          putStr "m "
+          (putStr . show) pull
+        else (
+          if (push < 0)
+            then outputcommitsToPush push
+            else return ()
+        )
+    )
+
+  if (pull > 0) || (push > 0)
+    then putStr " "
     else return ()
 
 outputCommitsToPullPush :: Int          -- ^ commits to pull
