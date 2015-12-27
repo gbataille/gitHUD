@@ -17,9 +17,9 @@ simpleRemoteBranchName :: String
                        -> String
 simpleRemoteBranchName branch =
   either
-  (\_ -> "")
-  (id)
-  (parse remoteBranchParser "" branch)
+    (const "")
+    id
+    (parse remoteBranchParser "" branch)
 
 remoteBranchParser :: Parser String
 remoteBranchParser = do
