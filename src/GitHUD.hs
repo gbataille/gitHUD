@@ -34,6 +34,10 @@ outputRepoState repoState = do
   if (la)
     then putStr " "
     else return ()
+  confl <- showElem conflict repoState Green Vivid "C"
+  if (confl)
+    then putStr " "
+    else return ()
 
 showElem :: (GitRepoState -> Int)
          -> GitRepoState
