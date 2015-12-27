@@ -37,6 +37,24 @@ start of the output that can be found in the [patched
 fonts](https://github.com/powerline/fonts) for
 [Powerline](https://github.com/powerline/powerline)
 
+# Benchmarks
+
+So of course, I wanted to check that whatever I was doing was useful. So I did
+a couple of benchmark with the Haskell criterion library. It's based on my
+system and does not guarantee any performances but it gives you an idea of the
+improvements. It goes:
+* git-radar - full shell implementation
+* gitHUD-syncIO - with normal IOs done one at a time
+* gitHUD-asyncIO - with IOs programmed asynchronously for better performance.
+
+![Bench]
+
+[Here](./bench/bench.html) you can find the details
+
+For information: I ran that on a Macbook Pro 13", 2014, fully boosted, running
+with iTerm 2, tmux, oh-my-zsh, inside a git repo with quite some information
+to parse
+
 # Thanks
 
 Well, my thanks to [git-radar](https://github.com/michaeldfallen/git-radar) for the great idea, and to
@@ -44,4 +62,5 @@ Well, my thanks to [git-radar](https://github.com/michaeldfallen/git-radar) for 
 reviews
 
 
-[Example]: https://raw.githubusercontent.com/gbataille/gitHUD/master/images/prompt.png
+[Example]: ./images/prompt.png
+[Bench]: ./bench/bench.png
