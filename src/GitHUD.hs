@@ -138,7 +138,7 @@ outputCommitsToPullPush pull push = do
       if (pull > 0)
         then outputcommitsToPull pull
         else (
-          if (push < 0)
+          if (push > 0)
             then outputcommitsToPush push
             else return ()
         )
