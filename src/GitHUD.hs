@@ -2,7 +2,6 @@ module GitHUD (
     githud
     ) where
 
-import Control.Monad (when)
 import Control.Monad.Reader
 import System.Environment (getArgs)
 
@@ -47,8 +46,9 @@ buildOutput repoState = do
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: ShellOutput
 outputGitRepoIndicator = do
-  liftIO . putChar $ '\57504'
-  liftIO . putChar $ ' '
+  liftIO $ do
+    putChar '\57504'
+    putChar ' '
 
 outputUpstreamAbsence :: String -> ShellOutput
 outputUpstreamAbsence remoteTrackingBranch =
@@ -59,10 +59,11 @@ outputUpstreamAbsence remoteTrackingBranch =
 
 outputLocalBranchName :: String -> ShellOutput
 outputLocalBranchName localBranchName = do
-  liftIO . putStr $ "["
-  liftIO $ mapM_ putStr (lines localBranchName)
-  liftIO . putStr $ "]"
-  liftIO . putStr $ " "
+  liftIO $ do
+    putStr $ "["
+    mapM_ putStr (lines localBranchName)
+    putStr $ "]"
+    putStr $ " "
 
 outputcommitsToPush :: Int
                     -> ShellOutput
