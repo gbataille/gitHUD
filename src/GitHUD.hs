@@ -13,30 +13,40 @@ import GitHUD.Parse.Count
 githud :: IO ()
 githud = do
   -- TODO: gbataille - Check that we are in a git repo
-  --
-  -- Running git commands
-  localBranchName <- removeEndingNewline <$> gitLocalBranchName
-  porcelainStatus <- gitPorcelainStatus
-  let repoState = gitParseStatus porcelainStatus
+  isGit <- checkInGitDirectory
+  if isGit
+    then do
+      --
+      -- Running git commands
+      localBranchName <- removeEndingNewline <$> gitLocalBranchName
+      porcelainStatus <- gitPorcelainStatus
+      let repoState = gitParseStatus porcelainStatus
 
-  outputGitRepoIndicator
-  outputLocalBranchName localBranchName
+      outputGitRepoIndicator
+      outputLocalBranchName localBranchName
 
-  remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
-  if (remoteName == "")
-    then return ()
-    else do
-      remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
+      remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
+      if (remoteName == "")
+        then return ()
+        else do
+          remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
 
-      let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
-      commitsToPushStr <- gitRevToPush fullRemoteBranchName
-      let commitsToPush = getCount commitsToPushStr
-      commitsToPullStr <- gitRevToPull fullRemoteBranchName
-      let commitsToPull = getCount commitsToPullStr
+          let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
+          commitsToPushStr <- gitRevToPush fullRemoteBranchName
+          let commitsToPush = getCount commitsToPushStr
+          commitsToPullStr <- gitRevToPull fullRemoteBranchName
+          let commitsToPull = getCount commitsToPullStr
 
-      outputCommitsToPullPush commitsToPull commitsToPush
+          outputCommitsToPullPush commitsToPull commitsToPush
 
-  outputRepoState repoState
+      outputRepoState repoState
+
+    else return ()
+
+checkInGitDirectory :: IO Bool
+checkInGitDirectory = do
+  (exCode, _, _) <- readProcessWithExitCode "git" ["rev-parse", "--git-dir"] ""
+  return (exCode == ExitSuccess)
 
 readProcessWithIgnoreExitCode :: FilePath -> [String] -> String -> IO String
 readProcessWithIgnoreExitCode command options stdin = do
