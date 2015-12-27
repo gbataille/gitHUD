@@ -30,11 +30,20 @@ statusTests = testGroup "Status Parser Test"
     , testCase "with one added file to the index" $
       gitParseStatus "D  some random foo bar stuff\n" @?= (zeroRepoState { indexDel = 1 })
 
+    , testCase "with a conflict with both sides changed" $ 
+      gitParseStatus "UU test\n" @?= (zeroRepoState { conflict = 1 })
+
+    , testCase "with a conflict with us side changed" $ 
+      gitParseStatus "DU test\n" @?= (zeroRepoState { conflict = 1 })
+
+    , testCase "with a conflict with them side changed" $ 
+      gitParseStatus "UD test\n" @?= (zeroRepoState { conflict = 1 })
+
     , testCase "with a complex mix" $
       gitParseStatus 
       complexStatusString
       @?= (zeroRepoState { localAdd = 1, localDel = 1, localMod = 1,
-                           indexAdd = 1, indexMod = 1, indexDel = 1 })
+                           indexAdd = 1, indexMod = 1, indexDel = 1, conflict = 3 })
   ]
 
 complexStatusString :: String
@@ -44,4 +53,7 @@ complexStatusString =
   \?? add\n\
   \A  add\n\
   \M  mod\n\
-  \D  del\n"
+  \D  del\n\
+  \UU conflict\n\
+  \DU conflict\n\
+  \UD conflict\n"
