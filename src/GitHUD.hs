@@ -98,53 +98,39 @@ fileState = do
     many $ noneOf "\n"
     return state
 
+-- | Parser of 2 characters exactly that returns a specific State
+twoCharParser :: [Char]           -- ^ List of allowed first Char to be matched
+              -> [Char]           -- ^ List of allowed second Char to be matched
+              -> GitFileState   -- ^ the GitFileState to return as output
+              -> GitHUDParser GitFileState
+twoCharParser first second state = try $ do
+  oneOf first
+  oneOf second
+  return state
+
 conflictState :: GitHUDParser GitFileState
-conflictState = try $ do
-    oneOf "DAU"
-    oneOf "DAU"
-    return Conflict
+conflictState = twoCharParser "DAU" "DAU" Conflict
 
 localModState :: GitHUDParser GitFileState
-localModState = try $ do
-    space
-    char 'M'
-    return LocalMod
+localModState = twoCharParser " " "M" LocalMod
 
 localAddState :: GitHUDParser GitFileState
-localAddState = try $ do
-    space
-    char 'A'
-    return LocalAdd
+localAddState = twoCharParser " " "A" LocalAdd
 
 localDelState :: GitHUDParser GitFileState
-localDelState = try $ do
-    space
-    char 'D'
-    return LocalDel
+localDelState = twoCharParser " " "D" LocalDel
 
 indexModState :: GitHUDParser GitFileState
-indexModState = try $ do
-    char 'M'
-    space
-    return IndexMod
+indexModState = twoCharParser "M" " " IndexMod
 
 indexAddState :: GitHUDParser GitFileState
-indexAddState = try $ do
-    char 'A'
-    space
-    return IndexAdd
+indexAddState = twoCharParser "A" " " IndexAdd
 
 indexDelState :: GitHUDParser GitFileState
-indexDelState = try $ do
-    char 'D'
-    space
-    return IndexDel
+indexDelState = twoCharParser "D" " " IndexDel
 
 untrackedFile :: GitHUDParser GitFileState
-untrackedFile = try $ do
-    char '?'
-    char '?'
-    return Untracked
+untrackedFile = twoCharParser "?" "?" Untracked
 
 outputRepoState :: Either ParseError GitRepoState -> IO ()
 outputRepoState (Left error) = print error
