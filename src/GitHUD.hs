@@ -4,17 +4,56 @@ module GitHUD (
 
 import System.Process (readProcess)
 import System.Console.ANSI (setSGR, SGR(Reset,SetColor), ConsoleLayer(..), ColorIntensity(..), Color(..))
+
 import GitHUD.Parse.Status
+import GitHUD.Parse.Branch
 
 githud :: IO ()
 githud = do
   -- TODO: gbataille - Check that we are in a git repo
-  porcelainStatus <- gitPorcelainStatus
+  --
+  -- Running git commands
+  localBranchName <- removeEndingNewline <$> gitLocalBranchName
+  porcelainStatus <- removeEndingNewline <$> gitPorcelainStatus
+  remoteName <- removeEndingNewline <$> gitRemoteName localBranchName
+  remoteBranch <- removeEndingNewline <$> gitRemoteBranchName localBranchName
+
+  -- Parsing git command output
+  let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName remoteName remoteBranch
   let repoState = gitParseStatus porcelainStatus
 
+  -- Output
+  putStrLn fullRemoteBranchName
   outputGitRepoIndicator
-  outputBranchName
+  outputLocalBranchName localBranchName
   outputRepoState repoState
+
+removeEndingNewline :: String -> String
+removeEndingNewline str = concat . lines $ str
+
+gitLocalBranchName :: IO String
+gitLocalBranchName = readProcess "git" ["symbolic-ref", "--short", "HEAD"] ""
+
+gitRemoteTrackingConfigKey :: String -> String
+gitRemoteTrackingConfigKey localBranchName = "branch." ++ localBranchName ++ ".remote"
+
+gitRemoteBranchConfigKey :: String -> String
+gitRemoteBranchConfigKey localBranchName = "branch." ++ localBranchName ++ ".merge"
+
+gitRemoteName :: String         -- ^ local branch name
+              -> IO String
+gitRemoteName localBranchName =
+  readProcess "git" ["config", "--get", gitRemoteTrackingConfigKey localBranchName] ""
+
+gitRemoteBranchName :: String     -- ^ remote name
+                    -> IO String
+gitRemoteBranchName remoteName =
+  readProcess "git" ["config", "--get", gitRemoteBranchConfigKey remoteName] ""
+
+
+-- | Assumes that we are in a git repo
+gitPorcelainStatus :: IO String
+gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
 -- | Requires patched fonts for Powerline (Monaco Powerline)
 outputGitRepoIndicator :: IO ()
@@ -22,20 +61,12 @@ outputGitRepoIndicator = do
   putChar '\57504'
   putChar ' '
 
-gitBranchName :: IO String
-gitBranchName = readProcess "git" ["symbolic-ref", "--short", "HEAD"] ""
-
-outputBranchName :: IO ()
-outputBranchName = do
-  branchName <- gitBranchName
+outputLocalBranchName :: String -> IO ()
+outputLocalBranchName localBranchName = do
   putStr "["
-  mapM_ putStr (lines branchName)
+  mapM_ putStr (lines localBranchName)
   putStr "]"
   putStr " "
-
--- | Assumes that we are in a git repo
-gitPorcelainStatus :: IO String
-gitPorcelainStatus = readProcess "git" ["status", "--porcelain"] ""
 
 outputRepoState :: GitRepoState -> IO ()
 outputRepoState repoState = do

@@ -17,6 +17,7 @@ library
   hs-source-dirs:     src
   exposed-modules:    GitHUD
                     , GitHUD.Parse.Status
+                    , GitHUD.Parse.Branch
   build-depends:      base >= 4.7 && < 5
                     , process
                     , parsec >= 3.1.9 && < 4
@@ -44,6 +45,7 @@ test-suite gitHUD-test
   ghc-options:        -threaded -rtsopts -with-rtsopts=-N
   default-language:   Haskell2010
   Other-modules:      Test.GitHUD.Parse.Status
+                    , Test.GitHUD.Parse.Branch
   Ghc-Options:        -rtsopts -Wall -Werror -fno-warn-unused-do-bind -threaded
 
 source-repository head
