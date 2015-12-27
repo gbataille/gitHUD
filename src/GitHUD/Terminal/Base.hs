@@ -2,19 +2,33 @@ module GitHUD.Terminal.Base (
   showStrInColor
   ) where
 
+import Control.Monad.Reader
 
-import GitHUD.Terminal.Types (Color(..), ColorIntensity(..))
+import GitHUD.Terminal.Types
 
 showStrInColor :: Color               -- ^ The terminal color to use
                -> ColorIntensity      -- ^ The intensity to use
                -> String              -- ^ The string to output
-               -> IO ()
+               -> ShellOutput
 showStrInColor color intensity str = do
+  shell <- ask
+  liftIO $ outputStrInColor color intensity str shell
+
+outputStrInColor :: Color
+                 -> ColorIntensity
+                 -> String
+                 -> Shell
+                 -> IO()
+outputStrInColor color intensity str shell = do
   let startCode = terminalStartCode color intensity
-  putStr $ zshMarkZeroWidth startCode
+  if (shell == ZSH)
+    then putStr $ zshMarkZeroWidth startCode
+    else putStr $ startCode
 
   putStr str
-  putStr $ zshMarkZeroWidth terminalEndCode
+  if (shell == ZSH)
+    then putStr $ zshMarkZeroWidth terminalEndCode
+    else putStr $ terminalEndCode
 
 zshMarkZeroWidth :: String
                  -> String

@@ -3,143 +3,158 @@ module GitHUD (
     ) where
 
 import Control.Monad (when)
+import Control.Monad.Reader
+import System.Environment (getArgs)
 
-import GitHUD.Terminal.Types (ColorIntensity(..), Color(..))
-import GitHUD.Git.Types
+import GitHUD.Terminal.Types
 import GitHUD.Terminal.Base (showStrInColor)
+import GitHUD.Git.Types
 import GitHUD.Git.Parse.Base
 import GitHUD.Git.Command (checkInGitDirectory)
 
 githud :: IO ()
 githud = do
+  shell <- processArguments getArgs
+
   isGit <- checkInGitDirectory
   when isGit $ do
     repoState <- getGitRepoState
 
-    outputGitRepoIndicator
-    outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
-    outputLocalBranchName (gitLocalBranch repoState)
-    outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
-    outputRepoState (gitLocalRepoChanges repoState)
-    outputStashCount (gitStashCount repoState)
+    runReaderT (buildOutput repoState) shell
 
     -- Necessary to properly terminate the output
     putStrLn ""
 
--- | Requires patched fonts for Powerline (Monaco Powerline)
-outputGitRepoIndicator :: IO ()
-outputGitRepoIndicator = do
-  putChar '\57504'
-  putChar ' '
+processArguments :: IO [String]
+                 -> IO Shell
+processArguments args = do
+  arguments <- args
+  if (not (null arguments)) && ((head arguments) == "zsh")
+    then return ZSH
+    else return Other
 
-outputLocalBranchName :: String -> IO ()
+buildOutput :: GitRepoState
+            -> ShellOutput
+buildOutput repoState = do
+  outputGitRepoIndicator
+  outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
+  outputLocalBranchName (gitLocalBranch repoState)
+  outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
+  outputRepoState (gitLocalRepoChanges repoState)
+  outputStashCount (gitStashCount repoState)
+
+-- | Requires patched fonts for Powerline (Monaco Powerline)
+outputGitRepoIndicator :: ShellOutput
+outputGitRepoIndicator = do
+  liftIO . putChar $ '\57504'
+  liftIO . putChar $ ' '
+
+outputLocalBranchName :: String -> ShellOutput
 outputLocalBranchName localBranchName = do
-  putStr "["
-  mapM_ putStr (lines localBranchName)
-  putStr "]"
-  putStr " "
+  liftIO . putStr $ "["
+  liftIO $ mapM_ putStr (lines localBranchName)
+  liftIO . putStr $ "]"
+  liftIO . putStr $ " "
 
 outputcommitsToPush :: Int
-                    -> IO ()
+                    -> ShellOutput
 outputcommitsToPush commitCount = do
   when (commitCount > 0) $ do
-    putStr . show $ commitCount
+    liftIO . putStr . show $ commitCount
     showStrInColor Green Vivid "\8593"
 
 outputcommitsToPull :: Int
-                    -> IO ()
+                    -> ShellOutput
 outputcommitsToPull commitCount = do
   when (commitCount > 0) $ do
-    putStr . show $ commitCount
+    liftIO . putStr . show $ commitCount
     showStrInColor Red Vivid "\8595"
 
 outputRCommits :: Int          -- ^ commits to pull
                -> Int          -- ^ commits to push
-               -> IO ()
+               -> ShellOutput
 outputRCommits pull push = do
   if (pull > 0) && (push > 0)
     then do
-      putStr "m "
-      putStr (show pull)
+      liftIO . putStr $ "m "
+      liftIO . putStr . show $ pull
       showStrInColor Green Vivid "\8644"
-      putStr (show push)
+      liftIO . putStr . show $ push
     else (
       if (pull > 0)
         then do
-          putStr "m "
+          liftIO . putStr $ "m "
           showStrInColor Green Vivid "\8594"
-          putStr " "
-          (putStr . show) pull
+          liftIO . putStr $ " "
+          liftIO . putStr . show $ pull
         else (
           when (push > 0) $ do
-            putStr "m "
+            liftIO . putStr $ "m "
             showStrInColor Green Vivid "\8592"
-            putStr " "
-            (putStr . show) push
+            liftIO . putStr $ " "
+            liftIO . putStr . show $ push
         )
     )
 
-  when ((pull > 0) || (push > 0)) $ putStr " "
+  when ((pull > 0) || (push > 0)) . liftIO . putStr $ " "
 
 outputCommitsToPullPush :: Int          -- ^ commits to pull
                         -> Int          -- ^ commits to push
-                        -> IO ()
+                        -> ShellOutput
 outputCommitsToPullPush pull push = do
   if (pull > 0) && (push > 0)
     then do
-      putStr (show pull)
+      liftIO . putStr . show $ pull
       showStrInColor Green Vivid "\8645"
-      putStr (show push)
+      liftIO . putStr . show $ push
     else
       if (pull > 0)
         then outputcommitsToPull pull
         else
-          when (push > 0) $ do outputcommitsToPush push
+          when (push > 0) $ outputcommitsToPush push
 
-  when ((pull > 0) || (push > 0)) $ putStr " "
+  when ((pull > 0) || (push > 0)) . liftIO . putStr $ " "
 
 outputStashCount :: Int
-                 -> IO ()
+                 -> ShellOutput
 outputStashCount stashCount = do
   when (stashCount /= 0) $ do
-    putStr . show $ stashCount
+    liftIO . putStr . show $ stashCount
     showStrInColor Green Vivid "≡ "
 
 outputRepoState :: GitLocalRepoChanges
-                -> IO ()
+                -> ShellOutput
 outputRepoState repoState = do
-  inda <- showElem indexAdd repoState Green Vivid "A"
-  indd <- showElem indexDel repoState Green Vivid "D"
-  indm <- showElem indexMod repoState Green Vivid "M"
-  when (inda || indd || indm) $ putStr " "
+  showElem indexAdd repoState Green Vivid "A"
+  showElem indexDel repoState Green Vivid "D"
+  showElem indexMod repoState Green Vivid "M"
+  when ((indexAdd repoState > 0) || (indexDel repoState > 0) || (indexMod repoState > 0)) . liftIO . putStr $ " "
 
-  ld <- showElem localDel repoState Red Vivid "D"
-  lm <- showElem localMod repoState Red Vivid "M"
-  when (ld || lm) $ putStr " "
+  showElem localDel repoState Red Vivid "D"
+  showElem localMod repoState Red Vivid "M"
+  when ((localDel repoState > 0) || (localMod repoState > 0)) . liftIO . putStr $ " "
 
-  la <- showElem localAdd repoState White Vivid "A"
-  when (la) $ putStr " "
+  showElem localAdd repoState White Vivid "A"
+  when (localAdd repoState > 0) . liftIO . putStr $ " "
 
-  confl <- showElem conflict repoState Green Vivid "C"
-  when (confl) $ putStr " "
+  showElem conflict repoState Green Vivid "C"
+  when (conflict repoState > 0) . liftIO . putStr $ " "
 
 showElem :: (GitLocalRepoChanges -> Int)
          -> GitLocalRepoChanges
          -> Color
          -> ColorIntensity
          -> String
-         -> IO Bool
+         -> ShellOutput
 showElem elemFunc repoState color intensity letter = do
   let num = elemFunc repoState
-  if num > 0
-    then ((showNumState num color intensity letter ) >> (return True))
-    else (return False)
+  when (num > 0) $ showNumState num color intensity letter
 
 showNumState :: Int
          -> Color
          -> ColorIntensity
          -> String
-         -> IO ()
+         -> ShellOutput
 showNumState num color intensity letter = do
-    putStr (show num)
+    liftIO . putStr . show $ num
     showStrInColor color intensity letter
