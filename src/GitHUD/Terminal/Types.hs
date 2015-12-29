@@ -3,16 +3,19 @@ module GitHUD.Terminal.Types (
   , ColorIntensity(..)
   , Shell(..)
   , Prompt(..)
+  , emptyPromptForShell
   , ShellOutput
   ) where
 
-import Control.Monad.Reader
+import Control.Monad.State
 
 data Color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White
 data ColorIntensity = Dull | Vivid
 data Shell = ZSH | Other deriving (Eq)
-
 data Prompt = Prompt { shellType :: Shell, prompt :: String }
 
-type ShellOutput = ReaderT Shell IO ()
+emptyPromptForShell :: Shell -> Prompt
+emptyPromptForShell shell = Prompt { shellType = shell, prompt = "" }
+
+type ShellOutput = StateT Prompt IO ()
 

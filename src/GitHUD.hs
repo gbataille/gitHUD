@@ -2,7 +2,7 @@ module GitHUD (
     githud
     ) where
 
-import Control.Monad.Reader
+import Control.Monad.State
 import System.Environment (getArgs)
 
 import GitHUD.Terminal.Types
@@ -18,7 +18,7 @@ githud = do
   isGit <- checkInGitDirectory
   when isGit $ do
     repoState <- getGitRepoState
-    runReaderT (buildOutput repoState) shell
+    runStateT (buildOutput repoState) (emptyPromptForShell shell)
     -- Necessary to properly terminate the output
     putStrLn ""
 

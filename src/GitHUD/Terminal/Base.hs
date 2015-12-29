@@ -2,7 +2,7 @@ module GitHUD.Terminal.Base (
   showStrInColor
   ) where
 
-import Control.Monad.Reader
+import Control.Monad.State
 import Data.Monoid (mappend)
 
 import GitHUD.Terminal.Types
@@ -12,8 +12,8 @@ showStrInColor :: Color               -- ^ The terminal color to use
                -> String              -- ^ The string to output
                -> ShellOutput
 showStrInColor color intensity str = do
-  shell <- ask
-  liftIO $ outputStrInColor color intensity str shell
+  shell <- get
+  liftIO $ outputStrInColor color intensity str (shellType shell)
 
 outputStrInColor :: Color
                  -> ColorIntensity
