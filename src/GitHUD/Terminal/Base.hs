@@ -2,6 +2,7 @@ module GitHUD.Terminal.Base (
   addColorToStringForShell
   ) where
 
+import Control.Monad (liftM)
 import Control.Monad.Reader (ask)
 import Control.Monad.Writer (tell)
 
@@ -12,8 +13,7 @@ addColorToStringForShell :: Color               -- ^ The terminal color to use
                          -> String              -- ^ The string to output
                          -> ShellOutput
 addColorToStringForShell color intensity str = do
-  outputConfig <- ask
-  let shell = getShell outputConfig
+  shell <- liftM getShell $ ask
   tell $ startColorMarker color intensity shell
   tell $ str
   tell $ endColorMarker shell
