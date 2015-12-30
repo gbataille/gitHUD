@@ -22,6 +22,7 @@ buildPrompt = do
   addUpstreamIndicator
   addRemoteCommits
   addLocalBranchName
+  addLocalCommits
   return ()
 
 addGitRepoIndicator :: ShellOutput
@@ -79,6 +80,29 @@ addLocalBranchName = do
   tell "] "
   return ()
 
+addLocalCommits :: ShellOutput
+addLocalCommits = do
+  repoState <- getRepoState
+  let push = gitCommitsToPush repoState
+  let pull = gitCommitsToPull repoState
+  if (pull > 0) && (push > 0)
+    then do
+      tell . show $ pull
+      tellStringInColor Green Vivid "\8645"
+      tell . show $ push
+      tell " "
+    else
+      if (pull > 0)
+        then do
+          tell . show $ pull
+          tellStringInColor Red Vivid "\8595 "
+        else
+          when (push > 0) $ do
+            tell . show $ push
+            tellStringInColor Green Vivid "\8593"
+
+  return ()
+
 --   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
 --   outputRepoState (gitLocalRepoChanges repoState)
 --   outputStashCount (gitStashCount repoState)
@@ -96,23 +120,6 @@ addLocalBranchName = do
 --   when (commitCount > 0) $ do
 --     liftIO . putStr . show $ commitCount
 --     showStrInColor Red Vivid "\8595"
---
--- outputCommitsToPullPush :: Int          -- ^ commits to pull
---                         -> Int          -- ^ commits to push
---                         -> ShellOutput
--- outputCommitsToPullPush pull push = do
---   if (pull > 0) && (push > 0)
---     then do
---       liftIO . putStr . show $ pull
---       showStrInColor Green Vivid "\8645"
---       liftIO . putStr . show $ push
---     else
---       if (pull > 0)
---         then outputcommitsToPull pull
---         else
---           when (push > 0) $ outputcommitsToPush push
---
---   when ((pull > 0) || (push > 0)) . liftIO . putStr $ " "
 --
 -- outputStashCount :: Int
 --                  -> ShellOutput
