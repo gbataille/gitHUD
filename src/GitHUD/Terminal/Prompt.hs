@@ -21,6 +21,7 @@ buildPrompt = do
   addGitRepoIndicator
   addUpstreamIndicator
   addRemoteCommits
+  addLocalBranchName
   return ()
 
 addGitRepoIndicator :: ShellOutput
@@ -63,27 +64,24 @@ addRemoteCommits = do
     )
   return ()
 
---   outputLocalBranchName (gitLocalBranch repoState) (gitCommitShortSHA repoState)
+addLocalBranchName :: ShellOutput
+addLocalBranchName = do
+  repoState <- getRepoState
+  let localBranchName = gitLocalBranch repoState
+  tell "["
+
+  if (localBranchName /= "")
+    then do
+      tell localBranchName
+    else do
+      tellStringInColor Yellow Vivid $ "detached@" ++ (gitCommitShortSHA repoState)
+
+  tell "] "
+  return ()
+
 --   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
 --   outputRepoState (gitLocalRepoChanges repoState)
 --   outputStashCount (gitStashCount repoState)
---
--- outputLocalBranchName :: String       -- ^ the local branch name
---                       -> String         -- ^ the HEAD commit short sha
---                       -> ShellOutput
--- outputLocalBranchName localBranchName commitSHA = do
---   if (localBranchName /= "")
---     then liftIO $ do
---       putStr "["
---       mapM_ putStr (lines localBranchName)
---       putStr "]"
---       putStr " "
---     else do
---       liftIO . putStr $ "["
---       showStrInColor Yellow Vivid "detached@"
---       showStrInColor Yellow Vivid commitSHA
---       liftIO . putStr $ "]"
---       liftIO . putStr $ " "
 --
 -- outputcommitsToPush :: Int
 --                     -> ShellOutput
