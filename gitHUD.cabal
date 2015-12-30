@@ -25,6 +25,7 @@ library
                     , GitHUD.Git.Parse.Branch
                     , GitHUD.Git.Parse.Count
                     , GitHUD.Terminal.Base
+                    , GitHUD.Terminal.Prompt
                     , GitHUD.Terminal.Types
   build-depends:      base >= 4.7 && < 5
                     , process
