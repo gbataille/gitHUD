@@ -24,6 +24,7 @@ buildPrompt = do
   addLocalBranchName
   addLocalCommits
   addRepoState
+  addStashes
   return ()
 
 addGitRepoIndicator :: ShellOutput
@@ -158,50 +159,11 @@ addNumStateElem num color intensity letter = do
   tellStringInColor color intensity letter
   return ()
 
---   outputRepoState (gitLocalRepoChanges repoState)
---   outputStashCount (gitStashCount repoState)
---
--- outputStashCount :: Int
---                  -> ShellOutput
--- outputStashCount stashCount = do
---   when (stashCount /= 0) $ do
---     liftIO . putStr . show $ stashCount
---     showStrInColor Green Vivid "≡ "
---
--- outputRepoState :: GitLocalRepoChanges
---                 -> ShellOutput
--- outputRepoState repoState = do
---   showElem indexAdd repoState Green Vivid "A"
---   showElem indexDel repoState Green Vivid "D"
---   showElem indexMod repoState Green Vivid "M"
---   showElem renamed  repoState Green Vivid "R"
---   when ((indexAdd repoState > 0) || (indexDel repoState > 0) || (indexMod repoState > 0) || (renamed repoState > 0)) . liftIO . putStr $ " "
---
---   showElem localDel repoState Red Vivid "D"
---   showElem localMod repoState Red Vivid "M"
---   when ((localDel repoState > 0) || (localMod repoState > 0)) . liftIO . putStr $ " "
---
---   showElem localAdd repoState White Vivid "A"
---   when (localAdd repoState > 0) . liftIO . putStr $ " "
---
---   showElem conflict repoState Green Vivid "C"
---   when (conflict repoState > 0) . liftIO . putStr $ " "
---
--- showElem :: (GitLocalRepoChanges -> Int)
---          -> GitLocalRepoChanges
---          -> Color
---          -> ColorIntensity
---          -> String
---          -> ShellOutput
--- showElem elemFunc repoState color intensity letter = do
---   let num = elemFunc repoState
---   when (num > 0) $ showNumState num color intensity letter
---
--- showNumState :: Int
---          -> Color
---          -> ColorIntensity
---          -> String
---          -> ShellOutput
--- showNumState num color intensity letter = do
---     liftIO . putStr . show $ num
---     showStrInColor color intensity letter
+addStashes :: ShellOutput
+addStashes = do
+  repoState <- getRepoState
+  let stashCount = gitStashCount repoState
+  when (stashCount /= 0) $ do
+    tell . show $ stashCount
+    tellStringInColor Green Vivid "≡ "
+
