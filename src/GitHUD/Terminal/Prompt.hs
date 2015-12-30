@@ -96,30 +96,17 @@ addLocalCommits = do
         then do
           tell . show $ pull
           tellStringInColor Red Vivid "\8595 "
+          tell " "
         else
           when (push > 0) $ do
             tell . show $ push
             tellStringInColor Green Vivid "\8593"
+            tell " "
 
   return ()
 
---   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
 --   outputRepoState (gitLocalRepoChanges repoState)
 --   outputStashCount (gitStashCount repoState)
---
--- outputcommitsToPush :: Int
---                     -> ShellOutput
--- outputcommitsToPush commitCount = do
---   when (commitCount > 0) $ do
---     liftIO . putStr . show $ commitCount
---     showStrInColor Green Vivid "\8593"
---
--- outputcommitsToPull :: Int
---                     -> ShellOutput
--- outputcommitsToPull commitCount = do
---   when (commitCount > 0) $ do
---     liftIO . putStr . show $ commitCount
---     showStrInColor Red Vivid "\8595"
 --
 -- outputStashCount :: Int
 --                  -> ShellOutput
