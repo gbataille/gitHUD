@@ -10,15 +10,20 @@ import GitHUD.Terminal.Types
 -- | display by accumulating data in a Writer and returning it
 buildPromptWithConfig :: TerminalState
 buildPromptWithConfig = do
-  (_, prompt) <- runWriterT buildOutput3
+  (_, prompt) <- runWriterT buildPrompt
   return prompt
 
-buildOutput3 :: ShellOutput
-buildOutput3 = do
-  outputConfig <- ask
-  tell . show $ getShell outputConfig
-  tell "foo"
+buildPrompt :: ShellOutput
+buildPrompt = do
+  addGitRepoIndicator
+  addUpstreamIndicator
   return ()
+
+addGitRepoIndicator :: ShellOutput
+addGitRepoIndicator = tell "\57504 "
+
+addUpstreamIndicator :: ShellOutput
+addUpstreamIndicator = tell ""
 
 -- buildOutput :: GitRepoState
 --             -> ShellOutput
