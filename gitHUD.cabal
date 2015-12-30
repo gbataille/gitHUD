@@ -57,6 +57,7 @@ test-suite gitHUD-test
                     , Test.GitHUD.Git.Parse.Branch
                     , Test.GitHUD.Git.Common
                     , Test.GitHUD.Git.Types
+                    , Test.GitHUD.Terminal.Base
   Ghc-Options:        -rtsopts -Wall -fno-warn-unused-do-bind -threaded
 
 source-repository head

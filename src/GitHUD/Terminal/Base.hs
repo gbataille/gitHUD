@@ -1,5 +1,6 @@
 module GitHUD.Terminal.Base (
   tellStringInColor
+  , applyShellMarkers
   ) where
 
 import Control.Monad.Writer (tell)
