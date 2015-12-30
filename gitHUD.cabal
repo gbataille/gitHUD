@@ -55,6 +55,7 @@ test-suite gitHUD-test
   default-language:   Haskell2010
   Other-modules:      Test.GitHUD.Git.Parse.Status
                     , Test.GitHUD.Git.Parse.Branch
+                    , Test.GitHUD.Git.Common
                     , Test.GitHUD.Git.Types
   Ghc-Options:        -rtsopts -Wall -fno-warn-unused-do-bind -threaded
 

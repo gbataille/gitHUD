@@ -2,6 +2,7 @@ import Test.Tasty
 
 import Test.GitHUD.Git.Parse.Status
 import Test.GitHUD.Git.Parse.Branch
+import Test.GitHUD.Git.Common
 import Test.GitHUD.Git.Types
 
 main :: IO ()
@@ -12,6 +13,7 @@ tests = testGroup "Tests"
   [ statusTests
   , branchTests
   , gitTypesTests
+  , gitCommonTests
   ]
 --
 -- tests :: TestTree
