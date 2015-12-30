@@ -5,6 +5,7 @@ import Test.GitHUD.Git.Parse.Branch
 import Test.GitHUD.Git.Common
 import Test.GitHUD.Git.Types
 import Test.GitHUD.Terminal.Base
+import Test.GitHUD.Terminal.Prompt
 
 main :: IO ()
 main = defaultMain tests
@@ -16,6 +17,7 @@ tests = testGroup "Tests"
   , gitTypesTests
   , gitCommonTests
   , terminalTests
+  , terminalPromptTests
   ]
 --
 -- tests :: TestTree

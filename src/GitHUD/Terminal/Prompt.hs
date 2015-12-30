@@ -1,5 +1,7 @@
 module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
+  , addGitRepoIndicator
+  , addUpstreamIndicator
   ) where
 
 import Control.Monad (when)
