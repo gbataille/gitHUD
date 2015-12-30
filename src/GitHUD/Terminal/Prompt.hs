@@ -2,8 +2,11 @@ module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
   ) where
 
+import Control.Monad (when)
 import Control.Monad.Writer (runWriterT, tell)
 
+import GitHUD.Git.Types
+import GitHUD.Terminal.Base
 import GitHUD.Terminal.Types
 
 -- | From the state of the terminal (shell type + git info), builds a prompt to
@@ -23,7 +26,17 @@ addGitRepoIndicator :: ShellOutput
 addGitRepoIndicator = tell "\57504 "
 
 addUpstreamIndicator :: ShellOutput
-addUpstreamIndicator = tell ""
+addUpstreamIndicator = do
+  repoState <- getRepoState
+  when (gitRemoteTrackingBranch repoState == "") $ do
+    tell "upstream "
+    tellStringInColor Red Vivid "\9889"
+    tell " "
+  return ()
+--   when (remoteTrackingBranch == "") $ do
+--     liftIO . putStr $ "upstream "
+--     showStrInColor Red Vivid "\9889"
+--     liftIO . putChar $ ' '
 
 -- buildOutput :: GitRepoState
 --             -> ShellOutput
@@ -35,13 +48,6 @@ addUpstreamIndicator = tell ""
 --   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
 --   outputRepoState (gitLocalRepoChanges repoState)
 --   outputStashCount (gitStashCount repoState)
---
--- -- | Requires patched fonts for Powerline (Monaco Powerline)
--- outputGitRepoIndicator :: ShellOutput
--- outputGitRepoIndicator = do
---   liftIO $ do
---     putChar '\57504'
---     putChar ' '
 --
 -- outputUpstreamAbsence :: String -> ShellOutput
 -- outputUpstreamAbsence remoteTrackingBranch =
