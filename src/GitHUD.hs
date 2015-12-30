@@ -18,10 +18,10 @@ githud = do
   isGit <- checkInGitDirectory
   when isGit $ do
     repoState <- getGitRepoState
-    let out = runReader buildOutputWithConfig $ buildOutputConfig shell repoState
+    let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState
 
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
-    putStrLn out
+    putStrLn prompt
 
 processArguments :: IO [String]
                  -> IO Shell

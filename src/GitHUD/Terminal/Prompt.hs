@@ -1,16 +1,15 @@
 module GitHUD.Terminal.Prompt (
-  buildOutputWithConfig
+  buildPromptWithConfig
   ) where
 
-import Control.Monad.Reader (ask)
 import Control.Monad.Writer (runWriterT, tell)
 
 import GitHUD.Terminal.Types
 
 -- | From the state of the terminal (shell type + git info), builds a prompt to
 -- | display by accumulating data in a Writer and returning it
-buildOutputWithConfig :: TerminalState
-buildOutputWithConfig = do
+buildPromptWithConfig :: TerminalState
+buildPromptWithConfig = do
   (_, prompt) <- runWriterT buildOutput3
   return prompt
 
