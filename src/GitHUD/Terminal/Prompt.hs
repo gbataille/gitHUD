@@ -23,6 +23,7 @@ buildPrompt = do
   addRemoteCommits
   addLocalBranchName
   addLocalCommits
+  addRepoState
   return ()
 
 addGitRepoIndicator :: ShellOutput
@@ -103,6 +104,58 @@ addLocalCommits = do
             tellStringInColor Green Vivid "\8593"
             tell " "
 
+  return ()
+
+addRepoState :: ShellOutput
+addRepoState = do
+  repoState <- getRepoState
+  let repoChanges = gitLocalRepoChanges repoState
+
+  let inda = indexAdd repoChanges
+  let indd = indexDel repoChanges
+  let indm = indexMod repoChanges
+  let mv = renamed repoChanges
+  addStateElem inda Green Vivid "A"
+  addStateElem indd Green Vivid "D"
+  addStateElem indm Green Vivid "M"
+  addStateElem mv Green Vivid "R"
+  addSpaceIfAnyBiggerThanZero [inda, indd, indm, mv]
+
+  let ld = localDel repoChanges
+  let lm = localMod repoChanges
+  addStateElem ld Red Vivid "D"
+  addStateElem lm Red Vivid "M"
+  addSpaceIfAnyBiggerThanZero [ld, lm]
+
+  let la = localAdd repoChanges
+  addStateElem la White Vivid "A"
+  addSpaceIfAnyBiggerThanZero [la]
+
+  let co = conflict repoChanges
+  addStateElem co Green Vivid "C"
+  addSpaceIfAnyBiggerThanZero [co]
+  return ()
+
+addSpaceIfAnyBiggerThanZero :: [Int] -> ShellOutput
+addSpaceIfAnyBiggerThanZero list =
+  when (any (>0) list) $ tell " "
+
+addStateElem :: Int
+             -> Color
+             -> ColorIntensity
+             -> String
+             -> ShellOutput
+addStateElem stateElem color intensity letter =
+  when (stateElem > 0) $ addNumStateElem stateElem color intensity letter
+
+addNumStateElem :: Int
+                -> Color
+                -> ColorIntensity
+                -> String
+                -> ShellOutput
+addNumStateElem num color intensity letter = do
+  tell . show $ num
+  tellStringInColor color intensity letter
   return ()
 
 --   outputRepoState (gitLocalRepoChanges repoState)
