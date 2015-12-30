@@ -20,6 +20,7 @@ buildPrompt :: ShellOutput
 buildPrompt = do
   addGitRepoIndicator
   addUpstreamIndicator
+  addRemoteCommits
   return ()
 
 addGitRepoIndicator :: ShellOutput
@@ -33,28 +34,39 @@ addUpstreamIndicator = do
     tellStringInColor Red Vivid "\9889"
     tell " "
   return ()
---   when (remoteTrackingBranch == "") $ do
---     liftIO . putStr $ "upstream "
---     showStrInColor Red Vivid "\9889"
---     liftIO . putChar $ ' '
 
--- buildOutput :: GitRepoState
---             -> ShellOutput
--- buildOutput repoState = do
---   outputGitRepoIndicator
---   outputUpstreamAbsence (gitRemoteTrackingBranch repoState)
---   outputRCommits (gitRemoteCommitsToPull repoState) (gitRemoteCommitsToPush repoState)
+addRemoteCommits :: ShellOutput
+addRemoteCommits = do
+  repoState <- getRepoState
+  let push = gitRemoteCommitsToPush repoState
+  let pull = gitRemoteCommitsToPull repoState
+  if (push > 0) && (pull > 0)
+    then do
+      tell "\120366 "
+      tell . show $ pull
+      tellStringInColor Green Vivid "\8644"
+      tell . show $ push
+      tell " "
+    else (
+      if (pull > 0)
+        then do
+          tell "\120366 "
+          tellStringInColor Green Vivid "\8594 "
+          tell . show $ pull
+          tell " "
+        else (
+          when (push > 0) $ do
+            tell "\120366 "
+            tellStringInColor Green Vivid "\8592 "
+            tell . show $ push
+        )
+    )
+  return ()
+
 --   outputLocalBranchName (gitLocalBranch repoState) (gitCommitShortSHA repoState)
 --   outputCommitsToPullPush (gitCommitsToPull repoState) (gitCommitsToPush repoState)
 --   outputRepoState (gitLocalRepoChanges repoState)
 --   outputStashCount (gitStashCount repoState)
---
--- outputUpstreamAbsence :: String -> ShellOutput
--- outputUpstreamAbsence remoteTrackingBranch =
---   when (remoteTrackingBranch == "") $ do
---     liftIO . putStr $ "upstream "
---     showStrInColor Red Vivid "\9889"
---     liftIO . putChar $ ' '
 --
 -- outputLocalBranchName :: String       -- ^ the local branch name
 --                       -> String         -- ^ the HEAD commit short sha
@@ -86,34 +98,6 @@ addUpstreamIndicator = do
 --   when (commitCount > 0) $ do
 --     liftIO . putStr . show $ commitCount
 --     showStrInColor Red Vivid "\8595"
---
--- outputRCommits :: Int          -- ^ commits to pull
---                -> Int          -- ^ commits to push
---                -> ShellOutput
--- outputRCommits pull push = do
---   if (pull > 0) && (push > 0)
---     then do
---       liftIO . putStr $ "\120366 "
---       liftIO . putStr . show $ pull
---       showStrInColor Green Vivid "\8644"
---       liftIO . putStr . show $ push
---     else (
---       if (pull > 0)
---         then do
---           liftIO . putStr $ "\120366 "
---           showStrInColor Green Vivid "\8594"
---           liftIO . putStr $ " "
---           liftIO . putStr . show $ pull
---         else (
---           when (push > 0) $ do
---             liftIO . putStr $ "\120366 "
---             showStrInColor Green Vivid "\8592"
---             liftIO . putStr $ " "
---             liftIO . putStr . show $ push
---         )
---     )
---
---   when ((pull > 0) || (push > 0)) . liftIO . putStr $ " "
 --
 -- outputCommitsToPullPush :: Int          -- ^ commits to pull
 --                         -> Int          -- ^ commits to push
