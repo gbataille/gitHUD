@@ -8,6 +8,7 @@ module GitHUD.Terminal.Base (
 import Control.Monad.Writer (tell)
 import Data.Monoid (mappend)
 
+import GitHUD.Types
 import GitHUD.Terminal.Types
 
 tellStringInColor :: Color               -- ^ The terminal color to use

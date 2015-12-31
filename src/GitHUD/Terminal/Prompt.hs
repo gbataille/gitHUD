@@ -16,6 +16,7 @@ import GitHUD.Config.Types
 import GitHUD.Git.Types
 import GitHUD.Terminal.Base
 import GitHUD.Terminal.Types
+import GitHUD.Types
 
 -- | From the state of the terminal (shell type + git info), builds a prompt to
 -- | display by accumulating data in a Writer and returning it

@@ -29,6 +29,7 @@ library
                     , GitHUD.Terminal.Base
                     , GitHUD.Terminal.Prompt
                     , GitHUD.Terminal.Types
+                    , GitHUD.Types
   build-depends:      base >= 4.7 && < 5
                     , process
                     , parsec >= 3.1.9 && < 4

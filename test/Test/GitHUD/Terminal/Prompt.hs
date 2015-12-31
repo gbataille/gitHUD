@@ -12,6 +12,7 @@ import GitHUD.Config.Types
 import GitHUD.Git.Types
 import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
+import GitHUD.Types
 
 terminalPromptTests :: TestTree
 terminalPromptTests = testGroup "Terminal Prompt Test"

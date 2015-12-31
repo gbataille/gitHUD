@@ -11,6 +11,7 @@ import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
 import GitHUD.Git.Parse.Base
 import GitHUD.Git.Command
+import GitHUD.Types
 
 githud :: IO ()
 githud = do
