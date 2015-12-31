@@ -18,6 +18,7 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
     , testAddUpstreamIndicator
     , testAddRemoteCommits
     , testAddLocalBranchName
+    , testAddLocalCommits
   ]
 
 testAddGitRepoIndicator :: TestTree
@@ -109,6 +110,33 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
       @?= "[\ESC[1;33mdetached@3d25ef\ESC[0m] "
   ]
 
+testAddLocalCommits :: TestTree
+testAddLocalCommits = testGroup "#addLocalCommits"
+  [ testCase "ZSH: commits to pull" $
+      testCommitsToPull ZSH @?=
+      "2%{\ESC[1;31m%}\8595 %{\ESC[0m%} "
+
+  , testCase "ZSH: commits to push" $
+      testCommitsToPush ZSH @?=
+      "2%{\ESC[1;32m%}\8593%{\ESC[0m%} "
+
+  , testCase "ZSH: commits to pull and to push" $
+      testCommitsToPushAndPull ZSH @?=
+      "4%{\ESC[1;32m%}\8645%{\ESC[0m%}4 "
+
+  , testCase "Other: commits to pull" $
+      testCommitsToPull Other @?=
+      "2\ESC[1;31m\8595 \ESC[0m "
+
+  , testCase "Other: commits to push" $
+      testCommitsToPush Other @?=
+      "2\ESC[1;32m\8593\ESC[0m "
+
+  , testCase "Other: commits to pull and to push" $
+      testCommitsToPushAndPull Other @?=
+      "4\ESC[1;32m\8645\ESC[0m4 "
+  ]
+
 -- | Utility function to test a ShellOutput function and gets the prompt built
 testWriterWithConfig :: OutputConfig    -- ^ Starting reader state
                      -> ShellOutput     -- ^ Function under test
@@ -136,3 +164,20 @@ testRemoteCommitsToPushAndPull shell = testWriterWithConfig
     (zeroGitRepoState { gitRemoteCommitsToPull = 4, gitRemoteCommitsToPush = 4 })
   )
   addRemoteCommits
+
+testCommitsToPull :: Shell -> String
+testCommitsToPull shell = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPull = 2 }))
+  addLocalCommits
+
+testCommitsToPush :: Shell -> String
+testCommitsToPush shell = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPush = 2 }))
+  addLocalCommits
+
+testCommitsToPushAndPull :: Shell -> String
+testCommitsToPushAndPull shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitCommitsToPull = 4, gitCommitsToPush = 4 })
+  )
+  addLocalCommits
