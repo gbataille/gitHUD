@@ -26,12 +26,23 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
 
 testAddGitRepoIndicator :: TestTree
 testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
-  [ testCase "ZSH: hardcoded character" $
+  [ testCase "ZSH: default config: hardcoded character" $
       testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "\57504 "
 
-    , testCase "Other: hardcoded character" $
+    , testCase "Other: default config: hardcoded character" $
       testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "\57504 "
 
+    , testCase "ZSH: custom config: hardcoded character" $
+      testWriterWithConfig
+        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { gitRepoIndicator = "indic" })
+        addGitRepoIndicator
+      @?= "indic "
+
+    , testCase "Other: custom config: hardcoded character" $
+      testWriterWithConfig
+        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { gitRepoIndicator = "indic" })
+        addGitRepoIndicator
+      @?= "indic "
   ]
 
 testAddUpstreamIndicator :: TestTree

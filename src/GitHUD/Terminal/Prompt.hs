@@ -12,6 +12,7 @@ module GitHUD.Terminal.Prompt (
 import Control.Monad (when)
 import Control.Monad.Writer (runWriterT, tell)
 
+import GitHUD.Config.Types
 import GitHUD.Git.Types
 import GitHUD.Terminal.Base
 import GitHUD.Terminal.Types
@@ -35,7 +36,10 @@ buildPrompt = do
   return ()
 
 addGitRepoIndicator :: ShellOutput
-addGitRepoIndicator = tell "\57504 "
+addGitRepoIndicator = do
+  config <- getConfig
+  tell $ gitRepoIndicator config
+  tell " "
 
 addUpstreamIndicator :: ShellOutput
 addUpstreamIndicator = do
