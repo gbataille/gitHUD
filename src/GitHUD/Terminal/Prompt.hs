@@ -3,6 +3,7 @@ module GitHUD.Terminal.Prompt (
   , addGitRepoIndicator
   , addUpstreamIndicator
   , addRemoteCommits
+  , addLocalBranchName
   ) where
 
 import Control.Monad (when)

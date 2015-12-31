@@ -18,6 +18,7 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
   [ testAddGitRepoIndicator
     , testAddUpstreamIndicator
     , testAddRemoteCommits
+    , testAddLocalBranchName
   ]
 
 testAddGitRepoIndicator :: TestTree
@@ -32,17 +33,17 @@ testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
       testWriterWithConfig
         (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }))
         addUpstreamIndicator
-    @?= ""
+      @?= ""
 
   , testCase "#addUpstreamIndicator with no upstream for non ZSH shell" $
       testWriterWithConfig
         (zeroOutputConfig ZSH) addUpstreamIndicator
-    @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
+      @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
 
   , testCase "#addUpstreamIndicator with no upstream for ZSH" $
       testWriterWithConfig
         (zeroOutputConfig Other) addUpstreamIndicator
-    @?= "upstream \x1b[1;31m\9889\x1b[0m "
+      @?= "upstream \x1b[1;31m\9889\x1b[0m "
   ]
 
 testAddRemoteCommits :: TestTree
@@ -65,6 +66,33 @@ testAddRemoteCommits = testGroup "#addRemoteCommits"
   , testCase "#addRemoteCommits Other commits to pull and to push" $
       testRemoteCommitsToPushAndPull Other @?=
       "\120366 4\ESC[1;32m\8644\ESC[0m4 "
+  ]
+
+testAddLocalBranchName :: TestTree
+testAddLocalBranchName = testGroup "#addLocalBranchName"
+  [ testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
+      testWriterWithConfig
+        (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }))
+        addLocalBranchName
+      @?= "[foo] "
+
+    , testCase "non ZSH: should display the name of the current branch if we are at the HEAD of any" $
+      testWriterWithConfig
+        (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }))
+        addLocalBranchName
+      @?= "[foo] "
+
+    , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
+      testWriterWithConfig
+        (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
+        addLocalBranchName
+      @?= "[%{\ESC[1;33m%}detached@3d25ef%{\ESC[0m%}] "
+
+    , testCase "non ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
+      testWriterWithConfig
+        (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
+        addLocalBranchName
+      @?= "[\ESC[1;33mdetached@3d25ef\ESC[0m] "
   ]
 
 -- | Utility function to test a ShellOutput function and gets the prompt built
