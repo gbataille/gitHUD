@@ -16,7 +16,8 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:     src
   exposed-modules:    GitHUD
-                    , GitHUD.Process
+                    , GitHUD.Config.Parse
+                    , GitHUD.Config.Types
                     , GitHUD.Git.Types
                     , GitHUD.Git.Common
                     , GitHUD.Git.Command
@@ -24,6 +25,7 @@ library
                     , GitHUD.Git.Parse.Status
                     , GitHUD.Git.Parse.Branch
                     , GitHUD.Git.Parse.Count
+                    , GitHUD.Process
                     , GitHUD.Terminal.Base
                     , GitHUD.Terminal.Prompt
                     , GitHUD.Terminal.Types

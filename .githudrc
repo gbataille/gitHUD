@@ -1,0 +1,10 @@
+# Lines beginning with a '#' in the first column are comments
+#
+# The file contains a list of key - value pairs, separated by an equal "=" sign
+# Careful, all spaces are meaningful
+# There generally should not be any before or after the equal "=" sign
+#
+# Empty lines are ignored.
+# Lines that are not understood by githud are silently ignored
+
+git_repo_indicator=toto

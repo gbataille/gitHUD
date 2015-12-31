@@ -6,6 +6,7 @@ import Control.Monad (when)
 import Control.Monad.Reader (runReader)
 import System.Environment (getArgs)
 
+import GitHUD.Config.Parse
 import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
 import GitHUD.Git.Parse.Base
@@ -14,6 +15,10 @@ import GitHUD.Git.Command
 githud :: IO ()
 githud = do
   shell <- processArguments getArgs
+
+  -- TODO: gbataille - change that to the home folder
+  -- TODO: gbataille - Error if the file does not exists. Have to check first
+  config <- parseConfigFile "/Users/gbataille/Documents/Prog/Perso/gitHUD/.githudrc"
 
   isGit <- checkInGitDirectory
   when isGit $ do
