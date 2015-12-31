@@ -27,48 +27,86 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
 
 testAddGitRepoIndicator :: TestTree
 testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
-  [ testCase "ZSH: default config: hardcoded character" $
-      testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "\57504 "
+  [ testGroup "Default Config"
+      [ testCase "ZSH: default config: hardcoded character" $
+          testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "\57504 "
 
-    , testCase "Other: default config: hardcoded character" $
-      testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "\57504 "
+        , testCase "Other: default config: hardcoded character" $
+          testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "\57504 "
+      ]
+    , testGroup "Custom Config"
+      [ testCase "ZSH: custom config: hardcoded character" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
+          addGitRepoIndicator
+        @?= "indic "
 
-    , testCase "ZSH: custom config: hardcoded character" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
-        addGitRepoIndicator
-      @?= "indic "
-
-    , testCase "Other: custom config: hardcoded character" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
-        addGitRepoIndicator
-      @?= "indic "
+      , testCase "Other: custom config: hardcoded character" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
+          addGitRepoIndicator
+        @?= "indic "
+      ]
   ]
+
+customConfig :: Config
+customConfig = defaultConfig {
+  confNoUpstreamString = "foo"
+  , confNoUpstreamIndicator = "bar"
+  , confNoUpstreamIndicatorColor = Green
+  , confNoUpstreamIndicatorIntensity = Dull
+}
 
 testAddUpstreamIndicator :: TestTree
 testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
-  [ testCase "ZSH: with an upstream" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-        addUpstreamIndicator
-      @?= ""
+  [ testGroup "Default Config"
+      [ testCase "ZSH: with an upstream" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
+            addUpstreamIndicator
+          @?= ""
 
-    , testCase "Other: with an upstream" $
-      testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-        addUpstreamIndicator
-      @?= ""
+        , testCase "Other: with an upstream" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
+            addUpstreamIndicator
+          @?= ""
 
-  , testCase "ZSH: with no upstream" $
-      testWriterWithConfig
-        (zeroOutputConfig ZSH) addUpstreamIndicator
-      @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
+      , testCase "ZSH: with no upstream" $
+          testWriterWithConfig
+            (zeroOutputConfig ZSH) addUpstreamIndicator
+          @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
 
-  , testCase "Other: with no upstream" $
-      testWriterWithConfig
-        (zeroOutputConfig Other) addUpstreamIndicator
-      @?= "upstream \x1b[1;31m\9889\x1b[0m "
+      , testCase "Other: with no upstream" $
+          testWriterWithConfig
+            (zeroOutputConfig Other) addUpstreamIndicator
+          @?= "upstream \x1b[1;31m\9889\x1b[0m "
+      ]
+    , testGroup "Custom Config"
+      [ testCase "ZSH: with an upstream" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfig)
+            addUpstreamIndicator
+          @?= ""
+
+        , testCase "Other: with an upstream" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfig)
+            addUpstreamIndicator
+          @?= ""
+
+      , testCase "ZSH: with no upstream" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState) customConfig)
+            addUpstreamIndicator
+          @?= "foo %{\x1b[32m%}bar%{\x1b[0m%} "
+
+      , testCase "Other: with no upstream" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState) customConfig)
+            addUpstreamIndicator
+          @?= "foo \x1b[32mbar\x1b[0m "
+      ]
   ]
 
 testAddRemoteCommits :: TestTree
