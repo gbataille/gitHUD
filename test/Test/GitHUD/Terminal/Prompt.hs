@@ -20,6 +20,7 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
     , testAddLocalBranchName
     , testAddLocalCommits
     , testAddRepoState
+    , testAddStashes
   ]
 
 testAddGitRepoIndicator :: TestTree
@@ -61,27 +62,27 @@ testAddRemoteCommits :: TestTree
 testAddRemoteCommits = testGroup "#addRemoteCommits"
   [ testCase "ZSH: commits to pull" $
       testRemoteCommitsToPull ZSH @?=
-      "\120366 %{\ESC[1;32m%}\8594 %{\ESC[0m%}2 "
+      "\120366 %{\x1b[1;32m%}\8594 %{\x1b[0m%}2 "
 
   , testCase "ZSH: commits to push" $
       testRemoteCommitsToPush ZSH @?=
-      "\120366 %{\ESC[1;32m%}\8592 %{\ESC[0m%}2 "
+      "\120366 %{\x1b[1;32m%}\8592 %{\x1b[0m%}2 "
 
   , testCase "ZSH: commits to pull and to push" $
       testRemoteCommitsToPushAndPull ZSH @?=
-      "\120366 4%{\ESC[1;32m%}\8644%{\ESC[0m%}4 "
+      "\120366 4%{\x1b[1;32m%}\8644%{\x1b[0m%}4 "
 
   , testCase "Other: commits to pull" $
       testRemoteCommitsToPull Other @?=
-      "\120366 \ESC[1;32m\8594 \ESC[0m2 "
+      "\120366 \x1b[1;32m\8594 \x1b[0m2 "
 
   , testCase "Other: commits to push" $
       testRemoteCommitsToPush Other @?=
-      "\120366 \ESC[1;32m\8592 \ESC[0m2 "
+      "\120366 \x1b[1;32m\8592 \x1b[0m2 "
 
   , testCase "Other: commits to pull and to push" $
       testRemoteCommitsToPushAndPull Other @?=
-      "\120366 4\ESC[1;32m\8644\ESC[0m4 "
+      "\120366 4\x1b[1;32m\8644\x1b[0m4 "
   ]
 
 testAddLocalBranchName :: TestTree
@@ -102,97 +103,110 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
       testWriterWithConfig
         (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
         addLocalBranchName
-      @?= "[%{\ESC[1;33m%}detached@3d25ef%{\ESC[0m%}] "
+      @?= "[%{\x1b[1;33m%}detached@3d25ef%{\x1b[0m%}] "
 
     , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
       testWriterWithConfig
         (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
         addLocalBranchName
-      @?= "[\ESC[1;33mdetached@3d25ef\ESC[0m] "
+      @?= "[\x1b[1;33mdetached@3d25ef\x1b[0m] "
   ]
 
 testAddLocalCommits :: TestTree
 testAddLocalCommits = testGroup "#addLocalCommits"
   [ testCase "ZSH: commits to pull" $
       testCommitsToPull ZSH @?=
-      "2%{\ESC[1;31m%}\8595 %{\ESC[0m%} "
+      "2%{\x1b[1;31m%}\8595 %{\x1b[0m%} "
 
   , testCase "ZSH: commits to push" $
       testCommitsToPush ZSH @?=
-      "2%{\ESC[1;32m%}\8593%{\ESC[0m%} "
+      "2%{\x1b[1;32m%}\8593%{\x1b[0m%} "
 
   , testCase "ZSH: commits to pull and to push" $
       testCommitsToPushAndPull ZSH @?=
-      "4%{\ESC[1;32m%}\8645%{\ESC[0m%}4 "
+      "4%{\x1b[1;32m%}\8645%{\x1b[0m%}4 "
 
   , testCase "Other: commits to pull" $
       testCommitsToPull Other @?=
-      "2\ESC[1;31m\8595 \ESC[0m "
+      "2\x1b[1;31m\8595 \x1b[0m "
 
   , testCase "Other: commits to push" $
       testCommitsToPush Other @?=
-      "2\ESC[1;32m\8593\ESC[0m "
+      "2\x1b[1;32m\8593\x1b[0m "
 
   , testCase "Other: commits to pull and to push" $
       testCommitsToPushAndPull Other @?=
-      "4\ESC[1;32m\8645\ESC[0m4 "
+      "4\x1b[1;32m\8645\x1b[0m4 "
   ]
 
 testAddRepoState :: TestTree
 testAddRepoState = testGroup "#addRepoState"
   [ testCase "ZSH: with Local Add Changes" $
-      testLocalAddChange ZSH @?= "2%{\ESC[1;37m%}A%{\ESC[0m%} "
+      testLocalAddChange ZSH @?= "2%{\x1b[1;37m%}A%{\x1b[0m%} "
 
     , testCase "ZSH: with Local Mod Changes" $
-      testLocalModChange ZSH @?= "2%{\ESC[1;31m%}M%{\ESC[0m%} "
+      testLocalModChange ZSH @?= "2%{\x1b[1;31m%}M%{\x1b[0m%} "
 
     , testCase "ZSH: with Local Del Changes" $
-      testLocalDelChange ZSH @?= "2%{\ESC[1;31m%}D%{\ESC[0m%} "
+      testLocalDelChange ZSH @?= "2%{\x1b[1;31m%}D%{\x1b[0m%} "
 
     , testCase "ZSH: with Index Add Changes" $
-      testIndexAddChange ZSH @?= "2%{\ESC[1;32m%}A%{\ESC[0m%} "
+      testIndexAddChange ZSH @?= "2%{\x1b[1;32m%}A%{\x1b[0m%} "
 
     , testCase "ZSH: with Index Mod Changes" $
-      testIndexModChange ZSH @?= "2%{\ESC[1;32m%}M%{\ESC[0m%} "
+      testIndexModChange ZSH @?= "2%{\x1b[1;32m%}M%{\x1b[0m%} "
 
     , testCase "ZSH: with Index Del Changes" $
-      testIndexDelChange ZSH @?= "2%{\ESC[1;32m%}D%{\ESC[0m%} "
+      testIndexDelChange ZSH @?= "2%{\x1b[1;32m%}D%{\x1b[0m%} "
 
     , testCase "ZSH: with Conflicted Changes" $
-      testConflictedChange ZSH @?= "2%{\ESC[1;32m%}C%{\ESC[0m%} "
+      testConflictedChange ZSH @?= "2%{\x1b[1;32m%}C%{\x1b[0m%} "
 
     , testCase "ZSH: with Renamed Changes" $
-      testRenamedChange ZSH @?= "2%{\ESC[1;32m%}R%{\ESC[0m%} "
+      testRenamedChange ZSH @?= "2%{\x1b[1;32m%}R%{\x1b[0m%} "
 
     , testCase "Other: with Local Add Changes" $
-      testLocalAddChange Other @?= "2\ESC[1;37mA\ESC[0m "
+      testLocalAddChange Other @?= "2\x1b[1;37mA\x1b[0m "
 
     , testCase "Other: with Local Mod Changes" $
-      testLocalModChange Other @?= "2\ESC[1;31mM\ESC[0m "
+      testLocalModChange Other @?= "2\x1b[1;31mM\x1b[0m "
 
     , testCase "Other: with Local Del Changes" $
-      testLocalDelChange Other @?= "2\ESC[1;31mD\ESC[0m "
+      testLocalDelChange Other @?= "2\x1b[1;31mD\x1b[0m "
 
     , testCase "Other: with Index Add Changes" $
-      testIndexAddChange Other @?= "2\ESC[1;32mA\ESC[0m "
+      testIndexAddChange Other @?= "2\x1b[1;32mA\x1b[0m "
 
     , testCase "Other: with Index Mod Changes" $
-      testIndexModChange Other @?= "2\ESC[1;32mM\ESC[0m "
+      testIndexModChange Other @?= "2\x1b[1;32mM\x1b[0m "
 
     , testCase "Other: with Index Del Changes" $
-      testIndexDelChange Other @?= "2\ESC[1;32mD\ESC[0m "
+      testIndexDelChange Other @?= "2\x1b[1;32mD\x1b[0m "
 
     , testCase "Other: with Conflicted Changes" $
-      testConflictedChange Other @?= "2\ESC[1;32mC\ESC[0m "
+      testConflictedChange Other @?= "2\x1b[1;32mC\x1b[0m "
 
     , testCase "Other: with Renamed Changes" $
-      testRenamedChange Other @?= "2\ESC[1;32mR\ESC[0m "
+      testRenamedChange Other @?= "2\x1b[1;32mR\x1b[0m "
 
     , testCase "ZSH: with every kind of Changes" $
-      testEveryRepoChange ZSH @?= "6%{\ESC[1;32m%}A%{\ESC[0m%}8%{\ESC[1;32m%}D%{\ESC[0m%}7%{\ESC[1;32m%}M%{\ESC[0m%}1%{\ESC[1;32m%}R%{\ESC[0m%} 5%{\ESC[1;31m%}D%{\ESC[0m%}4%{\ESC[1;31m%}M%{\ESC[0m%} 3%{\ESC[1;37m%}A%{\ESC[0m%} 2%{\ESC[1;32m%}C%{\ESC[0m%} "
+      testEveryRepoChange ZSH @?= "6%{\x1b[1;32m%}A%{\x1b[0m%}8%{\x1b[1;32m%}D%{\x1b[0m%}7%{\x1b[1;32m%}M%{\x1b[0m%}1%{\x1b[1;32m%}R%{\x1b[0m%} 5%{\x1b[1;31m%}D%{\x1b[0m%}4%{\x1b[1;31m%}M%{\x1b[0m%} 3%{\x1b[1;37m%}A%{\x1b[0m%} 2%{\x1b[1;32m%}C%{\x1b[0m%} "
 
     , testCase "Other: with every kind of Changes" $
-      testEveryRepoChange Other @?= "6\ESC[1;32mA\ESC[0m8\ESC[1;32mD\ESC[0m7\ESC[1;32mM\ESC[0m1\ESC[1;32mR\ESC[0m 5\ESC[1;31mD\ESC[0m4\ESC[1;31mM\ESC[0m 3\ESC[1;37mA\ESC[0m 2\ESC[1;32mC\ESC[0m "
+      testEveryRepoChange Other @?= "6\x1b[1;32mA\x1b[0m8\x1b[1;32mD\x1b[0m7\x1b[1;32mM\x1b[0m1\x1b[1;32mR\x1b[0m 5\x1b[1;31mD\x1b[0m4\x1b[1;31mM\x1b[0m 3\x1b[1;37mA\x1b[0m 2\x1b[1;32mC\x1b[0m "
+  ]
+
+testAddStashes :: TestTree
+testAddStashes = testGroup "#addStashes"
+  [ testCase "ZSH: hardcoded character" $
+      testWriterWithConfig
+        (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 })) addStashes
+      @?= "2%{\x1b[1;32m%}\8801 %{\x1b[0m%}"
+
+    , testCase "Other: hardcoded character" $
+      testWriterWithConfig
+        (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 })) addStashes
+      @?= "2\x1b[1;32m\8801 \x1b[0m"
   ]
 
 -- | Utility function to test a ShellOutput function and gets the prompt built
