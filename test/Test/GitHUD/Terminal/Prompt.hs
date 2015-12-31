@@ -9,7 +9,6 @@ import Control.Monad.Reader (runReader)
 import Control.Monad.Writer (runWriterT)
 
 import GitHUD.Git.Types
-import GitHUD.Terminal.Base
 import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
 
@@ -23,24 +22,34 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
 
 testAddGitRepoIndicator :: TestTree
 testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
-  [ testCase "#addGitRepoIndicator hardcoded character" $
+  [ testCase "ZSH: hardcoded character" $
       testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "\57504 "
+
+    , testCase "Other: hardcoded character" $
+      testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "\57504 "
+
   ]
 
 testAddUpstreamIndicator :: TestTree
 testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
-  [ testCase "#addUpstreamIndicator with an upstream" $
+  [ testCase "ZSH: with an upstream" $
       testWriterWithConfig
         (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }))
         addUpstreamIndicator
       @?= ""
 
-  , testCase "#addUpstreamIndicator with no upstream for non ZSH shell" $
+    , testCase "Other: with an upstream" $
+      testWriterWithConfig
+        (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }))
+        addUpstreamIndicator
+      @?= ""
+
+  , testCase "ZSH: with no upstream" $
       testWriterWithConfig
         (zeroOutputConfig ZSH) addUpstreamIndicator
       @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
 
-  , testCase "#addUpstreamIndicator with no upstream for ZSH" $
+  , testCase "Other: with no upstream" $
       testWriterWithConfig
         (zeroOutputConfig Other) addUpstreamIndicator
       @?= "upstream \x1b[1;31m\9889\x1b[0m "
@@ -48,22 +57,27 @@ testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
 
 testAddRemoteCommits :: TestTree
 testAddRemoteCommits = testGroup "#addRemoteCommits"
-  [ testCase "#addRemoteCommits ZSH commits to pull" $
+  [ testCase "ZSH: commits to pull" $
       testRemoteCommitsToPull ZSH @?=
       "\120366 %{\ESC[1;32m%}\8594 %{\ESC[0m%}2 "
-  , testCase "#addRemoteCommits ZSH commits to push" $
+
+  , testCase "ZSH: commits to push" $
       testRemoteCommitsToPush ZSH @?=
       "\120366 %{\ESC[1;32m%}\8592 %{\ESC[0m%}2 "
-  , testCase "#addRemoteCommits ZSH commits to pull and to push" $
+
+  , testCase "ZSH: commits to pull and to push" $
       testRemoteCommitsToPushAndPull ZSH @?=
       "\120366 4%{\ESC[1;32m%}\8644%{\ESC[0m%}4 "
-  , testCase "#addRemoteCommits Other commits to pull" $
+
+  , testCase "Other: commits to pull" $
       testRemoteCommitsToPull Other @?=
       "\120366 \ESC[1;32m\8594 \ESC[0m2 "
-  , testCase "#addRemoteCommits Other commits to push" $
+
+  , testCase "Other: commits to push" $
       testRemoteCommitsToPush Other @?=
       "\120366 \ESC[1;32m\8592 \ESC[0m2 "
-  , testCase "#addRemoteCommits Other commits to pull and to push" $
+
+  , testCase "Other: commits to pull and to push" $
       testRemoteCommitsToPushAndPull Other @?=
       "\120366 4\ESC[1;32m\8644\ESC[0m4 "
   ]
@@ -76,7 +90,7 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
         addLocalBranchName
       @?= "[foo] "
 
-    , testCase "non ZSH: should display the name of the current branch if we are at the HEAD of any" $
+    , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
       testWriterWithConfig
         (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }))
         addLocalBranchName
@@ -88,7 +102,7 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
         addLocalBranchName
       @?= "[%{\ESC[1;33m%}detached@3d25ef%{\ESC[0m%}] "
 
-    , testCase "non ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
+    , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
       testWriterWithConfig
         (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
         addLocalBranchName
