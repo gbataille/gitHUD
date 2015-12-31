@@ -19,6 +19,7 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
     , testAddRemoteCommits
     , testAddLocalBranchName
     , testAddLocalCommits
+    , testAddRepoState
   ]
 
 testAddGitRepoIndicator :: TestTree
@@ -137,6 +138,63 @@ testAddLocalCommits = testGroup "#addLocalCommits"
       "4\ESC[1;32m\8645\ESC[0m4 "
   ]
 
+testAddRepoState :: TestTree
+testAddRepoState = testGroup "#addRepoState"
+  [ testCase "ZSH: with Local Add Changes" $
+      testLocalAddChange ZSH @?= "2%{\ESC[1;37m%}A%{\ESC[0m%} "
+
+    , testCase "ZSH: with Local Mod Changes" $
+      testLocalModChange ZSH @?= "2%{\ESC[1;31m%}M%{\ESC[0m%} "
+
+    , testCase "ZSH: with Local Del Changes" $
+      testLocalDelChange ZSH @?= "2%{\ESC[1;31m%}D%{\ESC[0m%} "
+
+    , testCase "ZSH: with Index Add Changes" $
+      testIndexAddChange ZSH @?= "2%{\ESC[1;32m%}A%{\ESC[0m%} "
+
+    , testCase "ZSH: with Index Mod Changes" $
+      testIndexModChange ZSH @?= "2%{\ESC[1;32m%}M%{\ESC[0m%} "
+
+    , testCase "ZSH: with Index Del Changes" $
+      testIndexDelChange ZSH @?= "2%{\ESC[1;32m%}D%{\ESC[0m%} "
+
+    , testCase "ZSH: with Conflicted Changes" $
+      testConflictedChange ZSH @?= "2%{\ESC[1;32m%}C%{\ESC[0m%} "
+
+    , testCase "ZSH: with Renamed Changes" $
+      testRenamedChange ZSH @?= "2%{\ESC[1;32m%}R%{\ESC[0m%} "
+
+    , testCase "Other: with Local Add Changes" $
+      testLocalAddChange Other @?= "2\ESC[1;37mA\ESC[0m "
+
+    , testCase "Other: with Local Mod Changes" $
+      testLocalModChange Other @?= "2\ESC[1;31mM\ESC[0m "
+
+    , testCase "Other: with Local Del Changes" $
+      testLocalDelChange Other @?= "2\ESC[1;31mD\ESC[0m "
+
+    , testCase "Other: with Index Add Changes" $
+      testIndexAddChange Other @?= "2\ESC[1;32mA\ESC[0m "
+
+    , testCase "Other: with Index Mod Changes" $
+      testIndexModChange Other @?= "2\ESC[1;32mM\ESC[0m "
+
+    , testCase "Other: with Index Del Changes" $
+      testIndexDelChange Other @?= "2\ESC[1;32mD\ESC[0m "
+
+    , testCase "Other: with Conflicted Changes" $
+      testConflictedChange Other @?= "2\ESC[1;32mC\ESC[0m "
+
+    , testCase "Other: with Renamed Changes" $
+      testRenamedChange Other @?= "2\ESC[1;32mR\ESC[0m "
+
+    , testCase "ZSH: with every kind of Changes" $
+      testEveryRepoChange ZSH @?= "6%{\ESC[1;32m%}A%{\ESC[0m%}8%{\ESC[1;32m%}D%{\ESC[0m%}7%{\ESC[1;32m%}M%{\ESC[0m%}1%{\ESC[1;32m%}R%{\ESC[0m%} 5%{\ESC[1;31m%}D%{\ESC[0m%}4%{\ESC[1;31m%}M%{\ESC[0m%} 3%{\ESC[1;37m%}A%{\ESC[0m%} 2%{\ESC[1;32m%}C%{\ESC[0m%} "
+
+    , testCase "Other: with every kind of Changes" $
+      testEveryRepoChange Other @?= "6\ESC[1;32mA\ESC[0m8\ESC[1;32mD\ESC[0m7\ESC[1;32mM\ESC[0m1\ESC[1;32mR\ESC[0m 5\ESC[1;31mD\ESC[0m4\ESC[1;31mM\ESC[0m 3\ESC[1;37mA\ESC[0m 2\ESC[1;32mC\ESC[0m "
+  ]
+
 -- | Utility function to test a ShellOutput function and gets the prompt built
 testWriterWithConfig :: OutputConfig    -- ^ Starting reader state
                      -> ShellOutput     -- ^ Function under test
@@ -181,3 +239,92 @@ testCommitsToPushAndPull shell = testWriterWithConfig
     (zeroGitRepoState { gitCommitsToPull = 4, gitCommitsToPush = 4 })
   )
   addLocalCommits
+
+testLocalAddChange :: Shell -> String
+testLocalAddChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { localAdd = 2 })
+    })
+  )
+  addRepoState
+
+testLocalModChange :: Shell -> String
+testLocalModChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { localMod = 2 })
+    })
+  )
+  addRepoState
+
+testLocalDelChange :: Shell -> String
+testLocalDelChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { localDel = 2 })
+    })
+  )
+  addRepoState
+
+testIndexAddChange :: Shell -> String
+testIndexAddChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { indexAdd = 2 })
+    })
+  )
+  addRepoState
+
+testIndexModChange :: Shell -> String
+testIndexModChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { indexMod = 2 })
+    })
+  )
+  addRepoState
+
+testIndexDelChange :: Shell -> String
+testIndexDelChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { indexDel = 2 })
+    })
+  )
+  addRepoState
+
+testConflictedChange :: Shell -> String
+testConflictedChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { conflict = 2 })
+    })
+  )
+  addRepoState
+
+testRenamedChange :: Shell -> String
+testRenamedChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { renamed = 2 })
+    })
+  )
+  addRepoState
+
+testEveryRepoChange :: Shell -> String
+testEveryRepoChange shell = testWriterWithConfig
+  (buildOutputConfig shell
+    (zeroGitRepoState { gitLocalRepoChanges =
+      (zeroLocalRepoChanges { renamed = 1
+        , conflict = 2
+        , localAdd = 3
+        , localMod = 4
+        , localDel = 5
+        , indexAdd = 6
+        , indexMod = 7
+        , indexDel = 8
+      })
+    })
+  )
+  addRepoState
