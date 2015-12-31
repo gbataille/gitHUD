@@ -1,35 +1,42 @@
 module GitHUD.Terminal.Base (
-  showStrInColor
+  tellStringInColor
+  , applyShellMarkers
+  , terminalEndCode
+  , terminalStartCode
   ) where
 
-import Control.Monad.Reader
+import Control.Monad.Writer (tell)
 import Data.Monoid (mappend)
 
 import GitHUD.Terminal.Types
 
-showStrInColor :: Color               -- ^ The terminal color to use
-               -> ColorIntensity      -- ^ The intensity to use
-               -> String              -- ^ The string to output
-               -> ShellOutput
-showStrInColor color intensity str = do
-  shell <- ask
-  liftIO $ outputStrInColor color intensity str shell
+tellStringInColor :: Color               -- ^ The terminal color to use
+                  -> ColorIntensity      -- ^ The intensity to use
+                  -> String              -- ^ The string to output
+                  -> ShellOutput
+tellStringInColor color intensity str = do
+  shell <- getShell
+  tell $ startColorMarker color intensity shell
+  tell $ str
+  tell $ endColorMarker shell
 
-outputStrInColor :: Color
+startColorMarker :: Color
                  -> ColorIntensity
-                 -> String
                  -> Shell
-                 -> IO()
-outputStrInColor color intensity str shell = do
-  let startCode = terminalStartCode color intensity
-  if (shell == ZSH)
-    then putStr $ zshMarkZeroWidth startCode
-    else putStr $ startCode
+                 -> String
+startColorMarker color intensity shell =
+  applyShellMarkers shell $ terminalStartCode color intensity
 
-  putStr str
-  if (shell == ZSH)
-    then putStr $ zshMarkZeroWidth terminalEndCode
-    else putStr $ terminalEndCode
+endColorMarker :: Shell
+               -> String
+endColorMarker shell =
+  applyShellMarkers shell $ terminalEndCode
+
+applyShellMarkers :: Shell
+                  -> String
+                  -> String
+applyShellMarkers ZSH = zshMarkZeroWidth
+applyShellMarkers _ = id
 
 zshMarkZeroWidth :: String
                  -> String
