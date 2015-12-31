@@ -8,6 +8,7 @@ import Test.Tasty.HUnit
 import Control.Monad.Reader (runReader)
 import Control.Monad.Writer (runWriterT)
 
+import GitHUD.Config.Types
 import GitHUD.Git.Types
 import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
@@ -37,13 +38,13 @@ testAddUpstreamIndicator :: TestTree
 testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
   [ testCase "ZSH: with an upstream" $
       testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }))
+        (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
         addUpstreamIndicator
       @?= ""
 
     , testCase "Other: with an upstream" $
       testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }))
+        (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
         addUpstreamIndicator
       @?= ""
 
@@ -89,25 +90,25 @@ testAddLocalBranchName :: TestTree
 testAddLocalBranchName = testGroup "#addLocalBranchName"
   [ testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
       testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }))
+        (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
         addLocalBranchName
       @?= "[foo] "
 
     , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
       testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }))
+        (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
         addLocalBranchName
       @?= "[foo] "
 
     , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
       testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
+        (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
         addLocalBranchName
       @?= "[%{\x1b[1;33m%}detached@3d25ef%{\x1b[0m%}] "
 
     , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
       testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }))
+        (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
         addLocalBranchName
       @?= "[\x1b[1;33mdetached@3d25ef\x1b[0m] "
   ]
@@ -200,12 +201,12 @@ testAddStashes :: TestTree
 testAddStashes = testGroup "#addStashes"
   [ testCase "ZSH: hardcoded character" $
       testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 })) addStashes
+        (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
       @?= "2%{\x1b[1;32m%}\8801 %{\x1b[0m%}"
 
     , testCase "Other: hardcoded character" $
       testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 })) addStashes
+        (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
       @?= "2\x1b[1;32m\8801 \x1b[0m"
   ]
 
@@ -218,39 +219,41 @@ testWriterWithConfig config functionUnderTest =
 
 zeroOutputConfig :: Shell
                  -> OutputConfig
-zeroOutputConfig shell = buildOutputConfig shell zeroGitRepoState
+zeroOutputConfig shell = buildOutputConfig shell zeroGitRepoState defaultConfig
 
 testRemoteCommitsToPull :: Shell -> String
 testRemoteCommitsToPull shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPull = 2 }))
+  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPull = 2 }) defaultConfig)
   addRemoteCommits
 
 testRemoteCommitsToPush :: Shell -> String
 testRemoteCommitsToPush shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPush = 2 }))
+  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPush = 2 }) defaultConfig)
   addRemoteCommits
 
 testRemoteCommitsToPushAndPull :: Shell -> String
 testRemoteCommitsToPushAndPull shell = testWriterWithConfig
   (buildOutputConfig shell
     (zeroGitRepoState { gitRemoteCommitsToPull = 4, gitRemoteCommitsToPush = 4 })
+    defaultConfig
   )
   addRemoteCommits
 
 testCommitsToPull :: Shell -> String
 testCommitsToPull shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPull = 2 }))
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPull = 2 }) defaultConfig)
   addLocalCommits
 
 testCommitsToPush :: Shell -> String
 testCommitsToPush shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPush = 2 }))
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPush = 2 }) defaultConfig)
   addLocalCommits
 
 testCommitsToPushAndPull :: Shell -> String
 testCommitsToPushAndPull shell = testWriterWithConfig
   (buildOutputConfig shell
     (zeroGitRepoState { gitCommitsToPull = 4, gitCommitsToPush = 4 })
+    defaultConfig
   )
   addLocalCommits
 
@@ -260,6 +263,7 @@ testLocalAddChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { localAdd = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -269,6 +273,7 @@ testLocalModChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { localMod = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -278,6 +283,7 @@ testLocalDelChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { localDel = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -287,6 +293,7 @@ testIndexAddChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { indexAdd = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -296,6 +303,7 @@ testIndexModChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { indexMod = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -305,6 +313,7 @@ testIndexDelChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { indexDel = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -314,6 +323,7 @@ testConflictedChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { conflict = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -323,6 +333,7 @@ testRenamedChange shell = testWriterWithConfig
     (zeroGitRepoState { gitLocalRepoChanges =
       (zeroLocalRepoChanges { renamed = 2 })
     })
+    defaultConfig
   )
   addRepoState
 
@@ -340,5 +351,6 @@ testEveryRepoChange shell = testWriterWithConfig
         , indexDel = 8
       })
     })
+    defaultConfig
   )
   addRepoState
