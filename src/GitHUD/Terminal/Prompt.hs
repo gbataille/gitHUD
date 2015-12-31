@@ -2,6 +2,7 @@ module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
   , addGitRepoIndicator
   , addUpstreamIndicator
+  , addRemoteCommits
   ) where
 
 import Control.Monad (when)
