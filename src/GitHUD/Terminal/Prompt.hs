@@ -38,7 +38,7 @@ buildPrompt = do
 addGitRepoIndicator :: ShellOutput
 addGitRepoIndicator = do
   config <- getConfig
-  tell $ gitRepoIndicator config
+  tell $ confRepoIndicator config
   tell " "
 
 addUpstreamIndicator :: ShellOutput

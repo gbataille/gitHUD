@@ -34,13 +34,13 @@ testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
 
     , testCase "ZSH: custom config: hardcoded character" $
       testWriterWithConfig
-        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { gitRepoIndicator = "indic" })
+        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
         addGitRepoIndicator
       @?= "indic "
 
     , testCase "Other: custom config: hardcoded character" $
       testWriterWithConfig
-        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { gitRepoIndicator = "indic" })
+        (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
         addGitRepoIndicator
       @?= "indic "
   ]

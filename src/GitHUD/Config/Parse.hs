@@ -56,6 +56,6 @@ fallThroughItemParser = do
   return ErrorLine
 
 configItemsFolder :: Config -> ConfigItem -> Config
-configItemsFolder conf (Item "git_repo_indicator" repoIndicator) = conf { gitRepoIndicator = repoIndicator }
+configItemsFolder conf (Item "git_repo_indicator" repoIndicator) = conf { confRepoIndicator = repoIndicator }
 configItemsFolder conf _ = conf
 

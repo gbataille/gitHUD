@@ -4,10 +4,10 @@ module GitHUD.Config.Types (
   ) where
 
 data Config = Config {
-  gitRepoIndicator :: String
+  confRepoIndicator :: String
 } deriving (Eq, Show)
 
 defaultConfig :: Config
 defaultConfig = Config {
-  gitRepoIndicator = "\57504"
+  confRepoIndicator = "\57504"
 }
