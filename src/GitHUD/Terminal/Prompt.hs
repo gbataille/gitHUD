@@ -53,14 +53,12 @@ addRemoteCommits = do
       tell . show $ pull
       tellStringInColor Green Vivid "\8644"
       tell . show $ push
-      tell " "
     else (
       if (pull > 0)
         then do
           tell "\120366 "
           tellStringInColor Green Vivid "\8594 "
           tell . show $ pull
-          tell " "
         else (
           when (push > 0) $ do
             tell "\120366 "
@@ -68,6 +66,7 @@ addRemoteCommits = do
             tell . show $ push
         )
     )
+  addSpaceIfAnyBiggerThanZero [pull, push]
   return ()
 
 addLocalBranchName :: ShellOutput
