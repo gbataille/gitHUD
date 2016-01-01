@@ -23,7 +23,8 @@
 # no_upstream_indicator=⚡
 # no_upstream_indicator_color=Red
 # no_upstream_indicator_intensity=Vivid
-no_upstream_text=foo
-no_upstream_indicator=bar⚡
-no_upstream_indicator_color=Green
-no_upstream_indicator_intensity=Dull
+#
+# remote_commits_indicator=𝘮
+# remote_commits_pull_prefix=→
+# remote_commits_push_prefix=←
+# remote_commits_push_pull_infix=⇄

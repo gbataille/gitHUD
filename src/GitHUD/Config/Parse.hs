@@ -85,6 +85,15 @@ configItemsFolder conf (Item "no_upstream_indicator_color" noUpstreamIndColor) =
 configItemsFolder conf (Item "no_upstream_indicator_intensity" noUpstreamIndIntensity) =
   conf { confNoUpstreamIndicatorIntensity = intensityConfigToIntensity noUpstreamIndIntensity }
 
+configItemsFolder conf (Item "remote_commits_indicator" value) =
+  conf { confRemoteCommitsIndicator = value }
+configItemsFolder conf (Item "remote_commits_pull_prefix" value) =
+  conf { confRemoteCommitsOnlyPull = value }
+configItemsFolder conf (Item "remote_commits_push_prefix" value) =
+  conf { confRemoteCommitsOnlyPush = value }
+configItemsFolder conf (Item "remote_commits_push_pull_infix" value) =
+  conf { confRemoteCommitsBothPullPush = value }
+
 configItemsFolder conf _ = conf
 
 colorConfigToColor :: String -> Color
