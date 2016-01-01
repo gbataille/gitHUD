@@ -4,6 +4,6 @@ module GitHUD.Terminal.Types (
   , Shell(..)
   ) where
 
-data Color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White deriving (Eq, Show)
-data ColorIntensity = Dull | Vivid deriving (Eq, Show)
+data Color = Black | Red | Green | Yellow | Blue | Magenta | Cyan | White deriving (Eq, Show, Read)
+data ColorIntensity = Dull | Vivid deriving (Eq, Show, Read)
 data Shell = ZSH | Other deriving (Eq, Show)

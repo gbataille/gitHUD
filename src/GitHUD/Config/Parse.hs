@@ -70,5 +70,15 @@ fallThroughItemParser = do
 
 configItemsFolder :: Config -> ConfigItem -> Config
 configItemsFolder conf (Item "git_repo_indicator" repoIndicator) = conf { confRepoIndicator = repoIndicator }
+
+configItemsFolder conf (Item "no_upstream_text" noUpstreamText) =
+  conf { confNoUpstreamString = noUpstreamText }
+configItemsFolder conf (Item "no_upstream_indicator" noUpstreamIndicator) =
+  conf { confNoUpstreamIndicator = noUpstreamIndicator }
+configItemsFolder conf (Item "no_upstream_indicator_color" noUpstreamIndColor) =
+  conf { confNoUpstreamIndicatorColor = read noUpstreamIndColor }
+configItemsFolder conf (Item "no_upstream_indicator_intensity" noUpstreamIndIntensity) =
+  conf { confNoUpstreamIndicatorIntensity = read noUpstreamIndIntensity }
+
 configItemsFolder conf _ = conf
 

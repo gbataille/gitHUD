@@ -17,9 +17,13 @@
 # Uncomment one and change it to obtain a different prompt
 #
 #
-git_repo_indicator=
-
-no_upstream_text=upstream
-no_upstream_indicator=⚡
-no_upstream_indicator_color=Red
-no_upstream_indicator_intensity=Vivid
+# git_repo_indicator=
+#
+# no_upstream_text=upstream
+# no_upstream_indicator=⚡
+# no_upstream_indicator_color=Red
+# no_upstream_indicator_intensity=Vivid
+no_upstream_text=foo
+no_upstream_indicator=bar⚡
+no_upstream_indicator_color=Green
+no_upstream_indicator_intensity=Dull
