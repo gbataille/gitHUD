@@ -13,11 +13,12 @@ import GitHUD.Config.Parse
 configParserTests :: TestTree
 configParserTests = testGroup "Config Parser Test"
   [ testItemParser
+    , testCommentParser
   ]
 
 testItemParser :: TestTree
 testItemParser = testGroup "#itemParser"
-  [ testCase "Testing single config item parser" $
+  [ testCase "properly formed config item" $
       utilConfigItemParser itemParser "some_test_key=some Complex ⚡ value"
       @?= Item "some_test_key" "some Complex ⚡ value"
 
@@ -35,6 +36,17 @@ testItemParser = testGroup "#itemParser"
 
     , testCase "Comment should not work" $
         utilConfigItemParser itemParser "#some comment"
+        @?= ErrorLine
+  ]
+
+testCommentParser :: TestTree
+testCommentParser = testGroup "#commentParser"
+  [ testCase "proper comment" $
+      utilConfigItemParser commentParser "#some comment\n"
+      @?= Comment
+
+    , testCase "not a comment if start with a space" $
+        utilConfigItemParser commentParser " #some non comment\n"
         @?= ErrorLine
   ]
 
