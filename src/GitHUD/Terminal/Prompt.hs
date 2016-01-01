@@ -59,24 +59,30 @@ addUpstreamIndicator = do
 addRemoteCommits :: ShellOutput
 addRemoteCommits = do
   repoState <- getRepoState
+  config <- getConfig
   let push = gitRemoteCommitsToPush repoState
   let pull = gitRemoteCommitsToPull repoState
   if (push > 0) && (pull > 0)
     then do
-      tell "\120366 "
+      tell (confRemoteCommitsIndicator config)
+      tell " "
       tell . show $ pull
-      tellStringInColor Green Vivid "\8644"
+      tellStringInColor Green Vivid (confRemoteCommitsBothPullPush config)
       tell . show $ push
     else (
       if (pull > 0)
         then do
-          tell "\120366 "
-          tellStringInColor Green Vivid "\8594 "
+          tell (confRemoteCommitsIndicator config)
+          tell " "
+          tellStringInColor Green Vivid (confRemoteCommitsOnlyPull config)
+          tell " "
           tell . show $ pull
         else (
           when (push > 0) $ do
-            tell "\120366 "
-            tellStringInColor Green Vivid "\8592 "
+            tell (confRemoteCommitsIndicator config)
+            tell " "
+            tellStringInColor Green Vivid (confRemoteCommitsOnlyPush config)
+            tell " "
             tell . show $ push
         )
     )

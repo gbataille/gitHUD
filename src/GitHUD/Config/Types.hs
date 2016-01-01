@@ -13,6 +13,11 @@ data Config = Config {
   , confNoUpstreamIndicatorColor :: Color
   , confNoUpstreamIndicatorIntensity :: ColorIntensity
 
+  , confRemoteCommitsIndicator :: String
+  , confRemoteCommitsOnlyPush :: String
+  , confRemoteCommitsOnlyPull :: String
+  , confRemoteCommitsBothPullPush :: String
+
 } deriving (Eq, Show)
 
 defaultConfig :: Config
@@ -23,4 +28,9 @@ defaultConfig = Config {
   , confNoUpstreamIndicator = "\9889"
   , confNoUpstreamIndicatorColor = Red
   , confNoUpstreamIndicatorIntensity = Vivid
+
+  , confRemoteCommitsIndicator = "\120366"
+  , confRemoteCommitsOnlyPush = "\8592"
+  , confRemoteCommitsOnlyPull = "\8594"
+  , confRemoteCommitsBothPullPush = "\8644"
 }

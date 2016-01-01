@@ -9,11 +9,16 @@ import Text.Parsec (parse)
 import Text.Parsec.String (Parser)
 
 import GitHUD.Config.Parse
+import GitHUD.Config.Types
+import GitHUD.Terminal.Types
 
 configParserTests :: TestTree
 configParserTests = testGroup "Config Parser Test"
   [ testItemParser
     , testCommentParser
+    , testConfigItemFolder
+    , testColorConfigToColor
+    , testIntensityConfigToIntensity
   ]
 
 testItemParser :: TestTree
@@ -50,6 +55,45 @@ testCommentParser = testGroup "#commentParser"
         @?= ErrorLine
   ]
 
+testConfigItemFolder :: TestTree
+testConfigItemFolder = testGroup "#configItemFolder"
+  [   testCase "Comment should have no impact on the config" $
+        configItemsFolder defaultConfig (Comment)
+        @?= defaultConfig
+
+    , testCase "ErrorLines should have no impact on the config" $
+        configItemsFolder defaultConfig (ErrorLine)
+        @?= defaultConfig
+
+    , testCase "Key: git_repo_indicator" $
+        configItemsFolder defaultConfig (Item "git_repo_indicator" "foo")
+        @?= defaultConfig { confRepoIndicator = "foo" }
+
+    , testCase "Key: no_upstream_text" $
+        configItemsFolder defaultConfig (Item "no_upstream_text" "foo")
+        @?= defaultConfig { confNoUpstreamString = "foo" }
+
+    , testCase "Key: no_upstream_indicator" $
+        configItemsFolder defaultConfig (Item "no_upstream_indicator" "foo")
+        @?= defaultConfig { confNoUpstreamIndicator = "foo" }
+
+    , testCase "Key: no_upstream_indicator_color" $
+        configItemsFolder defaultConfig (Item "no_upstream_indicator_color" "Black")
+        @?= defaultConfig { confNoUpstreamIndicatorColor = Black }
+
+    , testCase "Key: no_upstream_indicator_color - invalid color" $
+        configItemsFolder defaultConfig (Item "no_upstream_indicator_color" "FOO")
+        @?= defaultConfig { confNoUpstreamIndicatorColor = White }
+
+    , testCase "Key: no_upstream_indicator_intensity" $
+        configItemsFolder defaultConfig (Item "no_upstream_indicator_intensity" "Dull")
+        @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
+
+    , testCase "Key: no_upstream_indicator_intensity - invalid intensity" $
+        configItemsFolder defaultConfig (Item "no_upstream_indicator_intensity" "FOO")
+        @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
+  ]
+
 utilConfigItemParser :: Parser ConfigItem -> String -> ConfigItem
 utilConfigItemParser parser str =
   either
@@ -57,3 +101,20 @@ utilConfigItemParser parser str =
     id
     (parse parser "" str)
 
+testIntensityConfigToIntensity :: TestTree
+testIntensityConfigToIntensity = testGroup "#intensityConfigToIntensity"
+  [   testCase "valid intensity - return it" $
+        intensityConfigToIntensity "Vivid" @?= Vivid
+
+    , testCase "invalid intensity - default to Dull" $
+        intensityConfigToIntensity "Foo" @?= Dull
+  ]
+
+testColorConfigToColor :: TestTree
+testColorConfigToColor = testGroup "#colorConfigToColor"
+  [   testCase "valid color - return it" $
+        colorConfigToColor "Cyan" @?= Cyan
+
+    , testCase "invalid color - default to White" $
+        colorConfigToColor "Foo" @?= White
+  ]

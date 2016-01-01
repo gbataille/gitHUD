@@ -49,8 +49,8 @@ testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
       ]
   ]
 
-customConfig :: Config
-customConfig = defaultConfig {
+customConfigUpstreamIndicator :: Config
+customConfigUpstreamIndicator = defaultConfig {
   confNoUpstreamString = "foo"
   , confNoUpstreamIndicator = "bar"
   , confNoUpstreamIndicatorColor = Green
@@ -85,55 +85,91 @@ testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
     , testGroup "Custom Config"
       [ testCase "ZSH: with an upstream" $
           testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfig)
+            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigUpstreamIndicator)
             addUpstreamIndicator
           @?= ""
 
         , testCase "Other: with an upstream" $
           testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfig)
+            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigUpstreamIndicator)
             addUpstreamIndicator
           @?= ""
 
       , testCase "ZSH: with no upstream" $
           testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState) customConfig)
+            (buildOutputConfig ZSH (zeroGitRepoState) customConfigUpstreamIndicator)
             addUpstreamIndicator
           @?= "foo %{\x1b[32m%}bar%{\x1b[0m%} "
 
       , testCase "Other: with no upstream" $
           testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState) customConfig)
+            (buildOutputConfig Other (zeroGitRepoState) customConfigUpstreamIndicator)
             addUpstreamIndicator
           @?= "foo \x1b[32mbar\x1b[0m "
       ]
   ]
 
+customConfigRemoteCommits :: Config
+customConfigRemoteCommits = defaultConfig {
+  confRemoteCommitsIndicator = "foo"
+  , confRemoteCommitsOnlyPull = "pull"
+  , confRemoteCommitsOnlyPush = "push"
+  , confRemoteCommitsBothPullPush = "pull-push"
+}
+
 testAddRemoteCommits :: TestTree
 testAddRemoteCommits = testGroup "#addRemoteCommits"
-  [ testCase "ZSH: commits to pull" $
-      testRemoteCommitsToPull ZSH @?=
-      "\120366 %{\x1b[1;32m%}\8594 %{\x1b[0m%}2 "
+  [ testGroup "Default Config"
+    [ testCase "ZSH: commits to pull" $
+        testRemoteCommitsToPull ZSH defaultConfig @?=
+        "\120366 %{\x1b[1;32m%}\8594%{\x1b[0m%} 2 "
 
-  , testCase "ZSH: commits to push" $
-      testRemoteCommitsToPush ZSH @?=
-      "\120366 %{\x1b[1;32m%}\8592 %{\x1b[0m%}2 "
+    , testCase "ZSH: commits to push" $
+        testRemoteCommitsToPush ZSH defaultConfig @?=
+        "\120366 %{\x1b[1;32m%}\8592%{\x1b[0m%} 2 "
 
-  , testCase "ZSH: commits to pull and to push" $
-      testRemoteCommitsToPushAndPull ZSH @?=
-      "\120366 4%{\x1b[1;32m%}\8644%{\x1b[0m%}4 "
+    , testCase "ZSH: commits to pull and to push" $
+        testRemoteCommitsToPushAndPull ZSH defaultConfig @?=
+        "\120366 4%{\x1b[1;32m%}\8644%{\x1b[0m%}4 "
 
-  , testCase "Other: commits to pull" $
-      testRemoteCommitsToPull Other @?=
-      "\120366 \x1b[1;32m\8594 \x1b[0m2 "
+    , testCase "Other: commits to pull" $
+        testRemoteCommitsToPull Other defaultConfig @?=
+        "\120366 \x1b[1;32m\8594\x1b[0m 2 "
 
-  , testCase "Other: commits to push" $
-      testRemoteCommitsToPush Other @?=
-      "\120366 \x1b[1;32m\8592 \x1b[0m2 "
+    , testCase "Other: commits to push" $
+        testRemoteCommitsToPush Other defaultConfig @?=
+        "\120366 \x1b[1;32m\8592\x1b[0m 2 "
 
-  , testCase "Other: commits to pull and to push" $
-      testRemoteCommitsToPushAndPull Other @?=
-      "\120366 4\x1b[1;32m\8644\x1b[0m4 "
+    , testCase "Other: commits to pull and to push" $
+        testRemoteCommitsToPushAndPull Other defaultConfig @?=
+        "\120366 4\x1b[1;32m\8644\x1b[0m4 "
+    ]
+
+    , testGroup "Custom Config"
+        [ testCase "ZSH: commits to pull" $
+            testRemoteCommitsToPull ZSH customConfigRemoteCommits @?=
+            "foo %{\x1b[1;32m%}pull%{\x1b[0m%} 2 "
+
+        , testCase "ZSH: commits to push" $
+            testRemoteCommitsToPush ZSH customConfigRemoteCommits @?=
+            "foo %{\x1b[1;32m%}push%{\x1b[0m%} 2 "
+
+        , testCase "ZSH: commits to pull and to push" $
+            testRemoteCommitsToPushAndPull ZSH customConfigRemoteCommits @?=
+            "foo 4%{\x1b[1;32m%}pull-push%{\x1b[0m%}4 "
+
+        , testCase "Other: commits to pull" $
+            testRemoteCommitsToPull Other customConfigRemoteCommits @?=
+            "foo \x1b[1;32mpull\x1b[0m 2 "
+
+        , testCase "Other: commits to push" $
+            testRemoteCommitsToPush Other customConfigRemoteCommits @?=
+            "foo \x1b[1;32mpush\x1b[0m 2 "
+
+        , testCase "Other: commits to pull and to push" $
+            testRemoteCommitsToPushAndPull Other customConfigRemoteCommits @?=
+            "foo 4\x1b[1;32mpull-push\x1b[0m4 "
+        ]
   ]
 
 testAddLocalBranchName :: TestTree
@@ -271,21 +307,21 @@ zeroOutputConfig :: Shell
                  -> OutputConfig
 zeroOutputConfig shell = buildOutputConfig shell zeroGitRepoState defaultConfig
 
-testRemoteCommitsToPull :: Shell -> String
-testRemoteCommitsToPull shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPull = 2 }) defaultConfig)
+testRemoteCommitsToPull :: Shell -> Config -> String
+testRemoteCommitsToPull shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPull = 2 }) config)
   addRemoteCommits
 
-testRemoteCommitsToPush :: Shell -> String
-testRemoteCommitsToPush shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPush = 2 }) defaultConfig)
+testRemoteCommitsToPush :: Shell -> Config -> String
+testRemoteCommitsToPush shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPush = 2 }) config)
   addRemoteCommits
 
-testRemoteCommitsToPushAndPull :: Shell -> String
-testRemoteCommitsToPushAndPull shell = testWriterWithConfig
+testRemoteCommitsToPushAndPull :: Shell -> Config -> String
+testRemoteCommitsToPushAndPull shell config = testWriterWithConfig
   (buildOutputConfig shell
     (zeroGitRepoState { gitRemoteCommitsToPull = 4, gitRemoteCommitsToPush = 4 })
-    defaultConfig
+    config
   )
   addRemoteCommits
 

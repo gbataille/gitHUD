@@ -3,16 +3,21 @@ module GitHUD.Config.Parse (
   , commentParser
   , itemParser
   , fallThroughItemParser
+  , configItemsFolder
   , ConfigItem(..)
+  , colorConfigToColor
+  , intensityConfigToIntensity
   ) where
 
 import Control.Monad (void, when)
-import Text.Parsec.Char (anyChar, char, newline, letter)
+import Text.Parsec (parse)
+import Text.Parsec.Char (anyChar, char, newline, letter, string)
 import Text.Parsec.Combinator (choice, eof, manyTill)
 import Text.Parsec.Prim (many, try, unexpected, (<|>), (<?>))
 import Text.Parsec.String (parseFromFile, Parser)
 
 import GitHUD.Config.Types
+import GitHUD.Terminal.Types
 
 data ConfigItem = Item String String
                 | Comment
@@ -76,9 +81,40 @@ configItemsFolder conf (Item "no_upstream_text" noUpstreamText) =
 configItemsFolder conf (Item "no_upstream_indicator" noUpstreamIndicator) =
   conf { confNoUpstreamIndicator = noUpstreamIndicator }
 configItemsFolder conf (Item "no_upstream_indicator_color" noUpstreamIndColor) =
-  conf { confNoUpstreamIndicatorColor = read noUpstreamIndColor }
+  conf { confNoUpstreamIndicatorColor = colorConfigToColor noUpstreamIndColor }
 configItemsFolder conf (Item "no_upstream_indicator_intensity" noUpstreamIndIntensity) =
-  conf { confNoUpstreamIndicatorIntensity = read noUpstreamIndIntensity }
+  conf { confNoUpstreamIndicatorIntensity = intensityConfigToIntensity noUpstreamIndIntensity }
 
 configItemsFolder conf _ = conf
 
+colorConfigToColor :: String -> Color
+colorConfigToColor str =
+  either
+    (const White)
+    id
+    (parse colorParser "" str)
+
+colorParser :: Parser Color
+colorParser = choice [
+    string "Black"   >> return Black
+  , string "Red"     >> return Red
+  , string "Green"   >> return Green
+  , string "Yellow"  >> return Yellow
+  , string "Blue"    >> return Blue
+  , string "Magenta" >> return Magenta
+  , string "Cyan"    >> return Cyan
+  , string "White"   >> return White
+  ] <?> "color"
+
+intensityConfigToIntensity :: String -> ColorIntensity
+intensityConfigToIntensity str =
+  either
+    (const Dull)
+    id
+    (parse intensityParser "" str)
+
+intensityParser :: Parser ColorIntensity
+intensityParser = choice [
+    string "Dull" >> return Dull
+  , string "Vivid" >> return Vivid
+  ] <?> "intensity"
