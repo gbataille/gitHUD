@@ -66,33 +66,66 @@ testConfigItemFolder = testGroup "#configItemFolder"
         @?= defaultConfig
 
     , testCase "Key: git_repo_indicator" $
-        configItemsFolder defaultConfig (Item "git_repo_indicator" "foo")
-        @?= defaultConfig { confRepoIndicator = "foo" }
+        expectValue "foo" $
+          toBeInField confRepoIndicator $
+            forConfigItemKey "git_repo_indicator" $
+              withValue "foo"
 
     , testCase "Key: no_upstream_text" $
-        configItemsFolder defaultConfig (Item "no_upstream_text" "foo")
-        @?= defaultConfig { confNoUpstreamString = "foo" }
+        expectValue "foo" $
+          toBeInField confNoUpstreamString $
+            forConfigItemKey "no_upstream_text" $
+              withValue "foo"
 
     , testCase "Key: no_upstream_indicator" $
-        configItemsFolder defaultConfig (Item "no_upstream_indicator" "foo")
-        @?= defaultConfig { confNoUpstreamIndicator = "foo" }
+        expectValue "foo" $
+          toBeInField confNoUpstreamIndicator $
+            forConfigItemKey "no_upstream_indicator" $
+              withValue "foo"
 
     , testCase "Key: no_upstream_indicator_color" $
-        configItemsFolder defaultConfig (Item "no_upstream_indicator_color" "Black")
-        @?= defaultConfig { confNoUpstreamIndicatorColor = Black }
+        expectValue Black $
+          toBeInField confNoUpstreamIndicatorColor $
+            forConfigItemKey "no_upstream_indicator_color" $
+              withValue "Black"
 
     , testCase "Key: no_upstream_indicator_color - invalid color" $
-        configItemsFolder defaultConfig (Item "no_upstream_indicator_color" "FOO")
-        @?= defaultConfig { confNoUpstreamIndicatorColor = White }
+        expectValue White $
+          toBeInField confNoUpstreamIndicatorColor $
+            forConfigItemKey "no_upstream_indicator_color" $
+              withValue "FOO"
 
     , testCase "Key: no_upstream_indicator_intensity" $
-        configItemsFolder defaultConfig (Item "no_upstream_indicator_intensity" "Dull")
-        @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
+        expectValue Dull $
+          toBeInField confNoUpstreamIndicatorIntensity $
+            forConfigItemKey "no_upstream_indicator_intensity" $
+              withValue "Dull"
 
     , testCase "Key: no_upstream_indicator_intensity - invalid intensity" $
-        configItemsFolder defaultConfig (Item "no_upstream_indicator_intensity" "FOO")
-        @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
+        expectValue Dull $
+          toBeInField confNoUpstreamIndicatorIntensity $
+            forConfigItemKey "no_upstream_indicator_intensity" $
+              withValue "FOO"
+
+    , testCase "Key: remote_commits_indicator" $
+        expectValue "FOO" $
+          toBeInField confRemoteCommitsIndicator $
+            forConfigItemKey "remote_commits_indicator" $
+              withValue "FOO"
   ]
+
+expectValue :: (Eq a, Show a) => a -> a -> Assertion
+expectValue expected actual = actual @?= expected
+
+toBeInField :: (Config -> a) -> Config -> a
+toBeInField accessor config = accessor config
+
+forConfigItemKey :: String -> String -> Config
+forConfigItemKey key value =
+  configItemsFolder defaultConfig (Item key value)
+
+withValue :: a -> a
+withValue = id
 
 utilConfigItemParser :: Parser ConfigItem -> String -> ConfigItem
 utilConfigItemParser parser str =
