@@ -60,6 +60,10 @@ data Config = Config {
   , confChangeConflictedSuffix :: String
   , confChangeConflictedSuffixColor :: Color
   , confChangeConflictedSuffixIntensity :: ColorIntensity
+
+  , confStashSuffix :: String
+  , confStashSuffixColor :: Color
+  , confStashSuffixIntensity :: ColorIntensity
 } deriving (Eq, Show)
 
 defaultConfig :: Config
@@ -118,4 +122,8 @@ defaultConfig = Config {
   , confChangeConflictedSuffix = "C"
   , confChangeConflictedSuffixColor = Green
   , confChangeConflictedSuffixIntensity = Vivid
+
+  , confStashSuffix = "≡"
+  , confStashSuffixColor = Green
+  , confStashSuffixIntensity = Vivid
 }

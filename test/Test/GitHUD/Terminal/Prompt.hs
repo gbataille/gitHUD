@@ -446,17 +446,37 @@ testAddRepoState = testGroup "#addRepoState"
         ]
   ]
 
+customStashConfig :: Config
+customStashConfig = defaultConfig {
+  confStashSuffix = "stash"
+  , confStashSuffixColor = Cyan
+  , confStashSuffixIntensity = Dull
+}
+
 testAddStashes :: TestTree
 testAddStashes = testGroup "#addStashes"
-  [ testCase "ZSH: hardcoded character" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
-      @?= "2%{\x1b[1;32m%}\8801 %{\x1b[0m%}"
+  [ testGroup "Default Config"
+      [ testCase "ZSH: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
+          @?= "2%{\x1b[1;32m%}\8801%{\x1b[0m%} "
 
-    , testCase "Other: hardcoded character" $
-      testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
-      @?= "2\x1b[1;32m\8801 \x1b[0m"
+        , testCase "Other: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
+          @?= "2\x1b[1;32m\8801\x1b[0m "
+      ]
+  , testGroup "Custom Config"
+      [ testCase "ZSH: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitStashCount = 2 }) customStashConfig) addStashes
+          @?= "2%{\x1b[36m%}stash%{\x1b[0m%} "
+
+        , testCase "Other: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) customStashConfig) addStashes
+          @?= "2\x1b[36mstash\x1b[0m "
+      ]
   ]
 
 -- | Utility function to test a ShellOutput function and gets the prompt built

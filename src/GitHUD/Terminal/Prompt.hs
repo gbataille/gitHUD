@@ -223,8 +223,13 @@ addNumStateElem num color intensity letter = do
 addStashes :: ShellOutput
 addStashes = do
   repoState <- getRepoState
+  config <- getConfig
   let stashCount = gitStashCount repoState
   when (stashCount /= 0) $ do
     tell . show $ stashCount
-    tellStringInColor Green Vivid "≡ "
+    tellStringInColor
+      (confStashSuffixColor config)
+      (confStashSuffixIntensity config)
+      (confStashSuffix config)
+    tell " "
 
