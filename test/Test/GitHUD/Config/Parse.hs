@@ -226,6 +226,150 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confLocalCommitsPushPullInfixIntensity $
             forConfigItemKey "local_commits_push_pull_infix_intensity" $
               withValue "Dull"
+
+    , testCase "Key: change_index_add_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeIndexAddSuffix $
+            forConfigItemKey "change_index_add_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_index_add_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeIndexAddSuffixColor $
+            forConfigItemKey "change_index_add_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_index_add_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeIndexAddSuffixIntensity $
+            forConfigItemKey "change_index_add_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_index_mod_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeIndexModSuffix $
+            forConfigItemKey "change_index_mod_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_index_mod_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeIndexModSuffixColor $
+            forConfigItemKey "change_index_mod_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_index_mod_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeIndexModSuffixIntensity $
+            forConfigItemKey "change_index_mod_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_index_del_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeIndexDelSuffix $
+            forConfigItemKey "change_index_del_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_index_del_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeIndexDelSuffixColor $
+            forConfigItemKey "change_index_del_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_index_del_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeIndexDelSuffixIntensity $
+            forConfigItemKey "change_index_del_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_local_add_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeLocalAddSuffix $
+            forConfigItemKey "change_local_add_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_local_add_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeLocalAddSuffixColor $
+            forConfigItemKey "change_local_add_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_local_add_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeLocalAddSuffixIntensity $
+            forConfigItemKey "change_local_add_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_local_mod_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeLocalModSuffix $
+            forConfigItemKey "change_local_mod_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_local_mod_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeLocalModSuffixColor $
+            forConfigItemKey "change_local_mod_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_local_mod_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeLocalModSuffixIntensity $
+            forConfigItemKey "change_local_mod_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_local_del_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeLocalDelSuffix $
+            forConfigItemKey "change_local_del_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_local_del_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeLocalDelSuffixColor $
+            forConfigItemKey "change_local_del_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_local_del_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeLocalDelSuffixIntensity $
+            forConfigItemKey "change_local_del_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_renamed_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeRenamedSuffix $
+            forConfigItemKey "change_renamed_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_renamed_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeRenamedSuffixColor $
+            forConfigItemKey "change_renamed_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_renamed_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeRenamedSuffixIntensity $
+            forConfigItemKey "change_renamed_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: change_conflicted_suffix" $
+        expectValue "FOO" $
+          toBeInField confChangeConflictedSuffix $
+            forConfigItemKey "change_conflicted_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: change_conflicted_suffix_color" $
+        expectValue Cyan $
+          toBeInField confChangeConflictedSuffixColor $
+            forConfigItemKey "change_conflicted_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: change_conflicted_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confChangeConflictedSuffixIntensity $
+            forConfigItemKey "change_conflicted_suffix_intensity" $
+              withValue "Dull"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion
