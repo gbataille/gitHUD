@@ -172,6 +172,60 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confLocalDetachedIntensity $
             forConfigItemKey "local_detached_intensity" $
               withValue "Dull"
+
+    , testCase "Key: local_commits_push_suffix" $
+        expectValue "FOO" $
+          toBeInField confLocalCommitsPushSuffix $
+            forConfigItemKey "local_commits_push_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: local_commits_push_suffix_color" $
+        expectValue Cyan $
+          toBeInField confLocalCommitsPushSuffixColor $
+            forConfigItemKey "local_commits_push_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: local_commits_push_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confLocalCommitsPushSuffixIntensity $
+            forConfigItemKey "local_commits_push_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: local_commits_pull_suffix" $
+        expectValue "FOO" $
+          toBeInField confLocalCommitsPullSuffix $
+            forConfigItemKey "local_commits_pull_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: local_commits_pull_suffix_color" $
+        expectValue Cyan $
+          toBeInField confLocalCommitsPullSuffixColor $
+            forConfigItemKey "local_commits_pull_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: local_commits_pull_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confLocalCommitsPullSuffixIntensity $
+            forConfigItemKey "local_commits_pull_suffix_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: local_commits_push_pull_infix" $
+        expectValue "FOO" $
+          toBeInField confLocalCommitsPushPullInfix $
+            forConfigItemKey "local_commits_push_pull_infix" $
+              withValue "FOO"
+
+    , testCase "Key: local_commits_push_pull_infix_color" $
+        expectValue Cyan $
+          toBeInField confLocalCommitsPushPullInfixColor $
+            forConfigItemKey "local_commits_push_pull_infix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: local_commits_push_pull_infix_intensity" $
+        expectValue Dull $
+          toBeInField confLocalCommitsPushPullInfixIntensity $
+            forConfigItemKey "local_commits_push_pull_infix_intensity" $
+              withValue "Dull"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion

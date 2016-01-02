@@ -36,3 +36,13 @@
 # local_detached_prefix=detached@
 # local_detached_color=Yellow
 # local_detached_intensity=Vivid
+#
+# local_commits_push_suffix=↑
+# local_commits_push_suffix_color=Green
+# local_commits_push_suffix_intensity=Vivid
+# local_commits_pull_suffix=↓
+# local_commits_pull_suffix_color=Red
+# local_commits_pull_suffix_intensity=Vivid
+# local_commits_push_pull_infix=⇅
+# local_commits_push_pull_infix_color=Green
+# local_commits_push_pull_infix_intensity=Vivid

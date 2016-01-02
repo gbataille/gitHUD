@@ -109,6 +109,25 @@ configItemsFolder conf (Item "local_detached_color" value) =
 configItemsFolder conf (Item "local_detached_intensity" value) =
   conf { confLocalDetachedIntensity = intensityConfigToIntensity value }
 
+configItemsFolder conf (Item "local_commits_push_suffix" value) =
+  conf { confLocalCommitsPushSuffix = value }
+configItemsFolder conf (Item "local_commits_push_suffix_color" value) =
+  conf { confLocalCommitsPushSuffixColor = colorConfigToColor value }
+configItemsFolder conf (Item "local_commits_push_suffix_intensity" value) =
+  conf { confLocalCommitsPushSuffixIntensity = intensityConfigToIntensity value }
+configItemsFolder conf (Item "local_commits_pull_suffix" value) =
+  conf { confLocalCommitsPullSuffix = value }
+configItemsFolder conf (Item "local_commits_pull_suffix_color" value) =
+  conf { confLocalCommitsPullSuffixColor = colorConfigToColor value }
+configItemsFolder conf (Item "local_commits_pull_suffix_intensity" value) =
+  conf { confLocalCommitsPullSuffixIntensity = intensityConfigToIntensity value }
+configItemsFolder conf (Item "local_commits_push_pull_infix" value) =
+  conf { confLocalCommitsPushPullInfix = value }
+configItemsFolder conf (Item "local_commits_push_pull_infix_color" value) =
+  conf { confLocalCommitsPushPullInfixColor = colorConfigToColor value }
+configItemsFolder conf (Item "local_commits_push_pull_infix_intensity" value) =
+  conf { confLocalCommitsPushPullInfixIntensity = intensityConfigToIntensity value }
+
 configItemsFolder conf _ = conf
 
 colorConfigToColor :: String -> Color
