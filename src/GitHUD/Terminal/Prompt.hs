@@ -146,30 +146,55 @@ addLocalCommits = do
 addRepoState :: ShellOutput
 addRepoState = do
   repoState <- getRepoState
+  config <- getConfig
   let repoChanges = gitLocalRepoChanges repoState
 
   let inda = indexAdd repoChanges
   let indd = indexDel repoChanges
   let indm = indexMod repoChanges
   let mv = renamed repoChanges
-  addStateElem inda Green Vivid "A"
-  addStateElem indd Green Vivid "D"
-  addStateElem indm Green Vivid "M"
-  addStateElem mv Green Vivid "R"
+  addStateElem inda
+    (confChangeIndexAddSuffixColor config)
+    (confChangeIndexAddSuffixIntensity config)
+    (confChangeIndexAddSuffix config)
+  addStateElem indd
+    (confChangeIndexDelSuffixColor config)
+    (confChangeIndexDelSuffixIntensity config)
+    (confChangeIndexDelSuffix config)
+  addStateElem indm
+    (confChangeIndexModSuffixColor config)
+    (confChangeIndexModSuffixIntensity config)
+    (confChangeIndexModSuffix config)
+  addStateElem mv
+    (confChangeRenamedSuffixColor config)
+    (confChangeRenamedSuffixIntensity config)
+    (confChangeRenamedSuffix config)
   addSpaceIfAnyBiggerThanZero [inda, indd, indm, mv]
 
   let ld = localDel repoChanges
   let lm = localMod repoChanges
-  addStateElem ld Red Vivid "D"
-  addStateElem lm Red Vivid "M"
+  addStateElem ld
+    (confChangeLocalDelSuffixColor config)
+    (confChangeLocalDelSuffixIntensity config)
+    (confChangeLocalDelSuffix config)
+  addStateElem lm
+    (confChangeLocalModSuffixColor config)
+    (confChangeLocalModSuffixIntensity config)
+    (confChangeLocalModSuffix config)
   addSpaceIfAnyBiggerThanZero [ld, lm]
 
   let la = localAdd repoChanges
-  addStateElem la White Vivid "A"
+  addStateElem la
+    (confChangeLocalAddSuffixColor config)
+    (confChangeLocalAddSuffixIntensity config)
+    (confChangeLocalAddSuffix config)
   addSpaceIfAnyBiggerThanZero [la]
 
   let co = conflict repoChanges
-  addStateElem co Green Vivid "C"
+  addStateElem co
+    (confChangeConflictedSuffixColor config)
+    (confChangeConflictedSuffixIntensity config)
+    (confChangeConflictedSuffix config)
   addSpaceIfAnyBiggerThanZero [co]
   return ()
 

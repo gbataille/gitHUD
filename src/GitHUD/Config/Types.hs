@@ -35,6 +35,31 @@ data Config = Config {
   , confLocalCommitsPushPullInfix :: String
   , confLocalCommitsPushPullInfixColor :: Color
   , confLocalCommitsPushPullInfixIntensity :: ColorIntensity
+
+  , confChangeIndexAddSuffix :: String
+  , confChangeIndexAddSuffixColor :: Color
+  , confChangeIndexAddSuffixIntensity :: ColorIntensity
+  , confChangeIndexModSuffix :: String
+  , confChangeIndexModSuffixColor :: Color
+  , confChangeIndexModSuffixIntensity :: ColorIntensity
+  , confChangeIndexDelSuffix :: String
+  , confChangeIndexDelSuffixColor :: Color
+  , confChangeIndexDelSuffixIntensity :: ColorIntensity
+  , confChangeLocalAddSuffix :: String
+  , confChangeLocalAddSuffixColor :: Color
+  , confChangeLocalAddSuffixIntensity :: ColorIntensity
+  , confChangeLocalModSuffix :: String
+  , confChangeLocalModSuffixColor :: Color
+  , confChangeLocalModSuffixIntensity :: ColorIntensity
+  , confChangeLocalDelSuffix :: String
+  , confChangeLocalDelSuffixColor :: Color
+  , confChangeLocalDelSuffixIntensity :: ColorIntensity
+  , confChangeRenamedSuffix :: String
+  , confChangeRenamedSuffixColor :: Color
+  , confChangeRenamedSuffixIntensity :: ColorIntensity
+  , confChangeConflictedSuffix :: String
+  , confChangeConflictedSuffixColor :: Color
+  , confChangeConflictedSuffixIntensity :: ColorIntensity
 } deriving (Eq, Show)
 
 defaultConfig :: Config
@@ -68,4 +93,29 @@ defaultConfig = Config {
   , confLocalCommitsPushPullInfix = "\8645"
   , confLocalCommitsPushPullInfixColor = Green
   , confLocalCommitsPushPullInfixIntensity = Vivid
+
+  , confChangeIndexAddSuffix = "A"
+  , confChangeIndexAddSuffixColor = Green
+  , confChangeIndexAddSuffixIntensity = Vivid
+  , confChangeIndexModSuffix = "M"
+  , confChangeIndexModSuffixColor = Green
+  , confChangeIndexModSuffixIntensity = Vivid
+  , confChangeIndexDelSuffix = "D"
+  , confChangeIndexDelSuffixColor = Green
+  , confChangeIndexDelSuffixIntensity = Vivid
+  , confChangeLocalAddSuffix = "A"
+  , confChangeLocalAddSuffixColor = White
+  , confChangeLocalAddSuffixIntensity = Vivid
+  , confChangeLocalModSuffix = "M"
+  , confChangeLocalModSuffixColor = Red
+  , confChangeLocalModSuffixIntensity = Vivid
+  , confChangeLocalDelSuffix = "D"
+  , confChangeLocalDelSuffixColor = Red
+  , confChangeLocalDelSuffixIntensity = Vivid
+  , confChangeRenamedSuffix = "R"
+  , confChangeRenamedSuffixColor = Green
+  , confChangeRenamedSuffixIntensity = Vivid
+  , confChangeConflictedSuffix = "C"
+  , confChangeConflictedSuffixColor = Green
+  , confChangeConflictedSuffixIntensity = Vivid
 }
