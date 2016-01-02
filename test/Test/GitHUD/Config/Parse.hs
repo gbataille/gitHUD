@@ -112,6 +112,24 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confRemoteCommitsIndicator $
             forConfigItemKey "remote_commits_indicator" $
               withValue "FOO"
+
+    , testCase "Key: remote_commits_pull_prefix" $
+        expectValue "FOO" $
+          toBeInField confRemoteCommitsOnlyPull $
+            forConfigItemKey "remote_commits_pull_prefix" $
+              withValue "FOO"
+
+    , testCase "Key: remote_commits_push_prefix" $
+        expectValue "FOO" $
+          toBeInField confRemoteCommitsOnlyPush $
+            forConfigItemKey "remote_commits_push_prefix" $
+              withValue "FOO"
+
+    , testCase "Key: remote_commits_push_pull_infix" $
+        expectValue "FOO" $
+          toBeInField confRemoteCommitsBothPullPush $
+            forConfigItemKey "remote_commits_push_pull_infix" $
+              withValue "FOO"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion
