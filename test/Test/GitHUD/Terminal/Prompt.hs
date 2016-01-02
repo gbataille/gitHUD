@@ -237,31 +237,71 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
     ]
   ]
 
+customConfigLocalCommits :: Config
+customConfigLocalCommits = defaultConfig {
+    confLocalCommitsPushSuffix = "push"
+  , confLocalCommitsPushSuffixColor = Cyan
+  , confLocalCommitsPushSuffixIntensity = Dull
+  , confLocalCommitsPullSuffix = "pull"
+  , confLocalCommitsPullSuffixColor = Magenta
+  , confLocalCommitsPullSuffixIntensity = Dull
+  , confLocalCommitsPushPullInfix = "push-pull"
+  , confLocalCommitsPushPullInfixColor = White
+  , confLocalCommitsPushPullInfixIntensity = Dull
+}
+
 testAddLocalCommits :: TestTree
 testAddLocalCommits = testGroup "#addLocalCommits"
-  [ testCase "ZSH: commits to pull" $
-      testCommitsToPull ZSH @?=
-      "2%{\x1b[1;31m%}\8595%{\x1b[0m%} "
+  [   testGroup "Default Config"
+      [ testCase "ZSH: commits to pull" $
+          testCommitsToPull ZSH defaultConfig @?=
+          "2%{\x1b[1;31m%}\8595%{\x1b[0m%} "
 
-  , testCase "ZSH: commits to push" $
-      testCommitsToPush ZSH @?=
-      "2%{\x1b[1;32m%}\8593%{\x1b[0m%} "
+      , testCase "ZSH: commits to push" $
+          testCommitsToPush ZSH defaultConfig @?=
+          "2%{\x1b[1;32m%}\8593%{\x1b[0m%} "
 
-  , testCase "ZSH: commits to pull and to push" $
-      testCommitsToPushAndPull ZSH @?=
-      "4%{\x1b[1;32m%}\8645%{\x1b[0m%}4 "
+      , testCase "ZSH: commits to pull and to push" $
+          testCommitsToPushAndPull ZSH defaultConfig @?=
+          "4%{\x1b[1;32m%}\8645%{\x1b[0m%}4 "
 
-  , testCase "Other: commits to pull" $
-      testCommitsToPull Other @?=
-      "2\x1b[1;31m\8595\x1b[0m "
+      , testCase "Other: commits to pull" $
+          testCommitsToPull Other defaultConfig @?=
+          "2\x1b[1;31m\8595\x1b[0m "
 
-  , testCase "Other: commits to push" $
-      testCommitsToPush Other @?=
-      "2\x1b[1;32m\8593\x1b[0m "
+      , testCase "Other: commits to push" $
+          testCommitsToPush Other defaultConfig @?=
+          "2\x1b[1;32m\8593\x1b[0m "
 
-  , testCase "Other: commits to pull and to push" $
-      testCommitsToPushAndPull Other @?=
-      "4\x1b[1;32m\8645\x1b[0m4 "
+      , testCase "Other: commits to pull and to push" $
+          testCommitsToPushAndPull Other defaultConfig @?=
+          "4\x1b[1;32m\8645\x1b[0m4 "
+      ]
+    , testGroup "Custom Config"
+      [ testCase "ZSH: commits to pull" $
+          testCommitsToPull ZSH customConfigLocalCommits @?=
+          "2%{\x1b[35m%}pull%{\x1b[0m%} "
+
+      , testCase "ZSH: commits to push" $
+          testCommitsToPush ZSH customConfigLocalCommits @?=
+          "2%{\x1b[36m%}push%{\x1b[0m%} "
+
+      , testCase "ZSH: commits to pull and to push" $
+          testCommitsToPushAndPull ZSH customConfigLocalCommits @?=
+          "4%{\x1b[37m%}push-pull%{\x1b[0m%}4 "
+
+      , testCase "Other: commits to pull" $
+          testCommitsToPull Other customConfigLocalCommits @?=
+          "2\x1b[35mpull\x1b[0m "
+
+      , testCase "Other: commits to push" $
+          testCommitsToPush Other customConfigLocalCommits @?=
+          "2\x1b[36mpush\x1b[0m "
+
+      , testCase "Other: commits to pull and to push" $
+          testCommitsToPushAndPull Other customConfigLocalCommits @?=
+          "4\x1b[37mpush-pull\x1b[0m4 "
+      ]
   ]
 
 testAddRepoState :: TestTree
@@ -363,21 +403,21 @@ testRemoteCommitsToPushAndPull shell config = testWriterWithConfig
   )
   addRemoteCommits
 
-testCommitsToPull :: Shell -> String
-testCommitsToPull shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPull = 2 }) defaultConfig)
+testCommitsToPull :: Shell -> Config -> String
+testCommitsToPull shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPull = 2 }) config)
   addLocalCommits
 
-testCommitsToPush :: Shell -> String
-testCommitsToPush shell = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPush = 2 }) defaultConfig)
+testCommitsToPush :: Shell -> Config -> String
+testCommitsToPush shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitCommitsToPush = 2 }) config)
   addLocalCommits
 
-testCommitsToPushAndPull :: Shell -> String
-testCommitsToPushAndPull shell = testWriterWithConfig
+testCommitsToPushAndPull :: Shell -> Config -> String
+testCommitsToPushAndPull shell config = testWriterWithConfig
   (buildOutputConfig shell
     (zeroGitRepoState { gitCommitsToPull = 4, gitCommitsToPush = 4 })
-    defaultConfig
+    config
   )
   addLocalCommits
 

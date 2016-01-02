@@ -111,24 +111,34 @@ addLocalBranchName = do
 addLocalCommits :: ShellOutput
 addLocalCommits = do
   repoState <- getRepoState
+  config <- getConfig
   let push = gitCommitsToPush repoState
   let pull = gitCommitsToPull repoState
   if (pull > 0) && (push > 0)
     then do
       tell . show $ pull
-      tellStringInColor Green Vivid "\8645"
+      tellStringInColor
+        (confLocalCommitsPushPullInfixColor config)
+        (confLocalCommitsPushPullInfixIntensity config)
+        (confLocalCommitsPushPullInfix config)
       tell . show $ push
       tell " "
     else
       if (pull > 0)
         then do
           tell . show $ pull
-          tellStringInColor Red Vivid "\8595"
+          tellStringInColor
+            (confLocalCommitsPullSuffixColor config)
+            (confLocalCommitsPullSuffixIntensity config)
+            (confLocalCommitsPullSuffix config)
           tell " "
         else
           when (push > 0) $ do
             tell . show $ push
-            tellStringInColor Green Vivid "\8593"
+            tellStringInColor
+              (confLocalCommitsPushSuffixColor config)
+              (confLocalCommitsPushSuffixIntensity config)
+              (confLocalCommitsPushSuffix config)
             tell " "
 
   return ()
