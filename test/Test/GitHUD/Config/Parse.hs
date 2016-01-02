@@ -94,25 +94,39 @@ testConfigItemFolder = testGroup "#configItemFolder"
         @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
 
     , testCase "Key: remote_commits_indicator" $
-        (((expectKey "remote_commits_indicator")
-          (withValue "FOO"))
-          `toChangeField` confRemoteCommitsIndicator)
-          `toValue` "FOO"
+        -- (((expectKey "remote_commits_indicator")
+        --   (withValue "FOO"))
+        --   `toChangeField` confRemoteCommitsIndicator)
+        --   `toValue` "FOO"
+        expectValue "FOO" $
+          toBeInField confRemoteCommitsIndicator $
+            forConfigItemKey "remote_commits_indicator" $
+              withValue "FOO"
   ]
 
-expectKey :: String -> (String -> Config)
-expectKey key = (configItemsFolder defaultConfig) . (Item key)
+expectValue :: (Eq a, Show a) => a -> a -> Assertion
+expectValue expected actual = actual @?= expected
+
+toBeInField :: (Config -> a) -> Config -> a
+toBeInField accessor config = accessor config
+
+forConfigItemKey :: String -> String -> Config
+forConfigItemKey key value =
+  configItemsFolder defaultConfig (Item key value)
+
+-- expectKey :: String -> (String -> Config)
+-- expectKey key = (configItemsFolder defaultConfig) . (Item key)
 
 withValue :: a -> a
 withValue = id
 
-toChangeField :: Config -> (Config -> String) -> String
-toChangeField config field = field config
-
-toValue :: String -> String -> Assertion
-toValue actual expected = actual @?= expected
-
-infix 1 `toChangeField`
+-- toChangeField :: Config -> (Config -> String) -> String
+-- toChangeField config field = field config
+--
+-- toValue :: String -> String -> Assertion
+-- toValue actual expected = actual @?= expected
+--
+-- infix 1 `toChangeField`
 
 utilConfigItemParser :: Parser ConfigItem -> String -> ConfigItem
 utilConfigItemParser parser str =
