@@ -123,7 +123,7 @@ addLocalCommits = do
       if (pull > 0)
         then do
           tell . show $ pull
-          tellStringInColor Red Vivid "\8595 "
+          tellStringInColor Red Vivid "\8595"
           tell " "
         else
           when (push > 0) $ do

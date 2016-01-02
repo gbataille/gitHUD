@@ -241,7 +241,7 @@ testAddLocalCommits :: TestTree
 testAddLocalCommits = testGroup "#addLocalCommits"
   [ testCase "ZSH: commits to pull" $
       testCommitsToPull ZSH @?=
-      "2%{\x1b[1;31m%}\8595 %{\x1b[0m%} "
+      "2%{\x1b[1;31m%}\8595%{\x1b[0m%} "
 
   , testCase "ZSH: commits to push" $
       testCommitsToPush ZSH @?=
@@ -253,7 +253,7 @@ testAddLocalCommits = testGroup "#addLocalCommits"
 
   , testCase "Other: commits to pull" $
       testCommitsToPull Other @?=
-      "2\x1b[1;31m\8595 \x1b[0m "
+      "2\x1b[1;31m\8595\x1b[0m "
 
   , testCase "Other: commits to push" $
       testCommitsToPush Other @?=
