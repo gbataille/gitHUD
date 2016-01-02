@@ -94,6 +94,21 @@ configItemsFolder conf (Item "remote_commits_push_prefix" value) =
 configItemsFolder conf (Item "remote_commits_push_pull_infix" value) =
   conf { confRemoteCommitsBothPullPush = value }
 
+configItemsFolder conf (Item "local_branch_prefix" value) =
+  conf { confLocalBranchNamePrefix = value }
+configItemsFolder conf (Item "local_branch_suffix" value) =
+  conf { confLocalBranchNameSuffix = value }
+configItemsFolder conf (Item "local_branch_color" value) =
+  conf { confLocalBranchColor = colorConfigToColor value }
+configItemsFolder conf (Item "local_branch_intensity" value) =
+  conf { confLocalBranchIntensity = intensityConfigToIntensity value }
+configItemsFolder conf (Item "local_detached_prefix" value) =
+  conf { confLocalDetachedPrefix = value }
+configItemsFolder conf (Item "local_detached_color" value) =
+  conf { confLocalDetachedColor = colorConfigToColor value }
+configItemsFolder conf (Item "local_detached_intensity" value) =
+  conf { confLocalDetachedIntensity = intensityConfigToIntensity value }
+
 configItemsFolder conf _ = conf
 
 colorConfigToColor :: String -> Color

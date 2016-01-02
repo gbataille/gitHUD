@@ -28,3 +28,11 @@
 # remote_commits_pull_prefix=→
 # remote_commits_push_prefix=←
 # remote_commits_push_pull_infix=⇄
+#
+# local_branch_prefix=[
+# local_branch_suffix=]
+# local_branch_color=Blue
+# local_branch_intensity=Vivid
+# local_detached_prefix=detached@
+# local_detached_color=Yellow
+# local_detached_intensity=Vivid

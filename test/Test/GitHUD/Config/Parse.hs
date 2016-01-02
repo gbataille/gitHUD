@@ -130,6 +130,48 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confRemoteCommitsBothPullPush $
             forConfigItemKey "remote_commits_push_pull_infix" $
               withValue "FOO"
+
+    , testCase "Key: local_branch_prefix" $
+        expectValue "FOO" $
+          toBeInField confLocalBranchNamePrefix $
+            forConfigItemKey "local_branch_prefix" $
+              withValue "FOO"
+
+    , testCase "Key: local_branch_suffix" $
+        expectValue "FOO" $
+          toBeInField confLocalBranchNameSuffix $
+            forConfigItemKey "local_branch_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: local_branch_color" $
+        expectValue Cyan $
+          toBeInField confLocalBranchColor $
+            forConfigItemKey "local_branch_color" $
+              withValue "Cyan"
+
+    , testCase "Key: local_branch_intensity" $
+        expectValue Dull $
+          toBeInField confLocalBranchIntensity $
+            forConfigItemKey "local_branch_intensity" $
+              withValue "Dull"
+
+    , testCase "Key: local_detached_prefix" $
+        expectValue "FOO" $
+          toBeInField confLocalDetachedPrefix $
+            forConfigItemKey "local_detached_prefix" $
+              withValue "FOO"
+
+    , testCase "Key: local_detached_color" $
+        expectValue Cyan $
+          toBeInField confLocalDetachedColor $
+            forConfigItemKey "local_detached_color" $
+              withValue "Cyan"
+
+    , testCase "Key: local_detached_intensity" $
+        expectValue Dull $
+          toBeInField confLocalDetachedIntensity $
+            forConfigItemKey "local_detached_intensity" $
+              withValue "Dull"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion
