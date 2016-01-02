@@ -92,7 +92,27 @@ testConfigItemFolder = testGroup "#configItemFolder"
     , testCase "Key: no_upstream_indicator_intensity - invalid intensity" $
         configItemsFolder defaultConfig (Item "no_upstream_indicator_intensity" "FOO")
         @?= defaultConfig { confNoUpstreamIndicatorIntensity = Dull }
+
+    , testCase "Key: remote_commits_indicator" $
+        (((expectKey "remote_commits_indicator")
+          (withValue "FOO"))
+          `toChangeField` confRemoteCommitsIndicator)
+          `toValue` "FOO"
   ]
+
+expectKey :: String -> (String -> Config)
+expectKey key = (configItemsFolder defaultConfig) . (Item key)
+
+withValue :: a -> a
+withValue = id
+
+toChangeField :: Config -> (Config -> String) -> String
+toChangeField config field = field config
+
+toValue :: String -> String -> Assertion
+toValue actual expected = actual @?= expected
+
+infix 1 `toChangeField`
 
 utilConfigItemParser :: Parser ConfigItem -> String -> ConfigItem
 utilConfigItemParser parser str =
