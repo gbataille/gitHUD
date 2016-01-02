@@ -8,6 +8,9 @@ command line that will show git information
 
 ![Example]
 
+**Note:** this example is taken from the iTerm2 OSX terminal, with custom
+colors from the Solarized Dark theme
+
 * [Why gitHUD?](#why_githud?)
 * [Install](#install)
 * [Setup](#setup)

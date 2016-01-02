@@ -90,7 +90,7 @@ testConfigItemFolder = testGroup "#configItemFolder"
               withValue "Black"
 
     , testCase "Key: no_upstream_indicator_color - invalid color" $
-        expectValue White $
+        expectValue Blue $
           toBeInField confNoUpstreamIndicatorColor $
             forConfigItemKey "no_upstream_indicator_color" $
               withValue "FOO"
@@ -102,7 +102,7 @@ testConfigItemFolder = testGroup "#configItemFolder"
               withValue "Dull"
 
     , testCase "Key: no_upstream_indicator_intensity - invalid intensity" $
-        expectValue Dull $
+        expectValue Vivid $
           toBeInField confNoUpstreamIndicatorIntensity $
             forConfigItemKey "no_upstream_indicator_intensity" $
               withValue "FOO"
@@ -155,10 +155,10 @@ utilConfigItemParser parser str =
 testIntensityConfigToIntensity :: TestTree
 testIntensityConfigToIntensity = testGroup "#intensityConfigToIntensity"
   [   testCase "valid intensity - return it" $
-        intensityConfigToIntensity "Vivid" @?= Vivid
+        intensityConfigToIntensity "Dull" @?= Dull
 
-    , testCase "invalid intensity - default to Dull" $
-        intensityConfigToIntensity "Foo" @?= Dull
+    , testCase "invalid intensity - default to Vivid" $
+        intensityConfigToIntensity "Foo" @?= Vivid
   ]
 
 testColorConfigToColor :: TestTree
@@ -166,6 +166,6 @@ testColorConfigToColor = testGroup "#colorConfigToColor"
   [   testCase "valid color - return it" $
         colorConfigToColor "Cyan" @?= Cyan
 
-    , testCase "invalid color - default to White" $
-        colorConfigToColor "Foo" @?= White
+    , testCase "invalid color - default to Blue" $
+        colorConfigToColor "Foo" @?= Blue
   ]

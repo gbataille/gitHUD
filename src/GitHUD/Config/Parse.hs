@@ -99,7 +99,7 @@ configItemsFolder conf _ = conf
 colorConfigToColor :: String -> Color
 colorConfigToColor str =
   either
-    (const White)
+    (const Blue)
     id
     (parse colorParser "" str)
 
@@ -118,7 +118,7 @@ colorParser = choice [
 intensityConfigToIntensity :: String -> ColorIntensity
 intensityConfigToIntensity str =
   either
-    (const Dull)
+    (const Vivid)
     id
     (parse intensityParser "" str)
 
