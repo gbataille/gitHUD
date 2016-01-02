@@ -177,6 +177,13 @@ configItemsFolder conf (Item "change_conflicted_suffix_color" value) =
 configItemsFolder conf (Item "change_conflicted_suffix_intensity" value) =
   conf { confChangeConflictedSuffixIntensity = intensityConfigToIntensity value }
 
+configItemsFolder conf (Item "stash_suffix" value) =
+  conf { confStashSuffix = value }
+configItemsFolder conf (Item "stash_suffix_color" value) =
+  conf { confStashSuffixColor = colorConfigToColor value }
+configItemsFolder conf (Item "stash_suffix_intensity" value) =
+  conf { confStashSuffixIntensity = intensityConfigToIntensity value }
+
 configItemsFolder conf _ = conf
 
 colorConfigToColor :: String -> Color

@@ -370,6 +370,24 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confChangeConflictedSuffixIntensity $
             forConfigItemKey "change_conflicted_suffix_intensity" $
               withValue "Dull"
+
+    , testCase "Key: stash_suffix" $
+        expectValue "FOO" $
+          toBeInField confStashSuffix $
+            forConfigItemKey "stash_suffix" $
+              withValue "FOO"
+
+    , testCase "Key: stash_suffix_color" $
+        expectValue Cyan $
+          toBeInField confStashSuffixColor $
+            forConfigItemKey "stash_suffix_color" $
+              withValue "Cyan"
+
+    , testCase "Key: stash_suffix_intensity" $
+        expectValue Dull $
+          toBeInField confStashSuffixIntensity $
+            forConfigItemKey "stash_suffix_intensity" $
+              withValue "Dull"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion

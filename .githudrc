@@ -71,3 +71,7 @@
 # change_conflicted_suffix=C
 # change_conflicted_suffix_color=Green
 # change_conflicted_suffix_intensity=Vivid
+#
+# stash_suffix=≡
+# stash_suffix_color=Green
+# stash_suffix_intensity=Vivid
