@@ -18,6 +18,13 @@ data Config = Config {
   , confRemoteCommitsOnlyPull :: String
   , confRemoteCommitsBothPullPush :: String
 
+  , confLocalBranchNamePrefix :: String
+  , confLocalBranchNameSuffix :: String
+  , confLocalDetachedPrefix :: String
+  , confLocalBranchColor :: Color
+  , confLocalBranchIntensity :: ColorIntensity
+  , confLocalDetachedColor :: Color
+  , confLocalDetachedIntensity :: ColorIntensity
 } deriving (Eq, Show)
 
 defaultConfig :: Config
@@ -33,4 +40,12 @@ defaultConfig = Config {
   , confRemoteCommitsOnlyPush = "\8592"
   , confRemoteCommitsOnlyPull = "\8594"
   , confRemoteCommitsBothPullPush = "\8644"
+
+  , confLocalBranchNamePrefix = "["
+  , confLocalBranchNameSuffix = "]"
+  , confLocalDetachedPrefix = "detached@"
+  , confLocalBranchColor = Blue
+  , confLocalBranchIntensity = Vivid
+  , confLocalDetachedColor = Yellow
+  , confLocalDetachedIntensity = Vivid
 }

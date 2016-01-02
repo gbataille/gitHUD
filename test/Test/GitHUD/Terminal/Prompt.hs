@@ -172,31 +172,69 @@ testAddRemoteCommits = testGroup "#addRemoteCommits"
         ]
   ]
 
+customConfigLocalBranchName :: Config
+customConfigLocalBranchName = defaultConfig {
+  confLocalBranchColor = Cyan
+  , confLocalDetachedColor = Magenta
+  , confLocalBranchIntensity = Dull
+  , confLocalDetachedIntensity = Dull
+  , confLocalBranchNamePrefix = "{"
+  , confLocalBranchNameSuffix = "}"
+  , confLocalDetachedPrefix = "det#!"
+}
+
 testAddLocalBranchName :: TestTree
 testAddLocalBranchName = testGroup "#addLocalBranchName"
-  [ testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
-        addLocalBranchName
-      @?= "[foo] "
+  [ testGroup "Default Config"
+    [   testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
+            addLocalBranchName
+          @?= "[%{\x1b[1;34m%}foo%{\x1b[0m%}] "
 
-    , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
-      testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
-        addLocalBranchName
-      @?= "[foo] "
+        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;34mfoo\x1b[0m] "
 
-    , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
-      testWriterWithConfig
-        (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
-        addLocalBranchName
-      @?= "[%{\x1b[1;33m%}detached@3d25ef%{\x1b[0m%}] "
+        , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
+            addLocalBranchName
+          @?= "[%{\x1b[1;33m%}detached@3d25ef%{\x1b[0m%}] "
 
-    , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
-      testWriterWithConfig
-        (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
-        addLocalBranchName
-      @?= "[\x1b[1;33mdetached@3d25ef\x1b[0m] "
+        , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;33mdetached@3d25ef\x1b[0m] "
+    ]
+    , testGroup "Custom Config"
+    [   testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{%{\x1b[36m%}foo%{\x1b[0m%}} "
+
+        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{\x1b[36mfoo\x1b[0m} "
+
+        , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{%{\x1b[35m%}det#!3d25ef%{\x1b[0m%}} "
+
+        , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{\x1b[35mdet#!3d25ef\x1b[0m} "
+    ]
   ]
 
 testAddLocalCommits :: TestTree

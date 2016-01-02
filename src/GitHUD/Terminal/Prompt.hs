@@ -92,16 +92,20 @@ addRemoteCommits = do
 addLocalBranchName :: ShellOutput
 addLocalBranchName = do
   repoState <- getRepoState
+  config <- getConfig
   let localBranchName = gitLocalBranch repoState
-  tell "["
+  tell (confLocalBranchNamePrefix config)
 
   if (localBranchName /= "")
     then do
-      tell localBranchName
+      tellStringInColor (confLocalBranchColor config) (confLocalBranchIntensity config) $
+        localBranchName
     else do
-      tellStringInColor Yellow Vivid $ "detached@" ++ (gitCommitShortSHA repoState)
+      tellStringInColor (confLocalDetachedColor config) (confLocalDetachedIntensity config) $
+        (confLocalDetachedPrefix config) ++ (gitCommitShortSHA repoState)
 
-  tell "] "
+  tell (confLocalBranchNameSuffix config)
+  tell " "
   return ()
 
 addLocalCommits :: ShellOutput
