@@ -1,5 +1,6 @@
 import Test.Tasty
 
+import Test.GitHUD.Config.Parse
 import Test.GitHUD.Git.Parse.Status
 import Test.GitHUD.Git.Parse.Branch
 import Test.GitHUD.Git.Common
@@ -18,6 +19,7 @@ tests = testGroup "Tests"
   , gitCommonTests
   , terminalTests
   , terminalPromptTests
+  , configParserTests
   ]
 --
 -- tests :: TestTree

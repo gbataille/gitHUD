@@ -1,0 +1,77 @@
+# Lines beginning with a '#' in the first column are comments
+#
+# The file contains a list of key - value pairs, separated by an equal "=" sign
+# Careful, all spaces are meaningful
+# There generally should not be any before or after the equal "=" sign
+#
+# Githud puts spaces inbetween every "section" of the prompt.
+# Generally, you should not put any spaces at the end yourself
+#
+# Empty lines are ignored.
+# Lines that are not understood by githud are silently ignored
+#
+# Colors are from [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White]
+# Intensities are from [Vivid, Dull]
+#
+# The following values are the defaults.
+# Uncomment one and change it to obtain a different prompt
+#
+#
+# git_repo_indicator=      # This character needs the powerline patched font mentionned in the README file
+#
+# no_upstream_text=upstream
+# no_upstream_indicator=⚡
+# no_upstream_indicator_color=Red
+# no_upstream_indicator_intensity=Vivid
+#
+# remote_commits_indicator=𝘮
+# remote_commits_pull_prefix=→
+# remote_commits_push_prefix=←
+# remote_commits_push_pull_infix=⇄
+#
+# local_branch_prefix=[
+# local_branch_suffix=]
+# local_branch_color=Blue
+# local_branch_intensity=Vivid
+# local_detached_prefix=detached@
+# local_detached_color=Yellow
+# local_detached_intensity=Vivid
+#
+# local_commits_push_suffix=↑
+# local_commits_push_suffix_color=Green
+# local_commits_push_suffix_intensity=Vivid
+# local_commits_pull_suffix=↓
+# local_commits_pull_suffix_color=Red
+# local_commits_pull_suffix_intensity=Vivid
+# local_commits_push_pull_infix=⇅
+# local_commits_push_pull_infix_color=Green
+# local_commits_push_pull_infix_intensity=Vivid
+#
+# change_index_add_suffix=A
+# change_index_add_suffix_color=Green
+# change_index_add_suffix_intensity=Vivid
+# change_index_mod_suffix=M
+# change_index_mod_suffix_color=Green
+# change_index_mod_suffix_intensity=Vivid
+# change_index_del_suffix=D
+# change_index_del_suffix_color=Green
+# change_index_del_suffix_intensity=Vivid
+# change_renamed_suffix=R
+# change_renamed_suffix_color=Green
+# change_renamed_suffix_intensity=Vivid
+# change_local_add_suffix=A
+# change_local_add_suffix_color=White
+# change_local_add_suffix_intensity=Vivid
+# change_local_mod_suffix=M
+# change_local_mod_suffix_color=Red
+# change_local_mod_suffix_intensity=Vivid
+# change_local_del_suffix=D
+# change_local_del_suffix_color=Red
+# change_local_del_suffix_intensity=Vivid
+# change_conflicted_suffix=C
+# change_conflicted_suffix_color=Green
+# change_conflicted_suffix_intensity=Vivid
+#
+# stash_suffix=≡
+# stash_suffix_color=Green
+# stash_suffix_intensity=Vivid

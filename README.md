@@ -8,10 +8,14 @@ command line that will show git information
 
 ![Example]
 
+**Note:** this example is taken from the iTerm2 OSX terminal, with custom
+colors from the Solarized Dark theme
+
 * [Why gitHUD?](#why_githud?)
 * [Install](#install)
 * [Setup](#setup)
 * [ZSH](#zsh)
+* [Configuration](#configuration)
 * [Benefits](#benefits)
 * [Dependencies](#dependencies)
 * [Benchmarks](#benchmarks)
@@ -40,7 +44,7 @@ Whatever the way you install gitHUD, don't forget to complete the [Setup](#setup
 * link my tap
 
 ```
-brew tag gbataille/homebrew-gba
+brew tap gbataille/homebrew-gba
 ```
 
 * install githud
@@ -88,10 +92,11 @@ repository. It's meant to be called each time you display your prompt.
 Therefore you want to put it in your PS1 env variable.
 
 For example, in my `.bashrc` file, with the executable at
-`~/.local/bin/gitHUD`
+`/usr/local/bin/gitHUD`
 
 ```
-export PS1="\[\033[0;37m\][\A]\[\033[0m\] \[\033[0;36m\]\u\[\033[0m\] \W\[\033[0;32m\]\$(~/.local/bin/gitHUD)\[\033[0m\]\$ "
+export PS1="\[\033[0;37m\][\A]\[\033[0m\] \[\033[0;36m\]\u\[\033[0m\]
+\W\[\033[0;32m\]\$(/usr/local/bin/gitHUD)\[\033[0m\]\$ "
 ```
 
 ZSH
@@ -111,18 +116,31 @@ gitHUD zsh
 Invoking it from the command line will show you those `%{` character.
 
 Putting it together in my `.zshrc`, I have the following PROMPT variable with
-the executable at `~/.local/bin/gitHUD`
+the executable at `/usr/local/bin/gitHUD`
 
 
 ```
-%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%} %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(~/.local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
+%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%}
+%{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(/usr/local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
 ```
+
+Configuration
+-------------
+
+The prompt format is nicely configurable. The defaults give you the look and
+feel from the screenshot above, with a terminal configured with the Solarized
+Dark theme colors.
+
+To change those colors, or the markers used in the prompt:
+* Copy the `.githudrc` file from this repository into your home directory
+* Edit the file by uncommenting some fields and changing their values
+  (instructions are enclosed in the file)
 
 Benefits
 --------
 
 - gitHUD is fast (on my system, about twice as fast as git-radar, with exec
-  times below 100ms). And I have a couple more ideas to make it better
+  times below 100ms)
 - gitHUD is easily maintainable through proper test coverage
 
 The only downside compared to git-radar is that you need to compile it on your
@@ -134,8 +152,8 @@ waiting for contributions to put it in RPM or DEB packages :)
 Dependencies
 ------------
 
-Until I make it configurable, I have hardcoded a "repository" character at the
-start of the output that can be found in the [patched
+The _default_ "repository" character at the start of the output requires a
+patched font that can be found in the [patched
 fonts](https://github.com/powerline/fonts) for
 [Powerline](https://github.com/powerline/powerline)
 
@@ -145,7 +163,7 @@ Benchmarks
 So of course, I wanted to check that whatever I was doing was useful. So I did
 a couple of benchmark with the Haskell criterion library. It's based on my
 system and does not guarantee any performances but it gives you an idea of the
-improvements. It goes:
+improvements. Here goes:
 * git-radar - full shell implementation
 * gitHUD-syncIO - with normal IOs done one at a time
 * gitHUD-asyncIO - with IOs programmed asynchronously for better performance.

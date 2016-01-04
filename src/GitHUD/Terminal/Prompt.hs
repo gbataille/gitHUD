@@ -12,9 +12,11 @@ module GitHUD.Terminal.Prompt (
 import Control.Monad (when)
 import Control.Monad.Writer (runWriterT, tell)
 
+import GitHUD.Config.Types
 import GitHUD.Git.Types
 import GitHUD.Terminal.Base
 import GitHUD.Terminal.Types
+import GitHUD.Types
 
 -- | From the state of the terminal (shell type + git info), builds a prompt to
 -- | display by accumulating data in a Writer and returning it
@@ -35,38 +37,52 @@ buildPrompt = do
   return ()
 
 addGitRepoIndicator :: ShellOutput
-addGitRepoIndicator = tell "\57504 "
+addGitRepoIndicator = do
+  config <- getConfig
+  tell $ confRepoIndicator config
+  tell " "
 
 addUpstreamIndicator :: ShellOutput
 addUpstreamIndicator = do
   repoState <- getRepoState
+  config <- getConfig
   when (gitRemoteTrackingBranch repoState == "") $ do
-    tell "upstream "
-    tellStringInColor Red Vivid "\9889"
+    tell $ confNoUpstreamString config
+    tell " "
+    tellStringInColor
+      (confNoUpstreamIndicatorColor config)
+      (confNoUpstreamIndicatorIntensity config)
+      (confNoUpstreamIndicator config)
     tell " "
   return ()
 
 addRemoteCommits :: ShellOutput
 addRemoteCommits = do
   repoState <- getRepoState
+  config <- getConfig
   let push = gitRemoteCommitsToPush repoState
   let pull = gitRemoteCommitsToPull repoState
   if (push > 0) && (pull > 0)
     then do
-      tell "\120366 "
+      tell (confRemoteCommitsIndicator config)
+      tell " "
       tell . show $ pull
-      tellStringInColor Green Vivid "\8644"
+      tellStringInColor Green Vivid (confRemoteCommitsBothPullPush config)
       tell . show $ push
     else (
       if (pull > 0)
         then do
-          tell "\120366 "
-          tellStringInColor Green Vivid "\8594 "
+          tell (confRemoteCommitsIndicator config)
+          tell " "
+          tellStringInColor Green Vivid (confRemoteCommitsOnlyPull config)
+          tell " "
           tell . show $ pull
         else (
           when (push > 0) $ do
-            tell "\120366 "
-            tellStringInColor Green Vivid "\8592 "
+            tell (confRemoteCommitsIndicator config)
+            tell " "
+            tellStringInColor Green Vivid (confRemoteCommitsOnlyPush config)
+            tell " "
             tell . show $ push
         )
     )
@@ -76,39 +92,53 @@ addRemoteCommits = do
 addLocalBranchName :: ShellOutput
 addLocalBranchName = do
   repoState <- getRepoState
+  config <- getConfig
   let localBranchName = gitLocalBranch repoState
-  tell "["
+  tell (confLocalBranchNamePrefix config)
 
   if (localBranchName /= "")
     then do
-      tell localBranchName
+      tellStringInColor (confLocalBranchColor config) (confLocalBranchIntensity config) $
+        localBranchName
     else do
-      tellStringInColor Yellow Vivid $ "detached@" ++ (gitCommitShortSHA repoState)
+      tellStringInColor (confLocalDetachedColor config) (confLocalDetachedIntensity config) $
+        (confLocalDetachedPrefix config) ++ (gitCommitShortSHA repoState)
 
-  tell "] "
+  tell (confLocalBranchNameSuffix config)
+  tell " "
   return ()
 
 addLocalCommits :: ShellOutput
 addLocalCommits = do
   repoState <- getRepoState
+  config <- getConfig
   let push = gitCommitsToPush repoState
   let pull = gitCommitsToPull repoState
   if (pull > 0) && (push > 0)
     then do
       tell . show $ pull
-      tellStringInColor Green Vivid "\8645"
+      tellStringInColor
+        (confLocalCommitsPushPullInfixColor config)
+        (confLocalCommitsPushPullInfixIntensity config)
+        (confLocalCommitsPushPullInfix config)
       tell . show $ push
       tell " "
     else
       if (pull > 0)
         then do
           tell . show $ pull
-          tellStringInColor Red Vivid "\8595 "
+          tellStringInColor
+            (confLocalCommitsPullSuffixColor config)
+            (confLocalCommitsPullSuffixIntensity config)
+            (confLocalCommitsPullSuffix config)
           tell " "
         else
           when (push > 0) $ do
             tell . show $ push
-            tellStringInColor Green Vivid "\8593"
+            tellStringInColor
+              (confLocalCommitsPushSuffixColor config)
+              (confLocalCommitsPushSuffixIntensity config)
+              (confLocalCommitsPushSuffix config)
             tell " "
 
   return ()
@@ -116,30 +146,55 @@ addLocalCommits = do
 addRepoState :: ShellOutput
 addRepoState = do
   repoState <- getRepoState
+  config <- getConfig
   let repoChanges = gitLocalRepoChanges repoState
 
   let inda = indexAdd repoChanges
   let indd = indexDel repoChanges
   let indm = indexMod repoChanges
   let mv = renamed repoChanges
-  addStateElem inda Green Vivid "A"
-  addStateElem indd Green Vivid "D"
-  addStateElem indm Green Vivid "M"
-  addStateElem mv Green Vivid "R"
+  addStateElem inda
+    (confChangeIndexAddSuffixColor config)
+    (confChangeIndexAddSuffixIntensity config)
+    (confChangeIndexAddSuffix config)
+  addStateElem indd
+    (confChangeIndexDelSuffixColor config)
+    (confChangeIndexDelSuffixIntensity config)
+    (confChangeIndexDelSuffix config)
+  addStateElem indm
+    (confChangeIndexModSuffixColor config)
+    (confChangeIndexModSuffixIntensity config)
+    (confChangeIndexModSuffix config)
+  addStateElem mv
+    (confChangeRenamedSuffixColor config)
+    (confChangeRenamedSuffixIntensity config)
+    (confChangeRenamedSuffix config)
   addSpaceIfAnyBiggerThanZero [inda, indd, indm, mv]
 
   let ld = localDel repoChanges
   let lm = localMod repoChanges
-  addStateElem ld Red Vivid "D"
-  addStateElem lm Red Vivid "M"
+  addStateElem ld
+    (confChangeLocalDelSuffixColor config)
+    (confChangeLocalDelSuffixIntensity config)
+    (confChangeLocalDelSuffix config)
+  addStateElem lm
+    (confChangeLocalModSuffixColor config)
+    (confChangeLocalModSuffixIntensity config)
+    (confChangeLocalModSuffix config)
   addSpaceIfAnyBiggerThanZero [ld, lm]
 
   let la = localAdd repoChanges
-  addStateElem la White Vivid "A"
+  addStateElem la
+    (confChangeLocalAddSuffixColor config)
+    (confChangeLocalAddSuffixIntensity config)
+    (confChangeLocalAddSuffix config)
   addSpaceIfAnyBiggerThanZero [la]
 
   let co = conflict repoChanges
-  addStateElem co Green Vivid "C"
+  addStateElem co
+    (confChangeConflictedSuffixColor config)
+    (confChangeConflictedSuffixIntensity config)
+    (confChangeConflictedSuffix config)
   addSpaceIfAnyBiggerThanZero [co]
   return ()
 
@@ -168,8 +223,13 @@ addNumStateElem num color intensity letter = do
 addStashes :: ShellOutput
 addStashes = do
   repoState <- getRepoState
+  config <- getConfig
   let stashCount = gitStashCount repoState
   when (stashCount /= 0) $ do
     tell . show $ stashCount
-    tellStringInColor Green Vivid "≡ "
+    tellStringInColor
+      (confStashSuffixColor config)
+      (confStashSuffixIntensity config)
+      (confStashSuffix config)
+    tell " "
 
