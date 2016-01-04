@@ -120,7 +120,7 @@ the executable at `/usr/local/bin/gitHUD`
 
 
 ```
-%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%}
+export PROMPT=%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%}
 %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(/usr/local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
 ```
 
