@@ -39,8 +39,7 @@ processArguments args = do
 
 getAppConfig :: IO Config
 getAppConfig = do
-  uid <- getRealUserID
-  userEntry <- getUserEntryForID uid
+  userEntry <- getRealUserID >>= getUserEntryForID
   let configFilePath = (homeDirectory userEntry) ++ "/.githudrc"
   configFilePresent <- fileExist configFilePath
   if configFilePresent
