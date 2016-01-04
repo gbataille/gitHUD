@@ -17,7 +17,7 @@
 # Uncomment one and change it to obtain a different prompt
 #
 #
-# git_repo_indicator=
+# git_repo_indicator=      # This character needs the powerline patched font mentionned in the README file
 #
 # no_upstream_text=upstream
 # no_upstream_indicator=⚡
@@ -75,4 +75,3 @@
 # stash_suffix=≡
 # stash_suffix_color=Green
 # stash_suffix_intensity=Vivid
-git_repo_indicator=XXX
