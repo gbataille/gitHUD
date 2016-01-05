@@ -17,7 +17,6 @@ colors from the Solarized Dark theme
 * [ZSH](#zsh)
 * [Configuration](#configuration)
 * [Benefits](#benefits)
-* [Dependencies](#dependencies)
 * [Benchmarks](#benchmarks)
 * [Thanks](#thanks)
 
@@ -148,14 +147,6 @@ platform, as opposed to being just shell.
 
 On Mac, it's now easy since I packaged it as a brew bottle. For Linux, I'm
 waiting for contributions to put it in RPM or DEB packages :)
-
-Dependencies
-------------
-
-The _default_ "repository" character at the start of the output requires a
-patched font that can be found in the [patched
-fonts](https://github.com/powerline/fonts) for
-[Powerline](https://github.com/powerline/powerline)
 
 Benchmarks
 ----------
