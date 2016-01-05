@@ -27,13 +27,14 @@ buildPromptWithConfig = do
 
 buildPrompt :: ShellOutput
 buildPrompt = do
-  addGitRepoIndicator
-  addNoTrackedUpstreamIndicator
-  addMergeBranchCommits
-  addLocalBranchName
-  addLocalCommits
-  addRepoState
-  addStashes
+  config <- askConfig
+  when (confShowPartRepoIndicator config) $ addGitRepoIndicator
+  when (confShowPartMergeBranchCommitsDiff config) $ addNoTrackedUpstreamIndicator
+  when (confShowPartMergeBranchCommitsDiff config) $ addMergeBranchCommits
+  when (confShowPartLocalBranch config) $ addLocalBranchName
+  when (confShowPartCommitsToOrigin config) $ addLocalCommits
+  when (confShowPartLocalChangesState config) $ addRepoState
+  when (confShowPartStashes config) $ addStashes
   return ()
 
 addGitRepoIndicator :: ShellOutput
