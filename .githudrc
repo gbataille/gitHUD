@@ -13,6 +13,9 @@
 # Colors are from [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White]
 # Intensities are from [Vivid, Dull]
 #
+# The show_part_xxx key tell githud whether to display this part of the prompt
+# It takes a boolean value [True, False]
+#
 # The following values are the defaults.
 # Uncomment one and change it to obtain a different prompt
 #
@@ -27,8 +30,12 @@
 # ---------------------- DEFAULTS ----------------------
 # ------------------------------------------------------
 #
+# --
+# show_part_repo_indicator=True
 # git_repo_indicator=ᚴ
 #
+# --
+# show_part_merge_branch_diff=True
 # no_upstream_text=upstream
 # no_upstream_color=Red
 # no_upstream_intensity=Vivid
@@ -41,6 +48,8 @@
 # remote_commits_push_prefix=←
 # remote_commits_push_pull_infix=⇄
 #
+# --
+# show_part_local_branch=True
 # local_branch_prefix=[
 # local_branch_suffix=]
 # local_branch_color=Blue
@@ -49,6 +58,8 @@
 # local_detached_color=Yellow
 # local_detached_intensity=Vivid
 #
+# --
+# show_part_commits_to_origin=True
 # local_commits_push_suffix=↑
 # local_commits_push_suffix_color=Green
 # local_commits_push_suffix_intensity=Vivid
@@ -59,6 +70,8 @@
 # local_commits_push_pull_infix_color=Green
 # local_commits_push_pull_infix_intensity=Vivid
 #
+# --
+# show_part_local_changes_state=True
 # change_index_add_suffix=A
 # change_index_add_suffix_color=Green
 # change_index_add_suffix_intensity=Vivid
@@ -84,6 +97,8 @@
 # change_conflicted_suffix_color=Green
 # change_conflicted_suffix_intensity=Vivid
 #
+# --
+# show_part_stashes=True
 # stash_suffix=≡
 # stash_suffix_color=Green
 # stash_suffix_intensity=Vivid
