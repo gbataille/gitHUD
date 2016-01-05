@@ -18,7 +18,7 @@ terminalPromptTests :: TestTree
 terminalPromptTests = testGroup "Terminal Prompt Test"
   [ testAddGitRepoIndicator
     , testAddNoTrackedUpstreamIndicator
-    , testAddRemoteCommits
+    , testAddMergeBranchCommits
     , testAddLocalBranchName
     , testAddLocalCommits
     , testAddRepoState
@@ -111,65 +111,65 @@ testAddNoTrackedUpstreamIndicator = testGroup "#addTrackedUpstreamIndicator"
       ]
   ]
 
-customConfigRemoteCommits :: Config
-customConfigRemoteCommits = defaultConfig {
-  confRemoteCommitsIndicator = "foo"
-  , confRemoteCommitsOnlyPull = "pull"
-  , confRemoteCommitsOnlyPush = "push"
-  , confRemoteCommitsBothPullPush = "pull-push"
+customConfigMergeBranchCommits :: Config
+customConfigMergeBranchCommits = defaultConfig {
+  confMergeBranchCommitsIndicator = "foo"
+  , confMergeBranchCommitsOnlyPull = "pull"
+  , confMergeBranchCommitsOnlyPush = "push"
+  , confMergeBranchCommitsBothPullPush = "pull-push"
 }
 
-testAddRemoteCommits :: TestTree
-testAddRemoteCommits = testGroup "#addRemoteCommits"
+testAddMergeBranchCommits :: TestTree
+testAddMergeBranchCommits = testGroup "#addMergeBranchCommits"
   [ testGroup "Default Config"
     [ testCase "ZSH: commits to pull" $
-        testRemoteCommitsToPull ZSH defaultConfig @?=
+        testMergeBranchCommitsToPull ZSH defaultConfig @?=
         "\120366 %{\x1b[1;32m%}\8594%{\x1b[0m%} 2 "
 
     , testCase "ZSH: commits to push" $
-        testRemoteCommitsToPush ZSH defaultConfig @?=
+        testMergeBranchCommitsToPush ZSH defaultConfig @?=
         "\120366 %{\x1b[1;32m%}\8592%{\x1b[0m%} 2 "
 
     , testCase "ZSH: commits to pull and to push" $
-        testRemoteCommitsToPushAndPull ZSH defaultConfig @?=
+        testMergeBranchCommitsToPushAndPull ZSH defaultConfig @?=
         "\120366 4%{\x1b[1;32m%}\8644%{\x1b[0m%}4 "
 
     , testCase "Other: commits to pull" $
-        testRemoteCommitsToPull Other defaultConfig @?=
+        testMergeBranchCommitsToPull Other defaultConfig @?=
         "\120366 \x1b[1;32m\8594\x1b[0m 2 "
 
     , testCase "Other: commits to push" $
-        testRemoteCommitsToPush Other defaultConfig @?=
+        testMergeBranchCommitsToPush Other defaultConfig @?=
         "\120366 \x1b[1;32m\8592\x1b[0m 2 "
 
     , testCase "Other: commits to pull and to push" $
-        testRemoteCommitsToPushAndPull Other defaultConfig @?=
+        testMergeBranchCommitsToPushAndPull Other defaultConfig @?=
         "\120366 4\x1b[1;32m\8644\x1b[0m4 "
     ]
 
     , testGroup "Custom Config"
         [ testCase "ZSH: commits to pull" $
-            testRemoteCommitsToPull ZSH customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPull ZSH customConfigMergeBranchCommits @?=
             "foo %{\x1b[1;32m%}pull%{\x1b[0m%} 2 "
 
         , testCase "ZSH: commits to push" $
-            testRemoteCommitsToPush ZSH customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPush ZSH customConfigMergeBranchCommits @?=
             "foo %{\x1b[1;32m%}push%{\x1b[0m%} 2 "
 
         , testCase "ZSH: commits to pull and to push" $
-            testRemoteCommitsToPushAndPull ZSH customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPushAndPull ZSH customConfigMergeBranchCommits @?=
             "foo 4%{\x1b[1;32m%}pull-push%{\x1b[0m%}4 "
 
         , testCase "Other: commits to pull" $
-            testRemoteCommitsToPull Other customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPull Other customConfigMergeBranchCommits @?=
             "foo \x1b[1;32mpull\x1b[0m 2 "
 
         , testCase "Other: commits to push" $
-            testRemoteCommitsToPush Other customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPush Other customConfigMergeBranchCommits @?=
             "foo \x1b[1;32mpush\x1b[0m 2 "
 
         , testCase "Other: commits to pull and to push" $
-            testRemoteCommitsToPushAndPull Other customConfigRemoteCommits @?=
+            testMergeBranchCommitsToPushAndPull Other customConfigMergeBranchCommits @?=
             "foo 4\x1b[1;32mpull-push\x1b[0m4 "
         ]
   ]
@@ -492,23 +492,23 @@ zeroOutputConfig :: Shell
                  -> OutputConfig
 zeroOutputConfig shell = buildOutputConfig shell zeroGitRepoState defaultConfig
 
-testRemoteCommitsToPull :: Shell -> Config -> String
-testRemoteCommitsToPull shell config = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPull = 2 }) config)
-  addRemoteCommits
+testMergeBranchCommitsToPull :: Shell -> Config -> String
+testMergeBranchCommitsToPull shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitMergeBranchCommitsToPull = 2 }) config)
+  addMergeBranchCommits
 
-testRemoteCommitsToPush :: Shell -> Config -> String
-testRemoteCommitsToPush shell config = testWriterWithConfig
-  (buildOutputConfig shell (zeroGitRepoState { gitRemoteCommitsToPush = 2 }) config)
-  addRemoteCommits
+testMergeBranchCommitsToPush :: Shell -> Config -> String
+testMergeBranchCommitsToPush shell config = testWriterWithConfig
+  (buildOutputConfig shell (zeroGitRepoState { gitMergeBranchCommitsToPush = 2 }) config)
+  addMergeBranchCommits
 
-testRemoteCommitsToPushAndPull :: Shell -> Config -> String
-testRemoteCommitsToPushAndPull shell config = testWriterWithConfig
+testMergeBranchCommitsToPushAndPull :: Shell -> Config -> String
+testMergeBranchCommitsToPushAndPull shell config = testWriterWithConfig
   (buildOutputConfig shell
-    (zeroGitRepoState { gitRemoteCommitsToPull = 4, gitRemoteCommitsToPush = 4 })
+    (zeroGitRepoState { gitMergeBranchCommitsToPull = 4, gitMergeBranchCommitsToPush = 4 })
     config
   )
-  addRemoteCommits
+  addMergeBranchCommits
 
 testCommitsToPull :: Shell -> Config -> String
 testCommitsToPull shell config = testWriterWithConfig

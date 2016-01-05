@@ -119,28 +119,28 @@ testConfigItemFolder = testGroup "#configItemFolder"
             forConfigItemKey "no_tracked_upstream_indicator_intensity" $
               withValue "FOO"
 
-    , testCase "Key: remote_commits_indicator" $
+    , testCase "Key: merge_branch_commits_indicator" $
         expectValue "FOO" $
-          toBeInField confRemoteCommitsIndicator $
-            forConfigItemKey "remote_commits_indicator" $
+          toBeInField confMergeBranchCommitsIndicator $
+            forConfigItemKey "merge_branch_commits_indicator" $
               withValue "FOO"
 
-    , testCase "Key: remote_commits_pull_prefix" $
+    , testCase "Key: merge_branch_commits_pull_prefix" $
         expectValue "FOO" $
-          toBeInField confRemoteCommitsOnlyPull $
-            forConfigItemKey "remote_commits_pull_prefix" $
+          toBeInField confMergeBranchCommitsOnlyPull $
+            forConfigItemKey "merge_branch_commits_pull_prefix" $
               withValue "FOO"
 
-    , testCase "Key: remote_commits_push_prefix" $
+    , testCase "Key: merge_branch_commits_push_prefix" $
         expectValue "FOO" $
-          toBeInField confRemoteCommitsOnlyPush $
-            forConfigItemKey "remote_commits_push_prefix" $
+          toBeInField confMergeBranchCommitsOnlyPush $
+            forConfigItemKey "merge_branch_commits_push_prefix" $
               withValue "FOO"
 
-    , testCase "Key: remote_commits_push_pull_infix" $
+    , testCase "Key: merge_branch_commits_push_pull_infix" $
         expectValue "FOO" $
-          toBeInField confRemoteCommitsBothPullPush $
-            forConfigItemKey "remote_commits_push_pull_infix" $
+          toBeInField confMergeBranchCommitsBothPullPush $
+            forConfigItemKey "merge_branch_commits_push_pull_infix" $
               withValue "FOO"
 
     , testCase "Key: local_branch_prefix" $

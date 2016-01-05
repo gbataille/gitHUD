@@ -15,10 +15,10 @@ data Config = Config {
   , confNoTrackedUpstreamIndicatorColor :: Color
   , confNoTrackedUpstreamIndicatorIntensity :: ColorIntensity
 
-  , confRemoteCommitsIndicator :: String
-  , confRemoteCommitsOnlyPush :: String
-  , confRemoteCommitsOnlyPull :: String
-  , confRemoteCommitsBothPullPush :: String
+  , confMergeBranchCommitsIndicator :: String
+  , confMergeBranchCommitsOnlyPush :: String
+  , confMergeBranchCommitsOnlyPull :: String
+  , confMergeBranchCommitsBothPullPush :: String
 
   , confLocalBranchNamePrefix :: String
   , confLocalBranchNameSuffix :: String
@@ -79,10 +79,10 @@ defaultConfig = Config {
   , confNoTrackedUpstreamIndicatorColor = Red
   , confNoTrackedUpstreamIndicatorIntensity = Vivid
 
-  , confRemoteCommitsIndicator = "\120366"
-  , confRemoteCommitsOnlyPush = "\8592"
-  , confRemoteCommitsOnlyPull = "\8594"
-  , confRemoteCommitsBothPullPush = "\8644"
+  , confMergeBranchCommitsIndicator = "\120366"
+  , confMergeBranchCommitsOnlyPush = "\8592"
+  , confMergeBranchCommitsOnlyPull = "\8594"
+  , confMergeBranchCommitsBothPullPush = "\8644"
 
   , confLocalBranchNamePrefix = "["
   , confLocalBranchNameSuffix = "]"

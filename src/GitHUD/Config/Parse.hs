@@ -89,14 +89,14 @@ configItemsFolder conf (Item "no_tracked_upstream_indicator_color" value) =
 configItemsFolder conf (Item "no_tracked_upstream_indicator_intensity" value) =
   conf { confNoTrackedUpstreamIndicatorIntensity = intensityConfigToIntensity value }
 
-configItemsFolder conf (Item "remote_commits_indicator" value) =
-  conf { confRemoteCommitsIndicator = value }
-configItemsFolder conf (Item "remote_commits_pull_prefix" value) =
-  conf { confRemoteCommitsOnlyPull = value }
-configItemsFolder conf (Item "remote_commits_push_prefix" value) =
-  conf { confRemoteCommitsOnlyPush = value }
-configItemsFolder conf (Item "remote_commits_push_pull_infix" value) =
-  conf { confRemoteCommitsBothPullPush = value }
+configItemsFolder conf (Item "merge_branch_commits_indicator" value) =
+  conf { confMergeBranchCommitsIndicator = value }
+configItemsFolder conf (Item "merge_branch_commits_pull_prefix" value) =
+  conf { confMergeBranchCommitsOnlyPull = value }
+configItemsFolder conf (Item "merge_branch_commits_push_prefix" value) =
+  conf { confMergeBranchCommitsOnlyPush = value }
+configItemsFolder conf (Item "merge_branch_commits_push_pull_infix" value) =
+  conf { confMergeBranchCommitsBothPullPush = value }
 
 configItemsFolder conf (Item "local_branch_prefix" value) =
   conf { confLocalBranchNamePrefix = value }

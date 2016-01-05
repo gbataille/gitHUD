@@ -50,8 +50,8 @@ data GitRepoState =
     , gitStashCount :: Int
     , gitCommitsToPull :: Int
     , gitCommitsToPush :: Int
-    , gitRemoteCommitsToPull :: Int
-    , gitRemoteCommitsToPush :: Int
+    , gitMergeBranchCommitsToPull :: Int
+    , gitMergeBranchCommitsToPush :: Int
   }
   deriving (Eq, Show)
 
@@ -66,6 +66,6 @@ zeroGitRepoState =
     , gitStashCount = 0
     , gitCommitsToPull = 0
     , gitCommitsToPush = 0
-    , gitRemoteCommitsToPull = 0
-    , gitRemoteCommitsToPush = 0
+    , gitMergeBranchCommitsToPull = 0
+    , gitMergeBranchCommitsToPush = 0
   }

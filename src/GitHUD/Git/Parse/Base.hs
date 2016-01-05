@@ -52,23 +52,23 @@ fillGitRemoteRepoState repoState = do
   mvRemoteBranchName <- newEmptyMVar
   mvCommitsToPull <- newEmptyMVar
   mvCommitsToPush <- newEmptyMVar
-  mvRemoteCommitsToPull <- newEmptyMVar
-  mvRemoteCommitsToPush <- newEmptyMVar
+  mvMergeBranchCommitsToPull <- newEmptyMVar
+  mvMergeBranchCommitsToPush <- newEmptyMVar
 
   forkIO $ gitCmdRemoteBranchName (gitLocalBranch repoState) mvRemoteBranchName
   remoteBranch <- removeEndingNewline <$> (takeMVar mvRemoteBranchName)
 
   let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName (gitRemote repoState) remoteBranch
 
-  forkIO $ gitCmdRevToPush "origin/master" fullRemoteBranchName mvRemoteCommitsToPush
-  forkIO $ gitCmdRevToPull "origin/master" fullRemoteBranchName mvRemoteCommitsToPull
+  forkIO $ gitCmdRevToPush "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPush
+  forkIO $ gitCmdRevToPull "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPull
   forkIO $ gitCmdRevToPush fullRemoteBranchName "HEAD" mvCommitsToPush
   forkIO $ gitCmdRevToPull fullRemoteBranchName "HEAD" mvCommitsToPull
 
-  rCommitsToMergeStr <- takeMVar mvRemoteCommitsToPush
-  let rCommitsToMerge = getCount rCommitsToMergeStr
-  rCommitsToRMasterStr <- takeMVar mvRemoteCommitsToPull
-  let rCommitsToRMaster = getCount rCommitsToRMasterStr
+  mergeBranchCommitsToMergeStr <- takeMVar mvMergeBranchCommitsToPush
+  let mergeBranchCommitsToMerge = getCount mergeBranchCommitsToMergeStr
+  mergeBranchCommitsToRMasterStr <- takeMVar mvMergeBranchCommitsToPull
+  let mergeBranchCommitsToRMaster = getCount mergeBranchCommitsToRMasterStr
 
   commitsToPushStr <- takeMVar mvCommitsToPush
   let commitsToPush = getCount commitsToPushStr
@@ -79,6 +79,6 @@ fillGitRemoteRepoState repoState = do
     gitRemoteTrackingBranch = remoteBranch
     , gitCommitsToPull = commitsToPull
     , gitCommitsToPush = commitsToPush
-    , gitRemoteCommitsToPull = rCommitsToRMaster
-    , gitRemoteCommitsToPush = rCommitsToMerge
+    , gitMergeBranchCommitsToPull = mergeBranchCommitsToRMaster
+    , gitMergeBranchCommitsToPush = mergeBranchCommitsToMerge
   }

@@ -2,7 +2,7 @@ module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
   , addGitRepoIndicator
   , addNoTrackedUpstreamIndicator
-  , addRemoteCommits
+  , addMergeBranchCommits
   , addLocalBranchName
   , addLocalCommits
   , addRepoState
@@ -29,7 +29,7 @@ buildPrompt :: ShellOutput
 buildPrompt = do
   addGitRepoIndicator
   addNoTrackedUpstreamIndicator
-  addRemoteCommits
+  addMergeBranchCommits
   addLocalBranchName
   addLocalCommits
   addRepoState
@@ -59,32 +59,32 @@ addNoTrackedUpstreamIndicator = do
     tell " "
   return ()
 
-addRemoteCommits :: ShellOutput
-addRemoteCommits = do
+addMergeBranchCommits :: ShellOutput
+addMergeBranchCommits = do
   repoState <- getRepoState
   config <- getConfig
-  let push = gitRemoteCommitsToPush repoState
-  let pull = gitRemoteCommitsToPull repoState
+  let push = gitMergeBranchCommitsToPush repoState
+  let pull = gitMergeBranchCommitsToPull repoState
   if (push > 0) && (pull > 0)
     then do
-      tell (confRemoteCommitsIndicator config)
+      tell (confMergeBranchCommitsIndicator config)
       tell " "
       tell . show $ pull
-      tellStringInColor Green Vivid (confRemoteCommitsBothPullPush config)
+      tellStringInColor Green Vivid (confMergeBranchCommitsBothPullPush config)
       tell . show $ push
     else (
       if (pull > 0)
         then do
-          tell (confRemoteCommitsIndicator config)
+          tell (confMergeBranchCommitsIndicator config)
           tell " "
-          tellStringInColor Green Vivid (confRemoteCommitsOnlyPull config)
+          tellStringInColor Green Vivid (confMergeBranchCommitsOnlyPull config)
           tell " "
           tell . show $ pull
         else (
           when (push > 0) $ do
-            tell (confRemoteCommitsIndicator config)
+            tell (confMergeBranchCommitsIndicator config)
             tell " "
-            tellStringInColor Green Vivid (confRemoteCommitsOnlyPush config)
+            tellStringInColor Green Vivid (confMergeBranchCommitsOnlyPush config)
             tell " "
             tell . show $ push
         )
