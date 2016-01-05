@@ -6,7 +6,14 @@ module GitHUD.Config.Types (
 import GitHUD.Terminal.Types
 
 data Config = Config {
-  confRepoIndicator :: String
+    confShowPartRepoIndicator :: Bool
+  , confShowPartMergeBranchCommitsDiff :: Bool
+  , confShowPartLocalBranch :: Bool
+  , confShowPartCommitsToOrigin :: Bool
+  , confShowPartLocalChangesState :: Bool
+  , confShowPartStashes :: Bool
+
+  , confRepoIndicator :: String
 
   , confNoTrackedUpstreamString :: String
   , confNoTrackedUpstreamStringColor :: Color
@@ -70,7 +77,14 @@ data Config = Config {
 
 defaultConfig :: Config
 defaultConfig = Config {
-  confRepoIndicator = "\57504"
+    confShowPartRepoIndicator = True
+  , confShowPartMergeBranchCommitsDiff = True
+  , confShowPartLocalBranch = True
+  , confShowPartCommitsToOrigin = True
+  , confShowPartLocalChangesState = True
+  , confShowPartStashes = True
+
+  , confRepoIndicator = "\57504"
 
   , confNoTrackedUpstreamString = "upstream"
   , confNoTrackedUpstreamStringColor = Red
