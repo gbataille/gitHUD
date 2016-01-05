@@ -57,7 +57,43 @@ testCommentParser = testGroup "#commentParser"
 
 testConfigItemFolder :: TestTree
 testConfigItemFolder = testGroup "#configItemFolder"
-  [   testCase "Comment should have no impact on the config" $
+  [   testCase "Key: show_part_repo_indicator" $
+        expectValue False $
+          toBeInField confShowPartRepoIndicator $
+            forConfigItemKey "show_part_repo_indicator" $
+              withValue "False"
+
+    , testCase "Key: show_part_merge_branch_commits_diff" $
+        expectValue False $
+          toBeInField confShowPartMergeBranchCommitsDiff $
+            forConfigItemKey "show_part_merge_branch_commits_diff" $
+              withValue "False"
+
+    , testCase "Key: show_part_local_branch" $
+        expectValue False $
+          toBeInField confShowPartLocalBranch $
+            forConfigItemKey "show_part_local_branch" $
+              withValue "False"
+
+    , testCase "Key: show_part_commits_to_origin" $
+        expectValue False $
+          toBeInField confShowPartCommitsToOrigin $
+            forConfigItemKey "show_part_commits_to_origin" $
+              withValue "False"
+
+    , testCase "Key: show_part_local_changes_state" $
+        expectValue False $
+          toBeInField confShowPartLocalChangesState $
+            forConfigItemKey "show_part_local_changes_state" $
+              withValue "False"
+
+    , testCase "Key: show_part_stashes" $
+        expectValue False $
+          toBeInField confShowPartStashes $
+            forConfigItemKey "show_part_stashes" $
+              withValue "False"
+
+    , testCase "Comment should have no impact on the config" $
         configItemsFolder defaultConfig (Comment)
         @?= defaultConfig
 

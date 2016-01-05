@@ -74,6 +74,19 @@ fallThroughItemParser = do
   return ErrorLine
 
 configItemsFolder :: Config -> ConfigItem -> Config
+configItemsFolder conf (Item "show_part_repo_indicator" value) =
+  conf { confShowPartRepoIndicator = boolConfigToIntensity value }
+configItemsFolder conf (Item "show_part_merge_branch_commits_diff" value) =
+  conf { confShowPartMergeBranchCommitsDiff = boolConfigToIntensity value }
+configItemsFolder conf (Item "show_part_local_branch" value) =
+  conf { confShowPartLocalBranch = boolConfigToIntensity value }
+configItemsFolder conf (Item "show_part_commits_to_origin" value) =
+  conf { confShowPartCommitsToOrigin = boolConfigToIntensity value }
+configItemsFolder conf (Item "show_part_local_changes_state" value) =
+  conf { confShowPartLocalChangesState = boolConfigToIntensity value }
+configItemsFolder conf (Item "show_part_stashes" value) =
+  conf { confShowPartStashes = boolConfigToIntensity value }
+
 configItemsFolder conf (Item "git_repo_indicator" repoIndicator) = conf { confRepoIndicator = repoIndicator }
 
 configItemsFolder conf (Item "no_tracked_upstream_text" value) =
@@ -221,3 +234,30 @@ intensityParser = choice [
     string "Dull" >> return Dull
   , string "Vivid" >> return Vivid
   ] <?> "intensity"
+
+boolConfigToIntensity :: String -> Bool
+boolConfigToIntensity str =
+  either
+    (const True)
+    id
+    (parse boolParser "" str)
+
+boolParser :: Parser Bool
+boolParser = choice [
+    string "False" >> return False
+  , string "F" >> return False
+  , string "false" >> return False
+  , string "f" >> return False
+  , string "No" >> return False
+  , string "N" >> return False
+  , string "no" >> return False
+  , string "n" >> return False
+  , string "True" >> return True
+  , string "T" >> return True
+  , string "true" >> return True
+  , string "t" >> return True
+  , string "Yes" >> return True
+  , string "Y" >> return True
+  , string "yes" >> return True
+  , string "y" >> return True
+  ] <?> "bool"
