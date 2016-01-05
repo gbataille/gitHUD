@@ -17,7 +17,7 @@ import GitHUD.Types
 terminalPromptTests :: TestTree
 terminalPromptTests = testGroup "Terminal Prompt Test"
   [ testAddGitRepoIndicator
-    , testAddUpstreamIndicator
+    , testAddNoTrackedUpstreamIndicator
     , testAddRemoteCommits
     , testAddLocalBranchName
     , testAddLocalCommits
@@ -49,64 +49,64 @@ testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
       ]
   ]
 
-customConfigUpstreamIndicator :: Config
-customConfigUpstreamIndicator = defaultConfig {
-  confNoUpstreamString = "foo"
-  , confNoUpstreamStringColor = Cyan
-  , confNoUpstreamStringIntensity = Dull
-  , confNoUpstreamIndicator = "bar"
-  , confNoUpstreamIndicatorColor = Green
-  , confNoUpstreamIndicatorIntensity = Dull
+customConfigNoTrackedUpstreamIndicator :: Config
+customConfigNoTrackedUpstreamIndicator = defaultConfig {
+  confNoTrackedUpstreamString = "foo"
+  , confNoTrackedUpstreamStringColor = Cyan
+  , confNoTrackedUpstreamStringIntensity = Dull
+  , confNoTrackedUpstreamIndicator = "bar"
+  , confNoTrackedUpstreamIndicatorColor = Green
+  , confNoTrackedUpstreamIndicatorIntensity = Dull
 }
 
-testAddUpstreamIndicator :: TestTree
-testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
+testAddNoTrackedUpstreamIndicator :: TestTree
+testAddNoTrackedUpstreamIndicator = testGroup "#addTrackedUpstreamIndicator"
   [ testGroup "Default Config"
       [ testCase "ZSH: with an upstream" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-            addUpstreamIndicator
+            addNoTrackedUpstreamIndicator
           @?= ""
 
         , testCase "Other: with an upstream" $
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-            addUpstreamIndicator
+            addNoTrackedUpstreamIndicator
           @?= ""
 
       , testCase "ZSH: with no upstream" $
           testWriterWithConfig
-            (zeroOutputConfig ZSH) addUpstreamIndicator
+            (zeroOutputConfig ZSH) addNoTrackedUpstreamIndicator
           @?= "%{\x1b[1;31m%}upstream%{\x1b[0m%} %{\x1b[1;31m%}\9889%{\x1b[0m%} "
 
       , testCase "Other: with no upstream" $
           testWriterWithConfig
-            (zeroOutputConfig Other) addUpstreamIndicator
+            (zeroOutputConfig Other) addNoTrackedUpstreamIndicator
           @?= "\x1b[1;31mupstream\x1b[0m \x1b[1;31m\9889\x1b[0m "
       ]
     , testGroup "Custom Config"
       [ testCase "ZSH: with an upstream" $
           testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigUpstreamIndicator)
-            addUpstreamIndicator
+            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
           @?= ""
 
         , testCase "Other: with an upstream" $
           testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigUpstreamIndicator)
-            addUpstreamIndicator
+            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
           @?= ""
 
       , testCase "ZSH: with no upstream" $
           testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState) customConfigUpstreamIndicator)
-            addUpstreamIndicator
+            (buildOutputConfig ZSH (zeroGitRepoState) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
           @?= "%{\x1b[36m%}foo%{\x1b[0m%} %{\x1b[32m%}bar%{\x1b[0m%} "
 
       , testCase "Other: with no upstream" $
           testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState) customConfigUpstreamIndicator)
-            addUpstreamIndicator
+            (buildOutputConfig Other (zeroGitRepoState) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
           @?= "\x1b[36mfoo\x1b[0m \x1b[32mbar\x1b[0m "
       ]
   ]

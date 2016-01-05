@@ -76,18 +76,18 @@ fallThroughItemParser = do
 configItemsFolder :: Config -> ConfigItem -> Config
 configItemsFolder conf (Item "git_repo_indicator" repoIndicator) = conf { confRepoIndicator = repoIndicator }
 
-configItemsFolder conf (Item "no_upstream_text" value) =
-  conf { confNoUpstreamString = value }
-configItemsFolder conf (Item "no_upstream_text_color" value) =
-  conf { confNoUpstreamStringColor = colorConfigToColor value }
-configItemsFolder conf (Item "no_upstream_text_intensity" value) =
-  conf { confNoUpstreamStringIntensity = intensityConfigToIntensity value }
-configItemsFolder conf (Item "no_upstream_indicator" value) =
-  conf { confNoUpstreamIndicator = value }
-configItemsFolder conf (Item "no_upstream_indicator_color" value) =
-  conf { confNoUpstreamIndicatorColor = colorConfigToColor value }
-configItemsFolder conf (Item "no_upstream_indicator_intensity" value) =
-  conf { confNoUpstreamIndicatorIntensity = intensityConfigToIntensity value }
+configItemsFolder conf (Item "no_tracked_upstream_text" value) =
+  conf { confNoTrackedUpstreamString = value }
+configItemsFolder conf (Item "no_tracked_upstream_text_color" value) =
+  conf { confNoTrackedUpstreamStringColor = colorConfigToColor value }
+configItemsFolder conf (Item "no_tracked_upstream_text_intensity" value) =
+  conf { confNoTrackedUpstreamStringIntensity = intensityConfigToIntensity value }
+configItemsFolder conf (Item "no_tracked_upstream_indicator" value) =
+  conf { confNoTrackedUpstreamIndicator = value }
+configItemsFolder conf (Item "no_tracked_upstream_indicator_color" value) =
+  conf { confNoTrackedUpstreamIndicatorColor = colorConfigToColor value }
+configItemsFolder conf (Item "no_tracked_upstream_indicator_intensity" value) =
+  conf { confNoTrackedUpstreamIndicatorIntensity = intensityConfigToIntensity value }
 
 configItemsFolder conf (Item "remote_commits_indicator" value) =
   conf { confRemoteCommitsIndicator = value }

@@ -8,12 +8,12 @@ import GitHUD.Terminal.Types
 data Config = Config {
   confRepoIndicator :: String
 
-  , confNoUpstreamString :: String
-  , confNoUpstreamStringColor :: Color
-  , confNoUpstreamStringIntensity :: ColorIntensity
-  , confNoUpstreamIndicator :: String
-  , confNoUpstreamIndicatorColor :: Color
-  , confNoUpstreamIndicatorIntensity :: ColorIntensity
+  , confNoTrackedUpstreamString :: String
+  , confNoTrackedUpstreamStringColor :: Color
+  , confNoTrackedUpstreamStringIntensity :: ColorIntensity
+  , confNoTrackedUpstreamIndicator :: String
+  , confNoTrackedUpstreamIndicatorColor :: Color
+  , confNoTrackedUpstreamIndicatorIntensity :: ColorIntensity
 
   , confRemoteCommitsIndicator :: String
   , confRemoteCommitsOnlyPush :: String
@@ -72,12 +72,12 @@ defaultConfig :: Config
 defaultConfig = Config {
   confRepoIndicator = "\57504"
 
-  , confNoUpstreamString = "upstream"
-  , confNoUpstreamStringColor = Red
-  , confNoUpstreamStringIntensity = Vivid
-  , confNoUpstreamIndicator = "\9889"
-  , confNoUpstreamIndicatorColor = Red
-  , confNoUpstreamIndicatorIntensity = Vivid
+  , confNoTrackedUpstreamString = "upstream"
+  , confNoTrackedUpstreamStringColor = Red
+  , confNoTrackedUpstreamStringIntensity = Vivid
+  , confNoTrackedUpstreamIndicator = "\9889"
+  , confNoTrackedUpstreamIndicatorColor = Red
+  , confNoTrackedUpstreamIndicatorIntensity = Vivid
 
   , confRemoteCommitsIndicator = "\120366"
   , confRemoteCommitsOnlyPush = "\8592"

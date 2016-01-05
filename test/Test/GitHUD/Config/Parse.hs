@@ -71,52 +71,52 @@ testConfigItemFolder = testGroup "#configItemFolder"
             forConfigItemKey "git_repo_indicator" $
               withValue "foo"
 
-    , testCase "Key: no_upstream_text" $
+    , testCase "Key: no_tracked_upstream_text" $
         expectValue "foo" $
-          toBeInField confNoUpstreamString $
-            forConfigItemKey "no_upstream_text" $
+          toBeInField confNoTrackedUpstreamString $
+            forConfigItemKey "no_tracked_upstream_text" $
               withValue "foo"
 
-    , testCase "Key: no_upstream_text_color" $
+    , testCase "Key: no_tracked_upstream_text_color" $
         expectValue Green $
-          toBeInField confNoUpstreamStringColor $
-            forConfigItemKey "no_upstream_text_color" $
+          toBeInField confNoTrackedUpstreamStringColor $
+            forConfigItemKey "no_tracked_upstream_text_color" $
               withValue "Green"
 
-    , testCase "Key: no_upstream_text_intensity" $
+    , testCase "Key: no_tracked_upstream_text_intensity" $
         expectValue Dull $
-          toBeInField confNoUpstreamStringIntensity $
-            forConfigItemKey "no_upstream_text_intensity" $
+          toBeInField confNoTrackedUpstreamStringIntensity $
+            forConfigItemKey "no_tracked_upstream_text_intensity" $
               withValue "Dull"
 
-    , testCase "Key: no_upstream_indicator" $
+    , testCase "Key: no_tracked_upstream_indicator" $
         expectValue "foo" $
-          toBeInField confNoUpstreamIndicator $
-            forConfigItemKey "no_upstream_indicator" $
+          toBeInField confNoTrackedUpstreamIndicator $
+            forConfigItemKey "no_tracked_upstream_indicator" $
               withValue "foo"
 
-    , testCase "Key: no_upstream_indicator_color" $
+    , testCase "Key: no_tracked_upstream_indicator_color" $
         expectValue Black $
-          toBeInField confNoUpstreamIndicatorColor $
-            forConfigItemKey "no_upstream_indicator_color" $
+          toBeInField confNoTrackedUpstreamIndicatorColor $
+            forConfigItemKey "no_tracked_upstream_indicator_color" $
               withValue "Black"
 
-    , testCase "Key: no_upstream_indicator_color - invalid color" $
+    , testCase "Key: no_tracked_upstream_indicator_color - invalid color" $
         expectValue Blue $
-          toBeInField confNoUpstreamIndicatorColor $
-            forConfigItemKey "no_upstream_indicator_color" $
+          toBeInField confNoTrackedUpstreamIndicatorColor $
+            forConfigItemKey "no_tracked_upstream_indicator_color" $
               withValue "FOO"
 
-    , testCase "Key: no_upstream_indicator_intensity" $
+    , testCase "Key: no_tracked_upstream_indicator_intensity" $
         expectValue Dull $
-          toBeInField confNoUpstreamIndicatorIntensity $
-            forConfigItemKey "no_upstream_indicator_intensity" $
+          toBeInField confNoTrackedUpstreamIndicatorIntensity $
+            forConfigItemKey "no_tracked_upstream_indicator_intensity" $
               withValue "Dull"
 
-    , testCase "Key: no_upstream_indicator_intensity - invalid intensity" $
+    , testCase "Key: no_tracked_upstream_indicator_intensity - invalid intensity" $
         expectValue Vivid $
-          toBeInField confNoUpstreamIndicatorIntensity $
-            forConfigItemKey "no_upstream_indicator_intensity" $
+          toBeInField confNoTrackedUpstreamIndicatorIntensity $
+            forConfigItemKey "no_tracked_upstream_indicator_intensity" $
               withValue "FOO"
 
     , testCase "Key: remote_commits_indicator" $

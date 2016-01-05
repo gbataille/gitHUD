@@ -36,12 +36,12 @@
 #
 # --
 # show_part_merge_branch_diff=True
-# no_upstream_text=upstream
-# no_upstream_color=Red
-# no_upstream_intensity=Vivid
-# no_upstream_indicator=⚡
-# no_upstream_indicator_color=Red
-# no_upstream_indicator_intensity=Vivid
+# no_tracked_upstream_text=upstream
+# no_tracked_upstream_color=Red
+# no_tracked_upstream_intensity=Vivid
+# no_tracked_upstream_indicator=⚡
+# no_tracked_upstream_indicator_color=Red
+# no_tracked_upstream_indicator_intensity=Vivid
 #
 # remote_commits_indicator=𝘮
 # remote_commits_pull_prefix=→

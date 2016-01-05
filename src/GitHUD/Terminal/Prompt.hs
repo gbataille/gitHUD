@@ -1,7 +1,7 @@
 module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
   , addGitRepoIndicator
-  , addUpstreamIndicator
+  , addNoTrackedUpstreamIndicator
   , addRemoteCommits
   , addLocalBranchName
   , addLocalCommits
@@ -28,7 +28,7 @@ buildPromptWithConfig = do
 buildPrompt :: ShellOutput
 buildPrompt = do
   addGitRepoIndicator
-  addUpstreamIndicator
+  addNoTrackedUpstreamIndicator
   addRemoteCommits
   addLocalBranchName
   addLocalCommits
@@ -42,20 +42,20 @@ addGitRepoIndicator = do
   tell $ confRepoIndicator config
   tell " "
 
-addUpstreamIndicator :: ShellOutput
-addUpstreamIndicator = do
+addNoTrackedUpstreamIndicator :: ShellOutput
+addNoTrackedUpstreamIndicator = do
   repoState <- getRepoState
   config <- getConfig
   when (gitRemoteTrackingBranch repoState == "") $ do
     tellStringInColor
-      (confNoUpstreamStringColor config)
-      (confNoUpstreamStringIntensity config)
-      (confNoUpstreamString config)
+      (confNoTrackedUpstreamStringColor config)
+      (confNoTrackedUpstreamStringIntensity config)
+      (confNoTrackedUpstreamString config)
     tell " "
     tellStringInColor
-      (confNoUpstreamIndicatorColor config)
-      (confNoUpstreamIndicatorIntensity config)
-      (confNoUpstreamIndicator config)
+      (confNoTrackedUpstreamIndicatorColor config)
+      (confNoTrackedUpstreamIndicatorIntensity config)
+      (confNoTrackedUpstreamIndicator config)
     tell " "
   return ()
 
