@@ -37,8 +37,8 @@
 # --
 # show_part_merge_branch_commits_diff=True
 # no_tracked_upstream_text=upstream
-# no_tracked_upstream_color=Red
-# no_tracked_upstream_intensity=Vivid
+# no_tracked_upstream_text_color=Red
+# no_tracked_upstream_text_intensity=Vivid
 # no_tracked_upstream_indicator=⚡
 # no_tracked_upstream_indicator_color=Red
 # no_tracked_upstream_indicator_intensity=Vivid
