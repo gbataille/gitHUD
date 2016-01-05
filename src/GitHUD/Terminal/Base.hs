@@ -16,7 +16,7 @@ tellStringInColor :: Color               -- ^ The terminal color to use
                   -> String              -- ^ The string to output
                   -> ShellOutput
 tellStringInColor color intensity str = do
-  shell <- getShell
+  shell <- askShell
   tell $ startColorMarker color intensity shell
   tell $ str
   tell $ endColorMarker shell

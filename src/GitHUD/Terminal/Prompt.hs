@@ -38,14 +38,14 @@ buildPrompt = do
 
 addGitRepoIndicator :: ShellOutput
 addGitRepoIndicator = do
-  config <- getConfig
+  config <- askConfig
   tell $ confRepoIndicator config
   tell " "
 
 addNoTrackedUpstreamIndicator :: ShellOutput
 addNoTrackedUpstreamIndicator = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   when (gitRemoteTrackingBranch repoState == "") $ do
     tellStringInColor
       (confNoTrackedUpstreamStringColor config)
@@ -61,8 +61,8 @@ addNoTrackedUpstreamIndicator = do
 
 addMergeBranchCommits :: ShellOutput
 addMergeBranchCommits = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   let push = gitMergeBranchCommitsToPush repoState
   let pull = gitMergeBranchCommitsToPull repoState
   if (push > 0) && (pull > 0)
@@ -94,8 +94,8 @@ addMergeBranchCommits = do
 
 addLocalBranchName :: ShellOutput
 addLocalBranchName = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   let localBranchName = gitLocalBranch repoState
   tell (confLocalBranchNamePrefix config)
 
@@ -113,8 +113,8 @@ addLocalBranchName = do
 
 addLocalCommits :: ShellOutput
 addLocalCommits = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   let push = gitCommitsToPush repoState
   let pull = gitCommitsToPull repoState
   if (pull > 0) && (push > 0)
@@ -148,8 +148,8 @@ addLocalCommits = do
 
 addRepoState :: ShellOutput
 addRepoState = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   let repoChanges = gitLocalRepoChanges repoState
 
   let inda = indexAdd repoChanges
@@ -225,8 +225,8 @@ addNumStateElem num color intensity letter = do
 
 addStashes :: ShellOutput
 addStashes = do
-  repoState <- getRepoState
-  config <- getConfig
+  repoState <- askRepoState
+  config <- askConfig
   let stashCount = gitStashCount repoState
   when (stashCount /= 0) $ do
     tell . show $ stashCount

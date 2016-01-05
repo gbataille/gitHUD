@@ -6,12 +6,12 @@ module GitHUD.Types (
   , Prompt
   , TerminalState
   , ShellOutput
-  , getShell
-  , getRepoState
-  , getConfig
+  , askShell
+  , askRepoState
+  , askConfig
   ) where
 
-import Control.Monad.Reader (Reader, MonadReader, ask, liftM)
+import Control.Monad.Reader (Reader, MonadReader, asks)
 import Control.Monad.Writer (WriterT)
 
 import GitHUD.Config.Types
@@ -34,14 +34,14 @@ buildOutputConfig shell repoState config = OutputConfig {
   , _config = config
 }
 
-getShell :: MonadReader OutputConfig m => m Shell
-getShell = liftM _shell $ ask
+askShell :: MonadReader OutputConfig m => m Shell
+askShell = asks _shell
 
-getRepoState :: MonadReader OutputConfig m => m GitRepoState
-getRepoState = liftM _repoState $ ask
+askRepoState :: MonadReader OutputConfig m => m GitRepoState
+askRepoState = asks _repoState
 
-getConfig :: MonadReader OutputConfig m => m Config
-getConfig = liftM _config $ ask
+askConfig :: MonadReader OutputConfig m => m Config
+askConfig = asks _config
 
 type Prompt = String
 
