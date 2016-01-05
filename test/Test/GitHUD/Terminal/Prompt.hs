@@ -52,6 +52,8 @@ testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
 customConfigUpstreamIndicator :: Config
 customConfigUpstreamIndicator = defaultConfig {
   confNoUpstreamString = "foo"
+  , confNoUpstreamStringColor = Cyan
+  , confNoUpstreamStringIntensity = Dull
   , confNoUpstreamIndicator = "bar"
   , confNoUpstreamIndicatorColor = Green
   , confNoUpstreamIndicatorIntensity = Dull
@@ -75,12 +77,12 @@ testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
       , testCase "ZSH: with no upstream" $
           testWriterWithConfig
             (zeroOutputConfig ZSH) addUpstreamIndicator
-          @?= "upstream %{\x1b[1;31m%}\9889%{\x1b[0m%} "
+          @?= "%{\x1b[1;31m%}upstream%{\x1b[0m%} %{\x1b[1;31m%}\9889%{\x1b[0m%} "
 
       , testCase "Other: with no upstream" $
           testWriterWithConfig
             (zeroOutputConfig Other) addUpstreamIndicator
-          @?= "upstream \x1b[1;31m\9889\x1b[0m "
+          @?= "\x1b[1;31mupstream\x1b[0m \x1b[1;31m\9889\x1b[0m "
       ]
     , testGroup "Custom Config"
       [ testCase "ZSH: with an upstream" $
@@ -99,13 +101,13 @@ testAddUpstreamIndicator = testGroup "#addUpstreamIndicator"
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState) customConfigUpstreamIndicator)
             addUpstreamIndicator
-          @?= "foo %{\x1b[32m%}bar%{\x1b[0m%} "
+          @?= "%{\x1b[36m%}foo%{\x1b[0m%} %{\x1b[32m%}bar%{\x1b[0m%} "
 
       , testCase "Other: with no upstream" $
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState) customConfigUpstreamIndicator)
             addUpstreamIndicator
-          @?= "foo \x1b[32mbar\x1b[0m "
+          @?= "\x1b[36mfoo\x1b[0m \x1b[32mbar\x1b[0m "
       ]
   ]
 

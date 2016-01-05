@@ -47,7 +47,10 @@ addUpstreamIndicator = do
   repoState <- getRepoState
   config <- getConfig
   when (gitRemoteTrackingBranch repoState == "") $ do
-    tell $ confNoUpstreamString config
+    tellStringInColor
+      (confNoUpstreamStringColor config)
+      (confNoUpstreamStringIntensity config)
+      (confNoUpstreamString config)
     tell " "
     tellStringInColor
       (confNoUpstreamIndicatorColor config)

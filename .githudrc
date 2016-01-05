@@ -17,9 +17,21 @@
 # Uncomment one and change it to obtain a different prompt
 #
 #
-# git_repo_indicator=      # This character needs the powerline patched font mentionned in the README file
+# The following character is a better repo indicator to me but needs the 
+# powerline patched font https://github.com/powerline/fonts
+# it's not a default anymore
+# Don't use it unless it displays a nice fork symbol
+# git_repo_indicator=
+#
+# ------------------------------------------------------
+# ---------------------- DEFAULTS ----------------------
+# ------------------------------------------------------
+#
+# git_repo_indicator=ᚴ
 #
 # no_upstream_text=upstream
+# no_upstream_color=Red
+# no_upstream_intensity=Vivid
 # no_upstream_indicator=⚡
 # no_upstream_indicator_color=Red
 # no_upstream_indicator_intensity=Vivid

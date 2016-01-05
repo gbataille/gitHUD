@@ -9,6 +9,8 @@ data Config = Config {
   confRepoIndicator :: String
 
   , confNoUpstreamString :: String
+  , confNoUpstreamStringColor :: Color
+  , confNoUpstreamStringIntensity :: ColorIntensity
   , confNoUpstreamIndicator :: String
   , confNoUpstreamIndicatorColor :: Color
   , confNoUpstreamIndicatorIntensity :: ColorIntensity
@@ -71,6 +73,8 @@ defaultConfig = Config {
   confRepoIndicator = "\57504"
 
   , confNoUpstreamString = "upstream"
+  , confNoUpstreamStringColor = Red
+  , confNoUpstreamStringIntensity = Vivid
   , confNoUpstreamIndicator = "\9889"
   , confNoUpstreamIndicatorColor = Red
   , confNoUpstreamIndicatorIntensity = Vivid

@@ -77,6 +77,18 @@ testConfigItemFolder = testGroup "#configItemFolder"
             forConfigItemKey "no_upstream_text" $
               withValue "foo"
 
+    , testCase "Key: no_upstream_text_color" $
+        expectValue Green $
+          toBeInField confNoUpstreamStringColor $
+            forConfigItemKey "no_upstream_text_color" $
+              withValue "Green"
+
+    , testCase "Key: no_upstream_text_intensity" $
+        expectValue Dull $
+          toBeInField confNoUpstreamStringIntensity $
+            forConfigItemKey "no_upstream_text_intensity" $
+              withValue "Dull"
+
     , testCase "Key: no_upstream_indicator" $
         expectValue "foo" $
           toBeInField confNoUpstreamIndicator $
