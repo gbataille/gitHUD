@@ -123,6 +123,26 @@ export PROMPT=%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_colo
 %{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(/usr/local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
 ```
 
+Fish
+---
+
+Add this code to your config.fish file.
+
+```
+function fish_prompt
+  set_color white
+  echo -n [(date "+%H:%M")]
+  set_color cyan
+  echo -n (whoami):
+  set_color yellow
+  echo -n (prompt_pwd)
+  set_color $fish_color_cwd
+  echo -n (/usr/local/bin/gitHUD)
+  set_color normal
+  echo -n "> "
+end
+```
+
 Configuration
 -------------
 
