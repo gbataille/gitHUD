@@ -7,6 +7,7 @@ module GitHUD.Terminal.Prompt (
   , addLocalCommits
   , addRepoState
   , addStashes
+  , buildPrompt
   ) where
 
 import Control.Monad (when)

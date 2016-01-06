@@ -23,6 +23,7 @@ terminalPromptTests = testGroup "Terminal Prompt Test"
     , testAddLocalCommits
     , testAddRepoState
     , testAddStashes
+    , testPartialPrompt
   ]
 
 testAddGitRepoIndicator :: TestTree
@@ -479,6 +480,76 @@ testAddStashes = testGroup "#addStashes"
             (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) customStashConfig) addStashes
           @?= "2\x1b[36mstash\x1b[0m "
       ]
+  ]
+
+localChangesForPartialPrompt :: GitLocalRepoChanges
+localChangesForPartialPrompt = GitLocalRepoChanges {
+    localMod = 1
+    , localAdd = 2
+    , localDel = 3
+    , indexMod = 4
+    , indexAdd = 5
+    , indexDel = 6
+    , renamed  = 7
+    , conflict = 8
+  }
+
+repoStateForPartialPrompt :: GitRepoState
+repoStateForPartialPrompt = GitRepoState {
+    gitLocalRepoChanges = localChangesForPartialPrompt
+    , gitLocalBranch = "branch"
+    , gitCommitShortSHA = "3de6ef"
+    , gitRemote = "origin"
+    , gitRemoteTrackingBranch = "origin/branch"
+    , gitStashCount = 3
+    , gitCommitsToPull = 5
+    , gitCommitsToPush = 6
+    , gitMergeBranchCommitsToPull = 2
+    , gitMergeBranchCommitsToPush = 1
+  }
+
+{- For reference here, the full prompt would be
+
+ "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+-}
+testPartialPrompt :: TestTree
+testPartialPrompt = testGroup "Partial prompt display"
+  [   testCase "w/out repo indicator" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartRepoIndicator = False })
+          buildPrompt
+        @?= "\120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+    , testCase "w/out merge branch commits info" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartMergeBranchCommitsDiff = False })
+          buildPrompt
+        @?= "\5812 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+    , testCase "w/out local branch info" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartLocalBranch = False })
+          buildPrompt
+        @?= "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+    , testCase "w/out commits push/pull info" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartCommitsToOrigin = False })
+          buildPrompt
+        @?= "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+    , testCase "w/out local repo changes" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartLocalChangesState = False })
+          buildPrompt
+        @?= "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+
+    , testCase "w/out stashes" $
+        testWriterWithConfig
+          (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartStashes = False })
+          buildPrompt
+        @?= "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}\8645%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} "
   ]
 
 -- | Utility function to test a ShellOutput function and gets the prompt built
