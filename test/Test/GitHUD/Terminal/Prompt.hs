@@ -29,10 +29,10 @@ testAddGitRepoIndicator :: TestTree
 testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
   [ testGroup "Default Config"
       [ testCase "ZSH: default config: hardcoded character" $
-          testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "\57504 "
+          testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "ᚴ "
 
         , testCase "Other: default config: hardcoded character" $
-          testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "\57504 "
+          testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "ᚴ "
       ]
     , testGroup "Custom Config"
       [ testCase "ZSH: custom config: hardcoded character" $

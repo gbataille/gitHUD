@@ -84,7 +84,7 @@ defaultConfig = Config {
   , confShowPartLocalChangesState = True
   , confShowPartStashes = True
 
-  , confRepoIndicator = "\57504"
+  , confRepoIndicator = "ᚴ"
 
   , confNoTrackedUpstreamString = "upstream"
   , confNoTrackedUpstreamStringColor = Red
