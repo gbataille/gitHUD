@@ -155,6 +155,9 @@ To change those colors, or the markers used in the prompt:
 * Edit the file by uncommenting some fields and changing their values
   (instructions are enclosed in the file)
 
+You can control which section of the output are shown (if you want to mask
+some) with the configuration keys starting with "show\_part\_"
+
 Benefits
 --------
 
