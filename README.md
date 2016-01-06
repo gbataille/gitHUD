@@ -151,7 +151,11 @@ feel from the screenshot above, with a terminal configured with the Solarized
 Dark theme colors.
 
 To change those colors, or the markers used in the prompt:
-* Copy the `.githudrc` file from this repository into your home directory
+* Copy the `.githudrc` file from this repository into your home directory.
+  From you home directory
+```
+wget https://raw.githubusercontent.com/gbataille/gitHUD/master/.githudrc
+```
 * Edit the file by uncommenting some fields and changing their values
   (instructions are enclosed in the file)
 
