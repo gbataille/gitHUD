@@ -23,7 +23,7 @@ colors from the Solarized Dark theme
 Why gitHUD?
 -----------
 
-I was really psyched a few months ago by
+I was really psyched a few months ago (mid-2015) by
 [git-radar](https://github.com/michaeldfallen/git-radar). Git-radar does the exact
 same thing as gitHUD, but is implemented in shell. While I had a great time
 using it for a while, I realized that on my particular setup, git-radar was
