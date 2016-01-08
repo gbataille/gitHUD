@@ -8,14 +8,15 @@ command line that will show git information
 
 ![Example]
 
-**Note:** this example is taken from the iTerm2 OSX terminal, with custom
-colors from the Solarized Dark theme
+_**Note:** this example is taken from the iTerm2 OSX terminal, with custom
+colors from the Solarized Dark theme_
 
 * [Why gitHUD?](#why_githud?)
 * [Install](#install)
 * [Setup](#setup)
 * [ZSH](#zsh)
 * [Configuration](#configuration)
+* [Understanding the gitHUD prompt](#understanding_the_githud_prompt)
 * [Benefits](#benefits)
 * [Benchmarks](#benchmarks)
 * [Thanks](#thanks)
@@ -27,7 +28,7 @@ I was really psyched a few months ago (mid-2015) by
 [git-radar](https://github.com/michaeldfallen/git-radar). Git-radar does the exact
 same thing as gitHUD, but is implemented in shell. While I had a great time
 using it for a while, I realized that on my particular setup, git-radar was
-introducing a visible delay (200ms, too long for me) in the displaying of my
+introducing a visible delay (>200ms, too long for me) in the displaying of my
 prompt.
 
 At that time, I was looking for an exercise to implement in Haskell, so that's
@@ -79,8 +80,11 @@ stack install gitHUD
 
 ### From sources
 
-* Get the source
-* Compile them (haskell)
+* Get the source (here)
+* Compile them (haskell, stack configured). So from the project folder:
+```
+stack install
+```
 
 
 Setup
@@ -90,29 +94,36 @@ If you simply call the githud executable, you'll get a short status of your
 repository. It's meant to be called each time you display your prompt.
 Therefore you want to put it in your PS1 env variable.
 
+#### Bash
+
 For example, in my `.bashrc` file, with the executable at
-`/usr/local/bin/gitHUD`
+`/usr/local/bin/gitHUD`, I have a prompt definition that looks like that:
 
 ```
 export PS1="\[\033[0;37m\][\A]\[\033[0m\] \[\033[0;36m\]\u\[\033[0m\]
 \W\[\033[0;32m\]\$(/usr/local/bin/gitHUD)\[\033[0m\]\$ "
 ```
 
-ZSH
----
+_(it has a lot more things into it, including the current directory, the hour,
+and a prompt '$' terminating character)_
+
+#### ZSH
 
 ZSH has some fancy way of managing prompt when you do things like
 autocompletion and the like. For that it needs to know the size of the prompt.
 Special characters used to express the color of the prompt need to be
 surrounded by special markup for them not to be counted.
 
-To make it work with ZSH, add a "zsh" parameter:
+GitHUD knows how to handle this. All you have to do is to run the program with
+a "zsh" parameter and those special characters will be used in the output:
 
 ```
 gitHUD zsh
 ```
 
-Invoking it from the command line will show you those `%{` character.
+_**Note**: Those special characters %{ %} are only interpreted and hidden when
+zsh renders a prompt. If you simply call githud with this parameter 'zsh' from
+the command line, you'll see them in the output!_
 
 Putting it together in my `.zshrc`, I have the following PROMPT variable with
 the executable at `/usr/local/bin/gitHUD`
@@ -120,11 +131,13 @@ the executable at `/usr/local/bin/gitHUD`
 
 ```
 export PROMPT=%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%}
-%{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(/usr/local/bin/gitHUD zsh)%{$(virtualenv_info)%}%(?,,%{${fg_bold[blue]}%}[%?]%{$reset_color%} )$ '
+%{$fg_bold[green]%}$(shorter_path)%{$reset_color%} $(/usr/local/bin/gitHUD zsh) $ '
 ```
 
-Fish
----
+_(it has a lot more things into it, including the current directory, the
+current user, the hour, and a prompt '$' terminating character)_
+
+#### Fish
 
 Add this code to your config.fish file.
 
@@ -152,7 +165,7 @@ Dark theme colors.
 
 To change those colors, or the markers used in the prompt:
 * Copy the `.githudrc` file from this repository into your home directory.
-  From you home directory
+  Then, from your home directory
 ```
 wget https://raw.githubusercontent.com/gbataille/gitHUD/master/.githudrc
 ```
@@ -161,6 +174,11 @@ wget https://raw.githubusercontent.com/gbataille/gitHUD/master/.githudrc
 
 You can control which section of the output are shown (if you want to mask
 some) with the configuration keys starting with "show\_part\_"
+
+Understanding the gitHUD prompt
+-------------------------------
+
+See [Prompt explained](docs/PROMPT_EXPLAINED.md)
 
 Benefits
 --------
@@ -179,7 +197,7 @@ Benchmarks
 ----------
 
 So of course, I wanted to check that whatever I was doing was useful. So I did
-a couple of benchmark with the Haskell criterion library. It's based on my
+a couple of benchmarks with the Haskell Criterion library. It's based on my
 system and does not guarantee any performances but it gives you an idea of the
 improvements. Here goes:
 * git-radar - full shell implementation
