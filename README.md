@@ -16,7 +16,7 @@ colors from the Solarized Dark theme_
 * [Setup](#setup)
 * [ZSH](#zsh)
 * [Configuration](#configuration)
-* [Understanding the gitHUD prompt](#understanding_the_githud_prompt)
+* [Understanding the gitHUD prompt](#understanding-the-githud-prompt)
 * [Benefits](#benefits)
 * [Benchmarks](#benchmarks)
 * [Thanks](#thanks)

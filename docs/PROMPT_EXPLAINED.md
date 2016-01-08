@@ -2,11 +2,11 @@ Prompt Explained
 ================
 
 The prompt built by gitHUD is made of 6 parts:
-* [Git Repo Indicator](#git_repo_indicator)
-* [Merge branch information](#merge_branch_information)
-* [Local branch](#local_branch_-_detached_information)
-* [Commits to push-pull](#commits_to_push-pull)
-* [Local repository state](#local_repository_state)
+* [Git Repo Indicator](#git-repo-indicator)
+* [Merge branch information](#merge-branch-information)
+* [Local branch](#local-branch---detached-information)
+* [Commits to push-pull](#commits-to-push-pull)
+* [Local repository state](#local-repository-state)
 * [Stashes](stashes)
 
 Each of these parts are described below and each of these parts are actually
