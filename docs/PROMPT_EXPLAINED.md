@@ -60,7 +60,7 @@ _Hidden by:_ `show_part_local_branch=False`
 | Output part | Description |
 |:-----------:| ----------- |
 | ![local_branch] | This is the name of the local branch you are working on |
-| ![detached] | This is the commit sha on which you are, if you are not at the HEAD of a branch (typically on rebase situations, conflict resolution, or exploration of an old repo state) |
+| ![detached] | This is the commit sha on which you are, if you are not at the HEAD of a branch<br>(typically on rebase situations, conflict resolution, or exploration of an old repo state) |
 
 ## Commits to push-pull
 
@@ -71,6 +71,23 @@ _Hidden by:_ `show_part_commits_to_origin=False`
 | ![commits_pull] | This means that some commits on you remote tracking branch have not been pulled (rebased?) locally | ![gitgraph_commits_pull] |
 | ![commits_push] | This means that some local commits have not yet been pushed to the remote tracking branch | ![gitgraph_commits_push] |
 | ![commits_push_pull] | This means that some commits are to be pulled (rebased?) and some have to be pushed | ![gitgraph_commits_pull_push] |
+
+## Local repository state
+
+_Hidden by:_ `show_part_local_changes_state=False`
+
+| Output part | Description |
+|:-----------:| ----------- |
+| ![repo_changes] | The first group is for the status of files in the index:<br><ul><li>A: New files</li><li>D: Deleted files</li><li>M: Modified files</li><li>R: Renamed Files</li></ul>The second and third groups are about local unstaged file modifications:<br><ul><li>D: Deleted files</li><li>M: Modified files</li><li>A: New Files</li></ul> |
+| ![conflicts] | This indicates files in a conflicted state (typically in the middle of a merge or rebase) |
+
+## Stashes
+
+_Hidden by:_ `show_part_stashes=False`
+
+| Output part | Description |
+|:-----------:| ----------- |
+| ![stash] | This means that there are some stashes in your repo |
 
 [repo_indicator]: ../images/prompt_repo_indicator.png
 [commits_pull]: ../images/prompt_commits_pull.png
