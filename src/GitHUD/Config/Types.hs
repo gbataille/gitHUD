@@ -112,7 +112,7 @@ defaultConfig = Config {
   , confLocalCommitsPullSuffix = "\8595"
   , confLocalCommitsPullSuffixColor = Red
   , confLocalCommitsPullSuffixIntensity = Vivid
-  , confLocalCommitsPushPullInfix = "\8645"
+  , confLocalCommitsPushPullInfix = "⥯"
   , confLocalCommitsPushPullInfixColor = Green
   , confLocalCommitsPushPullInfixIntensity = Vivid
 
