@@ -29,6 +29,10 @@ When there is no remote merge branch, this section of the prompt is empty.
 This is typically the case when you work on master, or when you work on a
 local __short lived__ feature branch that has no remote counterpart.
 
+| Output part | Description |
+|:-----------:| ----------- |
+| ![no_upstream] | This means that the current branch (other than master) has no remote tracking branch (typically a short lived feature branch) |
+
 ### Merge branch
 
 | Output part | Description | Viz |
@@ -46,6 +50,16 @@ _Hidden by:_ `show_part_local_branch=False`
 | ![local_branch] | This is the name of the local branch you are working on |
 | ![detached] | This is the commit sha on which you are, if you are not at the HEAD of a branch (typically on rebase situations, conflict resolution, or exploration of an old repo state) |
 
+## Commits to push-pull
+
+_Hidden by:_ `show_part_commits_to_origin=False`
+
+| Output part | Description | Viz |
+|:-----------:| ----------- |:--- |
+| ![commits_pull] | This means that some commits on you remote tracking branch have not been pulled (rebased?) locally | ![gitgraph_commits_pull] |
+| ![commits_push] | This means that some local commits have not yet been pushed to the remote tracking branch | ![gitgraph_commits_push] |
+| ![commits_push_pull] | This means that some commits are to be pulled (rebased?) and some have to be pushed | ![gitgraph_commits_pull_push] |
+
 [repo_indicator]: ../images/prompt_repo_indicator.png
 [commits_pull]: ../images/prompt_commits_pull.png
 [commits_push]: ../images/prompt_commits_push.png
@@ -53,6 +67,7 @@ _Hidden by:_ `show_part_local_branch=False`
 [conflicts]: ../images/prompt_conflicts.png
 [detached]: ../images/prompt_detached.png
 [local_branch]: ../images/prompt_local_branch.png
+[no_upstream]: ../images/prompt_no_upstream.png
 [merge_branch_pull]: ../images/prompt_merge_branch_pull.png
 [merge_branch_push]: ../images/prompt_merge_branch_push.png
 [repo_changes]: ../images/prompt_repo_changes.png
@@ -63,3 +78,7 @@ _Hidden by:_ `show_part_local_branch=False`
 [gitgraph_merge_branch_pull]: ../images/gitgraph_merge_branch_pull.png
 [gitgraph_merge_branch_push]: ../images/gitgraph_merge_branch_push.png
 [gitgraph_merge_branch_push_pull]: ../images/gitgraph_merge_branch_push_pull.png
+
+[gitgraph_commits_pull]: ../images/gitgraph_commits_pull.png
+[gitgraph_commits_push]: ../images/gitgraph_commits_push.png
+[gitgraph_commits_pull_push]: ../images/gitgraph_commits_pull_push.png
