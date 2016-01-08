@@ -1,6 +1,18 @@
 Prompt Explained
 ================
 
+The prompt built by gitHUD is made of 6 parts:
+* [Git Repo Indicator](#git_repo_indicator)
+* [Merge branch information](#merge_branch_information)
+* [Local branch](#local_branch_-_detached_information)
+* [Commits to push-pull](#commits_to_push-pull)
+* [Local repository state](#local_repository_state)
+* [Stashes](stashes)
+
+Each of these parts are described below and each of these parts are actually
+optional (all "on" by default). The specific documentation of each part tells
+you how to hide it if you wish to.
+
 ### When not in a git repository
 
 The gitHUD program exists promptly and does not display anything, i.e. leaves
