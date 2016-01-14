@@ -1,5 +1,6 @@
 module GitHUD.Terminal.Prompt (
   buildPromptWithConfig
+  , resetPromptAtBeginning
   , addGitRepoIndicator
   , addNoTrackedUpstreamIndicator
   , addMergeBranchCommits
@@ -29,6 +30,7 @@ buildPromptWithConfig = do
 buildPrompt :: ShellOutput
 buildPrompt = do
   config <- askConfig
+  resetPromptAtBeginning
   when (confShowPartRepoIndicator config) $ addGitRepoIndicator
   when (confShowPartMergeBranchCommitsDiff config) $ addNoTrackedUpstreamIndicator
   when (confShowPartMergeBranchCommitsDiff config) $ addMergeBranchCommits
@@ -37,6 +39,10 @@ buildPrompt = do
   when (confShowPartLocalChangesState config) $ addRepoState
   when (confShowPartStashes config) $ addStashes
   return ()
+
+resetPromptAtBeginning :: ShellOutput
+resetPromptAtBeginning =
+  (endColorMarker <$> askShell) >>= tell
 
 addGitRepoIndicator :: ShellOutput
 addGitRepoIndicator = do

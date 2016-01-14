@@ -3,6 +3,7 @@ module GitHUD.Terminal.Base (
   , applyShellMarkers
   , terminalEndCode
   , terminalStartCode
+  , endColorMarker
   ) where
 
 import Control.Monad.Writer (tell)
