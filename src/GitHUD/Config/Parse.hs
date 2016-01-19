@@ -220,6 +220,7 @@ colorParser = choice [
   , string "Magenta" >> return Magenta
   , string "Cyan"    >> return Cyan
   , string "White"   >> return White
+  , string "NoColor" >> return NoColor
   ] <?> "color"
 
 intensityConfigToIntensity :: String -> ColorIntensity

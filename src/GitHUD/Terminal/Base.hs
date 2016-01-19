@@ -62,6 +62,7 @@ terminalStartCode  Blue     Dull   = "\x1b[34m"
 terminalStartCode  Magenta  Dull   = "\x1b[35m"
 terminalStartCode  Cyan     Dull   = "\x1b[36m"
 terminalStartCode  White    Dull   = "\x1b[37m"
+terminalStartCode  NoColor  _      = terminalEndCode
 
 terminalEndCode :: String
 terminalEndCode = "\x1b[0m"
