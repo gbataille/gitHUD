@@ -206,7 +206,7 @@ configItemsFolder conf _ = conf
 colorConfigToColor :: String -> Color
 colorConfigToColor str =
   either
-    (const Blue)
+    (const NoColor)
     id
     (parse colorParser "" str)
 

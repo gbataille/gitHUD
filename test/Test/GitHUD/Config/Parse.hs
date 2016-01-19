@@ -138,7 +138,7 @@ testConfigItemFolder = testGroup "#configItemFolder"
               withValue "Black"
 
     , testCase "Key: no_tracked_upstream_indicator_color - invalid color" $
-        expectValue Blue $
+        expectValue NoColor $
           toBeInField confNoTrackedUpstreamIndicatorColor $
             forConfigItemKey "no_tracked_upstream_indicator_color" $
               withValue "FOO"
@@ -473,5 +473,5 @@ testColorConfigToColor = testGroup "#colorConfigToColor"
         colorConfigToColor "Cyan" @?= Cyan
 
     , testCase "invalid color - default to Blue" $
-        colorConfigToColor "Foo" @?= Blue
+        colorConfigToColor "Foo" @?= NoColor
   ]
