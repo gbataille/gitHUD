@@ -1,7 +1,6 @@
 module GitHUD.Terminal.Base (
   tellStringInColor
   , applyShellMarkers
-  , terminalEndCode
   , terminalStartCode
   , endColorMarker
   ) where
