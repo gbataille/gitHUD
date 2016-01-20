@@ -7,6 +7,8 @@ As you might have guessed from its name, gitHUD is a heads up display for the
 command line that will show git information
 
 ![Example]
+See [Prompt explained](docs/PROMPT_EXPLAINED.md) for a detailled element by element description of what
+you see
 
 _**Note:** this example is taken from the iTerm2 OSX terminal, with custom
 colors from the Solarized Dark theme_
