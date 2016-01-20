@@ -1,3 +1,9 @@
+From v1.3.0
+-----------
+* Allow for a special "NoColor" configuration color to reset to the terminal
+  foreground color
+* Protect the prompt from possible color set before gitHUD is invoked
+
 From v1.2.0
 -----------
 * Remove dependency on a patched font in the default config
