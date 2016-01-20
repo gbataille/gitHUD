@@ -11,6 +11,7 @@ module GitHUD.Terminal.Prompt (
   , buildPrompt
   ) where
 
+import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.Writer (runWriterT, tell)
 
