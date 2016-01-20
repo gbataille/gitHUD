@@ -10,7 +10,10 @@
 # Empty lines are ignored.
 # Lines that are not understood by githud are silently ignored
 #
-# Colors are from [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White]
+# Colors are from [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White, NoColor]
+# NoColor is a special keyword to remove any specific color and use the 
+# terminal foreground color
+#
 # Intensities are from [Vivid, Dull]
 #
 # The show_part_xxx key tell githud whether to display this part of the prompt
@@ -52,7 +55,7 @@
 # show_part_local_branch=True
 # local_branch_prefix=[
 # local_branch_suffix=]
-# local_branch_color=Blue
+# local_branch_color=NoColor
 # local_branch_intensity=Vivid
 # local_detached_prefix=detached@
 # local_detached_color=Yellow
