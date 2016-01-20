@@ -202,13 +202,13 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
             addLocalBranchName
-          @?= "[%{\x1b[1;34m%}foo%{\x1b[0m%}] "
+          @?= "[%{\x1b[0m%}foo%{\x1b[0m%}] "
 
         , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
             addLocalBranchName
-          @?= "[\x1b[1;34mfoo\x1b[0m] "
+          @?= "[\x1b[0mfoo\x1b[0m] "
 
         , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
@@ -519,7 +519,7 @@ repoStateForPartialPrompt = GitRepoState {
 
 {- For reference here, the full prompt would be
 
- "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+ "\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
 
 -}
 testPartialPrompt :: TestTree
@@ -528,13 +528,13 @@ testPartialPrompt = testGroup "Partial prompt display"
         testWriterWithConfig
           (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartRepoIndicator = False })
           buildPrompt
-        @?= "%{\ESC[0m%}\120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+        @?= "%{\ESC[0m%}\120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
 
     , testCase "w/out merge branch commits info" $
         testWriterWithConfig
           (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartMergeBranchCommitsDiff = False })
           buildPrompt
-        @?= "%{\ESC[0m%}\5812 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+        @?= "%{\ESC[0m%}\5812 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
 
     , testCase "w/out local branch info" $
         testWriterWithConfig
@@ -546,19 +546,19 @@ testPartialPrompt = testGroup "Partial prompt display"
         testWriterWithConfig
           (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartCommitsToOrigin = False })
           buildPrompt
-        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
 
     , testCase "w/out local repo changes" $
         testWriterWithConfig
           (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartLocalChangesState = False })
           buildPrompt
-        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
+        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 3%{\ESC[1;32m%}\8801%{\ESC[0m%} "
 
     , testCase "w/out stashes" $
         testWriterWithConfig
           (buildOutputConfig ZSH repoStateForPartialPrompt defaultConfig { confShowPartStashes = False })
           buildPrompt
-        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[1;34m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} "
+        @?= "%{\ESC[0m%}\5812 \120366 2%{\ESC[1;32m%}\8644%{\ESC[0m%}1 [%{\ESC[0m%}branch%{\ESC[0m%}] 5%{\ESC[1;32m%}⥯%{\ESC[0m%}6 5%{\ESC[1;32m%}A%{\ESC[0m%}6%{\ESC[1;32m%}D%{\ESC[0m%}4%{\ESC[1;32m%}M%{\ESC[0m%}7%{\ESC[1;32m%}R%{\ESC[0m%} 3%{\ESC[1;31m%}D%{\ESC[0m%}1%{\ESC[1;31m%}M%{\ESC[0m%} 2%{\ESC[1;37m%}A%{\ESC[0m%} 8%{\ESC[1;32m%}C%{\ESC[0m%} "
   ]
 
 -- | Utility function to test a ShellOutput function and gets the prompt built
