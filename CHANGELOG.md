@@ -2,7 +2,10 @@ From v1.3.0
 -----------
 * Allow for a special "NoColor" configuration color to reset to the terminal
   foreground color
+* NoColor is the default if the config file cannot be read
 * Protect the prompt from possible color set before gitHUD is invoked
+* Branch name has no color by default
+* The default commit pull-push symbol is changed to a (hopefully) clearer '⥯'
 
 From v1.2.0
 -----------
