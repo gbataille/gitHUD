@@ -65,19 +65,10 @@ cabal install gitHUD
 
 ### With stack
 
-gitHUD is available on hackage, but not in the stack list of curated packages.
-to install it with stack, you need to add it to the extra-deps in your
-stack.yml file
+You can install the `stack` build tool from [haskellstack.com](http://haskellstack.com/) and then install the `gitHUD` executable by running:
 
-``` stack.yaml
-extra-deps:
-- gitHUD-1.0.0.0
-```
-
-then you can run
-
-```
-stack install gitHUD
+```bash
+$ stack install --install-ghc gitHUD
 ```
 
 ### From sources
