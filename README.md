@@ -65,14 +65,7 @@ cabal install gitHUD
 
 ### With stack
 
-Create the following `stack.yaml` in your current directory:
-
-```yaml
-resolver: lts-5.0
-packages: []
-```
-
-... then install the executable by running:
+You can install the `stack` build tool from [haskellstack.com](http://haskellstack.com/) and then install the `gitHUD` executable by running:
 
 ```bash
 $ stack install --install-ghc gitHUD
