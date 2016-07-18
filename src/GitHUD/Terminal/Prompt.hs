@@ -31,15 +31,22 @@ buildPromptWithConfig = do
 buildPrompt :: ShellOutput
 buildPrompt = do
   config <- askConfig
+  repoState <- askRepoState
+  let branch = gitLocalBranch repoState
   resetPromptAtBeginning
   when (confShowPartRepoIndicator config) $ addGitRepoIndicator
-  when (confShowPartMergeBranchCommitsDiff config) $ addNoTrackedUpstreamIndicator
-  when (confShowPartMergeBranchCommitsDiff config) $ addMergeBranchCommits
+  when (showMergeBranchIndicator branch config) $ addNoTrackedUpstreamIndicator
+  when (showMergeBranchIndicator branch config) $ addMergeBranchCommits
   when (confShowPartLocalBranch config) $ addLocalBranchName
   when (confShowPartCommitsToOrigin config) $ addLocalCommits
   when (confShowPartLocalChangesState config) $ addRepoState
   when (confShowPartStashes config) $ addStashes
   return ()
+
+showMergeBranchIndicator :: String -> Config -> Bool
+showMergeBranchIndicator branch config =
+  (confShowPartMergeBranchCommitsDiff config) &&
+    (not (branch `elem` (confMergeBranchIgnoreBranches config)))
 
 resetPromptAtBeginning :: ShellOutput
 resetPromptAtBeginning =
