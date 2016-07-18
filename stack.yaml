@@ -2,6 +2,5 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
-extra-deps:
-- ivar-simple-0.3.2
+extra-deps: [cabal-helper-0.6.3.1]
 resolver: lts-3.19
