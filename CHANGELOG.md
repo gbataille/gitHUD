@@ -1,3 +1,8 @@
+From v1.3.1
+-----------
+* Introduce `merge_branch_ignore_branches` config list that allows to not
+  display the merge-branch part of the prompt for certain branch names
+
 From v1.3.0
 -----------
 * Allow for a special "NoColor" configuration color to reset to the terminal
