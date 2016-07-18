@@ -111,6 +111,8 @@ configItemsFolder conf (Item "merge_branch_commits_push_prefix" value) =
   conf { confMergeBranchCommitsOnlyPush = value }
 configItemsFolder conf (Item "merge_branch_commits_push_pull_infix" value) =
   conf { confMergeBranchCommitsBothPullPush = value }
+configItemsFolder conf (Item "merge_branch_ignore_branches" value) =
+  conf { confMergeBranchIgnoreBranches = stringConfigToStringList value }
 
 configItemsFolder conf (Item "local_branch_prefix" value) =
   conf { confLocalBranchNamePrefix = value }

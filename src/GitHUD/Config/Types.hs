@@ -26,6 +26,7 @@ data Config = Config {
   , confMergeBranchCommitsOnlyPush :: String
   , confMergeBranchCommitsOnlyPull :: String
   , confMergeBranchCommitsBothPullPush :: String
+  , confMergeBranchIgnoreBranches :: [String]
 
   , confLocalBranchNamePrefix :: String
   , confLocalBranchNameSuffix :: String
@@ -97,6 +98,7 @@ defaultConfig = Config {
   , confMergeBranchCommitsOnlyPush = "\8592"
   , confMergeBranchCommitsOnlyPull = "\8594"
   , confMergeBranchCommitsBothPullPush = "\8644"
+  , confMergeBranchIgnoreBranches = ["gh-pages"]
 
   , confLocalBranchNamePrefix = "["
   , confLocalBranchNameSuffix = "]"

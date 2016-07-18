@@ -180,6 +180,12 @@ testConfigItemFolder = testGroup "#configItemFolder"
             forConfigItemKey "merge_branch_commits_push_pull_infix" $
               withValue "FOO"
 
+    , testCase "Key: merge_branch_ignore_branches" $
+        expectValue ["gh-pages", "FOO"] $
+          toBeInField confMergeBranchIgnoreBranches $
+            forConfigItemKey "merge_branch_ignore_branches" $
+              withValue "gh-pages, FOO"
+
     , testCase "Key: local_branch_prefix" $
         expectValue "FOO" $
           toBeInField confLocalBranchNamePrefix $
