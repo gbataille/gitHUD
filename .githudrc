@@ -50,6 +50,13 @@
 # merge_branch_commits_pull_prefix=→
 # merge_branch_commits_push_prefix=←
 # merge_branch_commits_push_pull_infix=⇄
+# -------------------------------------------------------------------------------------------
+# The following config controls the conditional rendering of the merge-branch part of the
+# prompt. The condition is based on the branch name.
+# This is typically useful for branches which content is not linked to the rest of the repo
+# like the gh-pages branch that github uses for building static websites
+# -------------------------------------------------------------------------------------------
+# merge_branch_ignore_branches=gh-pages,
 #
 # --
 # show_part_local_branch=True
