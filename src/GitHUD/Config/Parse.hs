@@ -7,12 +7,13 @@ module GitHUD.Config.Parse (
   , ConfigItem(..)
   , colorConfigToColor
   , intensityConfigToIntensity
+  , stringConfigToStringList
   ) where
 
 import Control.Monad (void, when)
 import Text.Parsec (parse)
-import Text.Parsec.Char (anyChar, char, newline, letter, string)
-import Text.Parsec.Combinator (choice, eof, manyTill)
+import Text.Parsec.Char (anyChar, char, newline, noneOf, letter, spaces, string)
+import Text.Parsec.Combinator (choice, eof, many1, manyTill, optional, sepBy)
 import Text.Parsec.Prim (many, try, unexpected, (<|>), (<?>))
 import Text.Parsec.String (parseFromFile, Parser)
 
@@ -242,6 +243,28 @@ boolConfigToIntensity str =
     (const True)
     id
     (parse boolParser "" str)
+
+stringConfigToStringList :: String -> [String]
+stringConfigToStringList str =
+  either
+    (const [])
+    id
+    (parse stringListParser "" str)
+
+stringListParser :: Parser [String]
+stringListParser = do
+  branchNameList <- sepBy stripedBranchName (char ',')
+  return $ filter noEmptyStringFilter branchNameList
+
+noEmptyStringFilter :: String -> Bool
+noEmptyStringFilter str = not (str == "")
+
+stripedBranchName :: Parser String
+stripedBranchName = do
+  spaces
+  branchName <- many (noneOf [',', ' '])
+  spaces
+  return branchName
 
 boolParser :: Parser Bool
 boolParser = choice [

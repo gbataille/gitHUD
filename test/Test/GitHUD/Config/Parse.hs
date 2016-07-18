@@ -19,6 +19,7 @@ configParserTests = testGroup "Config Parser Test"
     , testConfigItemFolder
     , testColorConfigToColor
     , testIntensityConfigToIntensity
+    , testStringConfigToStringList
   ]
 
 testItemParser :: TestTree
@@ -475,3 +476,16 @@ testColorConfigToColor = testGroup "#colorConfigToColor"
     , testCase "invalid color - default to Blue" $
         colorConfigToColor "Foo" @?= NoColor
   ]
+
+testStringConfigToStringList :: TestTree
+testStringConfigToStringList = testGroup "#stringConfigToStringList"
+  [   testCase "valid string list, comma separated, no spaces" $
+        stringConfigToStringList "foo,bar" @?= ["foo", "bar"]
+
+    , testCase "valid string list, comma separated, spaces" $
+      stringConfigToStringList "foo, bar ,  baz " @?= ["foo", "bar", "baz"]
+
+    , testCase "valid string list, comma separated, finish with comma" $
+        stringConfigToStringList "foo,bar, " @?= ["foo", "bar"]
+  ]
+
