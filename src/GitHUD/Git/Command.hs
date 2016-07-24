@@ -53,7 +53,7 @@ gitCmdRevToPush :: String          -- ^ from revision
              -> MVar String      -- ^ The output mvar
              -> IO ()
 gitCmdRevToPush fromCommit toCommit out = do
-  revToPush <- readProcessWithIgnoreExitCode "git" ["rev-list", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+  revToPush <- readProcessWithIgnoreExitCode "git" ["rev-list", "--no-merges", "--right-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
   putMVar out revToPush
 
 gitCmdRevToPull :: String          -- ^ from revision
@@ -61,7 +61,7 @@ gitCmdRevToPull :: String          -- ^ from revision
              -> MVar String      -- ^ The output mvar
              -> IO ()
 gitCmdRevToPull fromCommit toCommit out = do
-  revToPull <- readProcessWithIgnoreExitCode "git" ["rev-list", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
+  revToPull <- readProcessWithIgnoreExitCode "git" ["rev-list", "--no-merges", "--left-only", "--count", mergeBaseDiffFromTo fromCommit toCommit] ""
   putMVar out revToPull
 
 gitCmdStashCount :: MVar String     -- ^ The output mvar

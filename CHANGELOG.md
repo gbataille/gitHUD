@@ -1,3 +1,11 @@
+From v1.3.2
+-----------
+* Merge branch count indicator will not include merge-commit anymore. This is
+  actually redundant in all case. In fact, in a develop/master typical flow,
+when develop merges into master and develop and master are actually equal, if
+you count the merge-commit, you'll have the impression that there is a delta
+between the 2 branches
+
 From v1.3.1
 -----------
 * Introduce `merge_branch_ignore_branches` config list that allows to not

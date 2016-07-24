@@ -35,6 +35,9 @@ lived branches). It tells you the difference between your remote
 tracking branch and the branch it was created from (both of which can evolve
 because of you or because of your colleagues.
 
+By default, this count does not include merge commits (that are redundant
+since the count includes the commits that are on the branch being merged)
+
 ### No merge branch
 
 When there is no remote merge branch, this section of the prompt is empty.
