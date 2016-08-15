@@ -1,3 +1,9 @@
+From v1.3.3
+-----------
+* Minor breaking change: Removed the trailing space. If you need it, just put
+  it in your prompt definition
+* Do not override background color. Just act on foreground text color
+
 From v1.3.2
 -----------
 * Merge branch count indicator will not include merge-commit anymore. This is
