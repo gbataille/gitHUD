@@ -1,9 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module GitHUD (
     githud
     ) where
 
 import Control.Monad (when)
 import Control.Monad.Reader (runReader)
+import Data.Text
 import System.Environment (getArgs)
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
@@ -27,13 +30,13 @@ githud = do
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
 
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
-    putStrLn prompt
+    putStrLn $ unpack (strip (pack prompt))
 
 processArguments :: IO [String]
                  -> IO Shell
 processArguments args = do
   arguments <- args
-  if (not (null arguments)) && ((head arguments) == "zsh")
+  if (not (Prelude.null arguments)) && ((Prelude.head arguments) == "zsh")
     then return ZSH
     else return Other
 
