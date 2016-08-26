@@ -50,25 +50,22 @@ fillGitRemoteRepoState :: GitRepoState
 fillGitRemoteRepoState repoState@( GitRepoState { gitRemote = ""} ) = return repoState
 fillGitRemoteRepoState repoState = do
   mvRemoteBranchName <- newEmptyMVar
+  mvMergeBase <- newEmptyMVar
   mvCommitsToPull <- newEmptyMVar
   mvCommitsToPush <- newEmptyMVar
-  mvMergeBranchCommitsToPull <- newEmptyMVar
-  mvMergeBranchCommitsToPush <- newEmptyMVar
 
   forkIO $ gitCmdRemoteBranchName (gitLocalBranch repoState) mvRemoteBranchName
+  forkIO $ gitCmdMergeBase (gitLocalBranch repoState) mvMergeBase
   remoteBranch <- removeEndingNewline <$> (takeMVar mvRemoteBranchName)
+  mergeBase <- removeEndingNewline <$> (takeMVar mvMergeBase)
 
   let fullRemoteBranchName = buildFullyQualifiedRemoteBranchName (gitRemote repoState) remoteBranch
 
-  forkIO $ gitCmdRevToPush "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPush
-  forkIO $ gitCmdRevToPull "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPull
+  -- TODO: gbataille - Check for merge-base. If none, don't execute remote part
   forkIO $ gitCmdRevToPush fullRemoteBranchName "HEAD" mvCommitsToPush
   forkIO $ gitCmdRevToPull fullRemoteBranchName "HEAD" mvCommitsToPull
 
-  mergeBranchCommitsToMergeStr <- takeMVar mvMergeBranchCommitsToPush
-  let mergeBranchCommitsToMerge = getCount mergeBranchCommitsToMergeStr
-  mergeBranchCommitsToRMasterStr <- takeMVar mvMergeBranchCommitsToPull
-  let mergeBranchCommitsToRMaster = getCount mergeBranchCommitsToRMasterStr
+  (mergeBranchToPull, mergeBranchToPush) <- getRemoteMasterMergeState mergeBase fullRemoteBranchName
 
   commitsToPushStr <- takeMVar mvCommitsToPush
   let commitsToPush = getCount commitsToPushStr
@@ -79,6 +76,24 @@ fillGitRemoteRepoState repoState = do
     gitRemoteTrackingBranch = remoteBranch
     , gitCommitsToPull = commitsToPull
     , gitCommitsToPush = commitsToPush
-    , gitMergeBranchCommitsToPull = mergeBranchCommitsToRMaster
-    , gitMergeBranchCommitsToPush = mergeBranchCommitsToMerge
+    , gitMergeBranchCommitsToPull = mergeBranchToPull
+    , gitMergeBranchCommitsToPush = mergeBranchToPush
   }
+
+getRemoteMasterMergeState :: String     -- ^ the merge base
+                          -> String     -- ^ the fully qualified remote branch name
+                          -> IO (Int, Int)    -- ^ tuple containing (to pull, to push)
+getRemoteMasterMergeState "" _ = return (0, 0)
+getRemoteMasterMergeState _ fullRemoteBranchName = do
+  mvMergeBranchCommitsToPull <- newEmptyMVar
+  mvMergeBranchCommitsToPush <- newEmptyMVar
+
+  forkIO $ gitCmdRevToPush "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPush
+  forkIO $ gitCmdRevToPull "origin/master" fullRemoteBranchName mvMergeBranchCommitsToPull
+
+  mergeBranchCommitsToRMasterStr <- takeMVar mvMergeBranchCommitsToPull
+  let mergeBranchCommitsToRMaster = getCount mergeBranchCommitsToRMasterStr
+  mergeBranchCommitsToMergeStr <- takeMVar mvMergeBranchCommitsToPush
+  let mergeBranchCommitsToMerge = getCount mergeBranchCommitsToMergeStr
+
+  return (mergeBranchCommitsToRMaster, mergeBranchCommitsToMerge)

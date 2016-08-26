@@ -1,5 +1,6 @@
 module GitHUD.Git.Command (
   gitCmdLocalBranchName
+  , gitCmdMergeBase
   , gitCmdRemoteName
   , gitCmdRemoteBranchName
   , gitCmdPorcelainStatus
@@ -27,6 +28,13 @@ gitCmdLocalBranchName :: MVar String -> IO ()
 gitCmdLocalBranchName out = do
   localBranch <- readProcessWithIgnoreExitCode "git" ["symbolic-ref", "--short", "HEAD"] ""
   putMVar out localBranch
+
+gitCmdMergeBase :: String     -- ^ local branch name
+                -> MVar String    -- ^ output Mvar
+                -> IO ()
+gitCmdMergeBase localBranchName out = do
+  mergeBase <- readProcessWithIgnoreExitCode "git" ["merge-base", "origin/master", localBranchName] ""
+  putMVar out mergeBase
 
 gitCmdRemoteName :: String         -- ^ local branch name
               -> MVar String   -- ^ the output mvar
