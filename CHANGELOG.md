@@ -1,3 +1,12 @@
+From v1.3.4
+-----------
+* in 1.3.1 I introduced `merge_branch_ignore_branches` to be able to deal with
+  "false" branches like the famous gh-pages. It happens that if this branch
+was properly created as an orphan branch (`git branch --orphan gh-pages`),
+then I can detect that it does not merge back into master and not show this
+part of the prompt automatically without people having to manually maintain
+exception. Thanks to [Markus](https://github.com/mgee) for pointing that out
+
 From v1.3.3
 -----------
 * Minor breaking change: Removed the trailing space. If you need it, just put
