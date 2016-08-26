@@ -55,6 +55,9 @@
 # prompt. The condition is based on the branch name.
 # This is typically useful for branches which content is not linked to the rest of the repo
 # like the gh-pages branch that github uses for building static websites
+#
+# If the orphan branch was created properly though (git branch --orphan gh-pages)
+# gitHUD will autodetect that it is orphan and not show this part of the prompt automatically
 # -------------------------------------------------------------------------------------------
 # merge_branch_ignore_branches=gh-pages,
 #
