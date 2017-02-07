@@ -36,9 +36,13 @@ processArguments :: IO [String]
                  -> IO Shell
 processArguments args = do
   arguments <- args
-  if (not (Prelude.null arguments)) && ((Prelude.head arguments) == "zsh")
-    then return ZSH
-    else return Other
+  return $ getShell arguments
+
+getShell :: [String]
+         -> Shell
+getShell ("zsh":_) = ZSH
+getShell ("bash":_) = BASH
+getShell _ = Other
 
 getAppConfig :: IO Config
 getAppConfig = do
