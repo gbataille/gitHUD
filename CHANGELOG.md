@@ -1,3 +1,8 @@
+From v1.3.5
+-----------
+* BASH shell: properly escape invisible control characters so that the prompt length is computed
+  properly
+
 From v1.3.4
 -----------
 * in 1.3.1 I introduced `merge_branch_ignore_branches` to be able to deal with
