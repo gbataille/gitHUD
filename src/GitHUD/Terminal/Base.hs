@@ -37,11 +37,16 @@ applyShellMarkers :: Shell
                   -> String
                   -> String
 applyShellMarkers ZSH = zshMarkZeroWidth
+applyShellMarkers BASH = bashMarkZeroWidth
 applyShellMarkers _ = id
 
 zshMarkZeroWidth :: String
                  -> String
 zshMarkZeroWidth str = "%{" `mappend` str `mappend` "%}"
+
+bashMarkZeroWidth :: String
+                 -> String
+bashMarkZeroWidth str = "\001" `mappend` str `mappend` "\002"
 
 terminalStartCode :: Color
                   -> ColorIntensity
