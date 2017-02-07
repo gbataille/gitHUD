@@ -16,7 +16,6 @@ colors from the Solarized Dark theme_
 * [Why gitHUD?](#why_githud?)
 * [Install](#install)
 * [Setup](#setup)
-* [ZSH](#zsh)
 * [Configuration](#configuration)
 * [Understanding the gitHUD prompt](#understanding-the-githud-prompt)
 * [Benefits](#benefits)
@@ -96,14 +95,27 @@ If you simply call the githud executable, you'll get a short status of your
 repository. It's meant to be called each time you display your prompt.
 Therefore you want to put it in your PS1 env variable.
 
+Shells have some fancy way of managing prompt when you do things like
+autocompletion and the like. For that it needs to know the size of the prompt.
+Special characters used to express the color of the prompt need to be
+surrounded by special markup for them not to be counted.
+
+GitHUD knows how to handle this. All you have to do is to run the program with
+a parameter depending on your shell of choice and those special characters will be used in the
+output
+
 #### Bash
+
+```
+gitHUD bash
+```
 
 For example, in my `.bashrc` file, with the executable at
 `/usr/local/bin/gitHUD`, I have a prompt definition that looks like that:
 
 ```
 export PS1="\[\033[0;37m\][\A]\[\033[0m\] \[\033[0;36m\]\u\[\033[0m\]
-\W\[\033[0;32m\]\$(/usr/local/bin/gitHUD)\[\033[0m\]\$ "
+\W\[\033[0;32m\]\$(/usr/local/bin/gitHUD bash)\[\033[0m\]\$ "
 ```
 
 _(it has a lot more things into it, including the current directory, the hour,
@@ -111,19 +123,11 @@ and a prompt '$' terminating character)_
 
 #### ZSH
 
-ZSH has some fancy way of managing prompt when you do things like
-autocompletion and the like. For that it needs to know the size of the prompt.
-Special characters used to express the color of the prompt need to be
-surrounded by special markup for them not to be counted.
-
-GitHUD knows how to handle this. All you have to do is to run the program with
-a "zsh" parameter and those special characters will be used in the output:
-
 ```
 gitHUD zsh
 ```
 
-_**Note**: Those special characters %{ %} are only interpreted and hidden when
+_**Note**: Those special characters `%{` `%}` are only interpreted and hidden when
 zsh renders a prompt. If you simply call githud with this parameter 'zsh' from
 the command line, you'll see them in the output!_
 
