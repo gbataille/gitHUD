@@ -54,23 +54,18 @@ brew tap gbataille/homebrew-gba
 brew install githud
 ```
 
-### With Cabal
+### With Stack (Recommended)
 
-gitHUD is available on hackage. Therefore just get it as usual
-
-```
-cabal install gitHUD
-```
-
-### With stack
+Stack is a haskell package manager. 1 command install can be found
+[here](https://docs.haskellstack.org/en/stable/README/)
 
 gitHUD is available on hackage, but not in the stack list of curated packages.
 to install it with stack, you need to add it to the extra-deps in your
 stack.yml file
 
-``` stack.yaml
+``` ~/.stack/global/stack.yaml
 extra-deps:
-- gitHUD-1.0.0.0
+- gitHUD-1.3.6
 ```
 
 then you can run
@@ -79,13 +74,27 @@ then you can run
 stack install gitHUD
 ```
 
-### From sources
+### With Cabal
 
-* Get the source (here)
-* Compile them (haskell, stack configured). So from the project folder:
+gitHUD is available on hackage. Therefore just get it as usual
+
 ```
-stack install
+cabal install gitHUD
 ```
+
+### From sources, with Stack
+
+* Install stack. 1 command install [here](https://docs.haskellstack.org/en/stable/README/)  
+`wget -qO- https://get.haskellstack.org/ | sh`
+* Get the source  
+`git clone https://github.com/gbataille/gitHUD.git`
+* `cd` into the gitHUD source directory
+* Configure stack (this will create a sandbox for this project, like virtualenv or rvm)  
+`stack setup`
+* Install  
+`stack install`
+
+The executable path is going to be outputed on the console, typically `~/.local/bin/gitHUD`
 
 
 Setup
