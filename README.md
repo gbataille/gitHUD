@@ -94,7 +94,7 @@ cabal install gitHUD
 * Install  
 `stack install`
 
-The executable path is going to be outputed on the console, typically `~/.local/bin/gitHUD`
+The executable path is going to be visible on the console, typically `~/.local/bin/gitHUD`
 
 
 Setup
