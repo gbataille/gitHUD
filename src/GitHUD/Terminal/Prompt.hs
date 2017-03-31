@@ -113,6 +113,7 @@ addLocalBranchName = do
   repoState <- askRepoState
   config <- askConfig
   let localBranchName = gitLocalBranch repoState
+  let commitTag = gitCommitTag repoState
   tell (confLocalBranchNamePrefix config)
 
   if (localBranchName /= "")
@@ -120,8 +121,13 @@ addLocalBranchName = do
       tellStringInColor (confLocalBranchColor config) (confLocalBranchIntensity config) $
         localBranchName
     else do
-      tellStringInColor (confLocalDetachedColor config) (confLocalDetachedIntensity config) $
-        (confLocalDetachedPrefix config) ++ (gitCommitShortSHA repoState)
+      if (commitTag /= "")
+        then do
+          tellStringInColor (confLocalDetachedColor config) (confLocalDetachedIntensity config) $
+            (confLocalDetachedPrefix config) ++ commitTag
+      else do
+        tellStringInColor (confLocalDetachedColor config) (confLocalDetachedIntensity config) $
+          (confLocalDetachedPrefix config) ++ (gitCommitShortSHA repoState)
 
   tell (confLocalBranchNameSuffix config)
   tell " "

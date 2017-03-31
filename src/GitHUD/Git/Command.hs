@@ -8,6 +8,7 @@ module GitHUD.Git.Command (
   , gitCmdRevToPull
   , gitCmdStashCount
   , gitCmdCommitShortSHA
+  , gitCmdCommitTag
   , checkInGitDirectory
   ) where
 
@@ -89,3 +90,9 @@ gitCmdCommitShortSHA :: MVar String
 gitCmdCommitShortSHA out = do
   shortSHA <- readProcessWithIgnoreExitCode "git" ["rev-parse", "--short", "HEAD"] ""
   putMVar out shortSHA
+
+gitCmdCommitTag :: MVar String
+                -> IO ()
+gitCmdCommitTag out = do
+  tag <- readProcessWithIgnoreExitCode "git" ["describe", "--exact-match", "--tags"] ""
+  putMVar out tag

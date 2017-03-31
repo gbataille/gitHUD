@@ -210,6 +210,18 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             addLocalBranchName
           @?= "[\x1b[39mfoo\x1b[39m] "
 
+        , testCase "ZSH: should display the current commit tag if we are not on one" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
+            addLocalBranchName
+          @?= "[%{\x1b[1;33m%}detached@v1.1.1%{\x1b[39m%}] "
+
+        , testCase "Other: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;33mdetached@v1.1.1\x1b[39m] "
+
         , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
@@ -234,6 +246,18 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
             addLocalBranchName
           @?= "{\x1b[36mfoo\x1b[39m} "
+
+        , testCase "ZSH: should display the current commit tag if we are not on one" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{%{\x1b[35m%}det#!v1.1.1%{\x1b[39m%}} "
+
+        , testCase "Other: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{\x1b[35mdet#!v1.1.1\x1b[39m} "
 
         , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
