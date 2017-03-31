@@ -1,3 +1,7 @@
+From v1.3.6
+-----------
+* When in detached, but on a commit that has a tag, display the tag name rather than the commit SHA
+
 From v1.3.5
 -----------
 * BASH shell: properly escape invisible control characters so that the prompt length is computed
