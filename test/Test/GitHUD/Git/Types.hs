@@ -18,7 +18,7 @@ testMergeGitLocalRepoChanges =
   mergeGitLocalRepoChanges glrc1 glrc2 @?= glrcMerged
 
 glrc1 :: GitLocalRepoChanges
-glrc1 = GitLocalRepoChanges { 
+glrc1 = GitLocalRepoChanges {
   localMod = 3
   , localAdd = 2
   , localDel = 4

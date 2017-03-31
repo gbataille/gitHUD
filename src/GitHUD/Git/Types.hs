@@ -45,6 +45,7 @@ data GitRepoState =
     gitLocalRepoChanges :: GitLocalRepoChanges
     , gitLocalBranch :: String
     , gitCommitShortSHA :: String
+    , gitCommitTag :: String
     , gitRemote :: String
     , gitRemoteTrackingBranch :: String
     , gitStashCount :: Int
@@ -61,6 +62,7 @@ zeroGitRepoState =
     gitLocalRepoChanges = zeroLocalRepoChanges
     , gitLocalBranch = ""
     , gitCommitShortSHA = ""
+    , gitCommitTag = ""
     , gitRemote = ""
     , gitRemoteTrackingBranch = ""
     , gitStashCount = 0
