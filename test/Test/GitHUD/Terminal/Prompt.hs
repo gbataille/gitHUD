@@ -233,6 +233,18 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
             addLocalBranchName
           @?= "[\x1b[1;33mdetached@3d25ef\x1b[39m] "
+
+        , testCase "ZSH: should prefer the current tag over the commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef", gitCommitTag = "v1.2.3" }) defaultConfig)
+            addLocalBranchName
+          @?= "[%{\x1b[1;33m%}detached@v1.2.3%{\x1b[39m%}] "
+
+        , testCase "Other: should prefer the current tag over the commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef", gitCommitTag = "v1.2.3" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;33mdetached@v1.2.3\x1b[39m] "
     ]
     , testGroup "Custom Config"
     [   testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
@@ -531,7 +543,9 @@ repoStateForPartialPrompt :: GitRepoState
 repoStateForPartialPrompt = GitRepoState {
     gitLocalRepoChanges = localChangesForPartialPrompt
     , gitLocalBranch = "branch"
+    {- The branch supercedes both the commit SHA and the tag -}
     , gitCommitShortSHA = "3de6ef"
+    , gitCommitTag = "v1.3"
     , gitRemote = "origin"
     , gitRemoteTrackingBranch = "origin/branch"
     , gitStashCount = 3
