@@ -1,0 +1,26 @@
+@startuml
+start
+if (\nPID file AND\nsocket file AND\nprocess with PID running\n) then (yes)
+  :Read command from script parameters;
+  :Send command on socket;
+  stop
+else (no)
+  :Save current process PID in the PID file;
+  :Open a file socket;
+  :Read command from script parameters;
+  while (command not stop/quit)
+    :Move to git repo;
+    :Execute git command;
+    :Sleep X seconds;
+    :Read new-command from socket (non-blocking);
+    if (new-command found?) then (yes)
+      :command = new-command;
+    else (no)
+      :continue with same command;
+    endif
+  endwhile
+  :Close the socket;
+  :Unlink the PID file;
+  stop
+endif
+@enduml
