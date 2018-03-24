@@ -1,3 +1,8 @@
+From v1.3.7
+-----------
+* BREAKING: the executable is renamed from `gitHUD` to `githud`, as suggested in
+  [#14](https://github.com/gbataille/gitHUD/issues/14) by [@voidus](https://github.com/voidus)
+
 From v1.3.6
 -----------
 * When in detached, but on a commit that has a tag, display the tag name rather than the commit SHA
