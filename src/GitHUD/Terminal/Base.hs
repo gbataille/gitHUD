@@ -70,4 +70,4 @@ terminalStartCode  White    Dull   = "\x1b[37m"
 terminalStartCode  NoColor  _      = terminalEndCode
 
 terminalEndCode :: String
-terminalEndCode = "\x1b[39m"
+terminalEndCode = "\x1b[0;39m"

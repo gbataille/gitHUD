@@ -1,3 +1,7 @@
+From v2.0.1
+-----------
+* Fix: Properly reset "normal" styling after displaying "Bold" characters (#13)
+
 From v1.3.7
 -----------
 * BREAKING: the executable is renamed from `gitHUD` to `githud`, as suggested in
