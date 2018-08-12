@@ -14,6 +14,9 @@ import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
 import GitHUD.Types
 
+allPrompts :: [Shell]
+allPrompts = [ZSH, TMUX, Other]
+
 terminalPromptTests :: TestTree
 terminalPromptTests = testGroup "Terminal Prompt Test"
   [ testResetPromptAtBeginning
@@ -33,30 +36,27 @@ testResetPromptAtBeginning = testGroup "#resetPromptAtBeginning"
        testWriterWithConfig (zeroOutputConfig ZSH) resetPromptAtBeginning @?= "%{\x1b[0;39m%}"
    , testCase "Should start the prompt with a reset color control sequence" $
        testWriterWithConfig (zeroOutputConfig Other) resetPromptAtBeginning @?= "\x1b[0;39m"
+   , testCase "Should start the prompt with a reset color control sequence" $
+       testWriterWithConfig (zeroOutputConfig TMUX) resetPromptAtBeginning @?= "#[fg=default]"
  ]
+
+_testAddGitDefaultRepoIndicator :: Shell -> TestTree
+_testAddGitDefaultRepoIndicator shell =
+  testCase ((show shell) ++ ": default config: hardcoded character") $
+    testWriterWithConfig (zeroOutputConfig shell) addGitRepoIndicator @?= "ᚴ "
+
+_testAddGitCustomRepoIndicator :: Shell -> TestTree
+_testAddGitCustomRepoIndicator shell =
+  testCase ((show shell) ++ ": custom config: hardcoded character") $
+    testWriterWithConfig
+      (buildOutputConfig shell zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
+      addGitRepoIndicator
+    @?= "indic "
 
 testAddGitRepoIndicator :: TestTree
 testAddGitRepoIndicator = testGroup "#addGitRepoIndicator"
-  [ testGroup "Default Config"
-      [ testCase "ZSH: default config: hardcoded character" $
-          testWriterWithConfig (zeroOutputConfig ZSH) addGitRepoIndicator @?= "ᚴ "
-
-        , testCase "Other: default config: hardcoded character" $
-          testWriterWithConfig (zeroOutputConfig Other) addGitRepoIndicator @?= "ᚴ "
-      ]
-    , testGroup "Custom Config"
-      [ testCase "ZSH: custom config: hardcoded character" $
-        testWriterWithConfig
-          (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
-          addGitRepoIndicator
-        @?= "indic "
-
-      , testCase "Other: custom config: hardcoded character" $
-        testWriterWithConfig
-          (buildOutputConfig ZSH zeroGitRepoState $ defaultConfig { confRepoIndicator = "indic" })
-          addGitRepoIndicator
-        @?= "indic "
-      ]
+  [ testGroup "Default Config" $ fmap _testAddGitDefaultRepoIndicator allPrompts
+    , testGroup "Custom Config" $ fmap _testAddGitCustomRepoIndicator allPrompts
   ]
 
 customConfigNoTrackedUpstreamIndicator :: Config
@@ -69,22 +69,28 @@ customConfigNoTrackedUpstreamIndicator = defaultConfig {
   , confNoTrackedUpstreamIndicatorIntensity = Dull
 }
 
+_testUpstreamIndicatorWithUpstreamDefaultConfig :: Shell -> TestTree
+_testUpstreamIndicatorWithUpstreamDefaultConfig shell =
+  testCase ((show shell) ++ ": with an upstream") $
+    testWriterWithConfig
+            (buildOutputConfig shell (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
+            addNoTrackedUpstreamIndicator
+          @?= ""
+
+_testUpstreamIndicatorWithUpstreamCustomConfig :: Shell -> TestTree
+_testUpstreamIndicatorWithUpstreamCustomConfig shell =
+  testCase ((show shell) ++ ": with an upstream") $
+    testWriterWithConfig
+            (buildOutputConfig shell (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
+          @?= ""
+
 testAddNoTrackedUpstreamIndicator :: TestTree
 testAddNoTrackedUpstreamIndicator = testGroup "#addTrackedUpstreamIndicator"
-  [ testGroup "Default Config"
-      [ testCase "ZSH: with an upstream" $
-          testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-            addNoTrackedUpstreamIndicator
-          @?= ""
-
-        , testCase "Other: with an upstream" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) defaultConfig)
-            addNoTrackedUpstreamIndicator
-          @?= ""
-
-      , testCase "ZSH: with no upstream" $
+  [ testGroup "Default Config - upstream" $ fmap _testUpstreamIndicatorWithUpstreamDefaultConfig allPrompts
+    , testGroup "Custom Config - upstream" $ fmap _testUpstreamIndicatorWithUpstreamCustomConfig allPrompts
+    , testGroup "Default Config - no upstream"
+      [ testCase "ZSH: with no upstream" $
           testWriterWithConfig
             (zeroOutputConfig ZSH) addNoTrackedUpstreamIndicator
           @?= "%{\x1b[1;31m%}upstream%{\x1b[0;39m%} %{\x1b[1;31m%}\9889%{\x1b[0;39m%} "
@@ -93,21 +99,14 @@ testAddNoTrackedUpstreamIndicator = testGroup "#addTrackedUpstreamIndicator"
           testWriterWithConfig
             (zeroOutputConfig Other) addNoTrackedUpstreamIndicator
           @?= "\x1b[1;31mupstream\x1b[0;39m \x1b[1;31m\9889\x1b[0;39m "
+
+      , testCase "TMUX: with no upstream" $
+          testWriterWithConfig
+            (zeroOutputConfig TMUX) addNoTrackedUpstreamIndicator
+          @?= "#[fg=brightred]upstream#[fg=default] #[fg=brightred]\9889#[fg=default] "
       ]
-    , testGroup "Custom Config"
-      [ testCase "ZSH: with an upstream" $
-          testWriterWithConfig
-            (buildOutputConfig ZSH (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigNoTrackedUpstreamIndicator)
-            addNoTrackedUpstreamIndicator
-          @?= ""
-
-        , testCase "Other: with an upstream" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitRemoteTrackingBranch = "foo" }) customConfigNoTrackedUpstreamIndicator)
-            addNoTrackedUpstreamIndicator
-          @?= ""
-
-      , testCase "ZSH: with no upstream" $
+    , testGroup "Custom Config - no upstream"
+      [ testCase "ZSH: with no upstream" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState) customConfigNoTrackedUpstreamIndicator)
             addNoTrackedUpstreamIndicator
@@ -118,6 +117,12 @@ testAddNoTrackedUpstreamIndicator = testGroup "#addTrackedUpstreamIndicator"
             (buildOutputConfig Other (zeroGitRepoState) customConfigNoTrackedUpstreamIndicator)
             addNoTrackedUpstreamIndicator
           @?= "\x1b[36mfoo\x1b[0;39m \x1b[32mbar\x1b[0;39m "
+
+      , testCase "TMUX: with no upstream" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState) customConfigNoTrackedUpstreamIndicator)
+            addNoTrackedUpstreamIndicator
+          @?= "#[fg=cyan]foo#[fg=default] #[fg=green]bar#[fg=default] "
       ]
   ]
 
@@ -155,6 +160,18 @@ testAddMergeBranchCommits = testGroup "#addMergeBranchCommits"
     , testCase "Other: commits to pull and to push" $
         testMergeBranchCommitsToPushAndPull Other defaultConfig @?=
         "\120366 4\x1b[1;32m\8644\x1b[0;39m4 "
+
+    , testCase "TMUX: commits to pull" $
+        testMergeBranchCommitsToPull TMUX defaultConfig @?=
+        "\120366 #[fg=brightgreen]\8594#[fg=default] 2 "
+
+    , testCase "TMUX: commits to push" $
+        testMergeBranchCommitsToPush TMUX defaultConfig @?=
+        "\120366 #[fg=brightgreen]\8592#[fg=default] 2 "
+
+    , testCase "TMUX: commits to pull and to push" $
+        testMergeBranchCommitsToPushAndPull TMUX defaultConfig @?=
+        "\120366 4#[fg=brightgreen]\8644#[fg=default]4 "
     ]
 
     , testGroup "Custom Config"
@@ -181,6 +198,18 @@ testAddMergeBranchCommits = testGroup "#addMergeBranchCommits"
         , testCase "Other: commits to pull and to push" $
             testMergeBranchCommitsToPushAndPull Other customConfigMergeBranchCommits @?=
             "foo 4\x1b[1;32mpull-push\x1b[0;39m4 "
+
+        , testCase "TMUX: commits to pull" $
+            testMergeBranchCommitsToPull TMUX customConfigMergeBranchCommits @?=
+            "foo #[fg=brightgreen]pull#[fg=default] 2 "
+
+        , testCase "TMUX: commits to push" $
+            testMergeBranchCommitsToPush TMUX customConfigMergeBranchCommits @?=
+            "foo #[fg=brightgreen]push#[fg=default] 2 "
+
+        , testCase "TMUX: commits to pull and to push" $
+            testMergeBranchCommitsToPushAndPull TMUX customConfigMergeBranchCommits @?=
+            "foo 4#[fg=brightgreen]pull-push#[fg=default]4 "
         ]
   ]
 
@@ -204,23 +233,11 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             addLocalBranchName
           @?= "[%{\x1b[0;39m%}foo%{\x1b[0;39m%}] "
 
-        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
-            addLocalBranchName
-          @?= "[\x1b[0;39mfoo\x1b[0;39m] "
-
         , testCase "ZSH: should display the current commit tag if we are not on one" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
             addLocalBranchName
           @?= "[%{\x1b[1;33m%}detached@v1.1.1%{\x1b[0;39m%}] "
-
-        , testCase "Other: should display the current commit tog if we are on one" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
-            addLocalBranchName
-          @?= "[\x1b[1;33mdetached@v1.1.1\x1b[0;39m] "
 
         , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
@@ -228,23 +245,59 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             addLocalBranchName
           @?= "[%{\x1b[1;33m%}detached@3d25ef%{\x1b[0;39m%}] "
 
-        , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
-            addLocalBranchName
-          @?= "[\x1b[1;33mdetached@3d25ef\x1b[0;39m] "
-
         , testCase "ZSH: should prefer the current tag over the commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitCommitShortSHA = "3d25ef", gitCommitTag = "v1.2.3" }) defaultConfig)
             addLocalBranchName
           @?= "[%{\x1b[1;33m%}detached@v1.2.3%{\x1b[0;39m%}] "
 
+        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[0;39mfoo\x1b[0;39m] "
+
+        , testCase "Other: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;33mdetached@v1.1.1\x1b[0;39m] "
+
+        , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
+            addLocalBranchName
+          @?= "[\x1b[1;33mdetached@3d25ef\x1b[0;39m] "
+
         , testCase "Other: should prefer the current tag over the commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef", gitCommitTag = "v1.2.3" }) defaultConfig)
             addLocalBranchName
           @?= "[\x1b[1;33mdetached@v1.2.3\x1b[0;39m] "
+
+        , testCase "TMUX: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitLocalBranch = "foo" }) defaultConfig)
+            addLocalBranchName
+          @?= "[#[fg=default]foo#[fg=default]] "
+
+        , testCase "TMUX: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitCommitTag = "v1.1.1" }) defaultConfig)
+            addLocalBranchName
+          @?= "[#[fg=brightyellow]detached@v1.1.1#[fg=default]] "
+
+        , testCase "TMUX: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) defaultConfig)
+            addLocalBranchName
+          @?= "[#[fg=brightyellow]detached@3d25ef#[fg=default]] "
+
+        , testCase "TMUX: should prefer the current tag over the commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitCommitShortSHA = "3d25ef", gitCommitTag = "v1.2.3" }) defaultConfig)
+            addLocalBranchName
+          @?= "[#[fg=brightyellow]detached@v1.2.3#[fg=default]] "
     ]
     , testGroup "Custom Config"
     [   testCase "ZSH: should display the name of the current branch if we are at the HEAD of any" $
@@ -253,23 +306,11 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             addLocalBranchName
           @?= "{%{\x1b[36m%}foo%{\x1b[0;39m%}} "
 
-        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
-            addLocalBranchName
-          @?= "{\x1b[36mfoo\x1b[0;39m} "
-
         , testCase "ZSH: should display the current commit tag if we are not on one" $
           testWriterWithConfig
             (buildOutputConfig ZSH (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
             addLocalBranchName
           @?= "{%{\x1b[35m%}det#!v1.1.1%{\x1b[0;39m%}} "
-
-        , testCase "Other: should display the current commit tog if we are on one" $
-          testWriterWithConfig
-            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
-            addLocalBranchName
-          @?= "{\x1b[35mdet#!v1.1.1\x1b[0;39m} "
 
         , testCase "ZSH: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
@@ -277,11 +318,41 @@ testAddLocalBranchName = testGroup "#addLocalBranchName"
             addLocalBranchName
           @?= "{%{\x1b[35m%}det#!3d25ef%{\x1b[0;39m%}} "
 
+        , testCase "Other: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{\x1b[36mfoo\x1b[0;39m} "
+
+        , testCase "Other: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig Other (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{\x1b[35mdet#!v1.1.1\x1b[0;39m} "
+
         , testCase "Other: should display the current commit SHA if we are not on a branch's HEAD" $
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) customConfigLocalBranchName)
             addLocalBranchName
           @?= "{\x1b[35mdet#!3d25ef\x1b[0;39m} "
+
+        , testCase "TMUX: should display the name of the current branch if we are at the HEAD of any" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitLocalBranch = "foo" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{#[fg=cyan]foo#[fg=default]} "
+
+        , testCase "TMUX: should display the current commit tog if we are on one" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitCommitTag = "v1.1.1" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{#[fg=magenta]det#!v1.1.1#[fg=default]} "
+
+        , testCase "TMUX: should display the current commit SHA if we are not on a branch's HEAD" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitCommitShortSHA = "3d25ef" }) customConfigLocalBranchName)
+            addLocalBranchName
+          @?= "{#[fg=magenta]det#!3d25ef#[fg=default]} "
     ]
   ]
 
@@ -324,6 +395,18 @@ testAddLocalCommits = testGroup "#addLocalCommits"
       , testCase "Other: commits to pull and to push" $
           testCommitsToPushAndPull Other defaultConfig @?=
           "4\x1b[1;32m⥯\x1b[0;39m4 "
+
+      , testCase "TMUX: commits to pull" $
+          testCommitsToPull TMUX defaultConfig @?=
+          "2#[fg=brightred]\8595#[fg=default] "
+
+      , testCase "TMUX: commits to push" $
+          testCommitsToPush TMUX defaultConfig @?=
+          "2#[fg=brightgreen]\8593#[fg=default] "
+
+      , testCase "TMUX: commits to pull and to push" $
+          testCommitsToPushAndPull TMUX defaultConfig @?=
+          "4#[fg=brightgreen]⥯#[fg=default]4 "
       ]
     , testGroup "Custom Config"
       [ testCase "ZSH: commits to pull" $
@@ -349,6 +432,18 @@ testAddLocalCommits = testGroup "#addLocalCommits"
       , testCase "Other: commits to pull and to push" $
           testCommitsToPushAndPull Other customConfigLocalCommits @?=
           "4\x1b[37mpush-pull\x1b[0;39m4 "
+
+      , testCase "TMUX: commits to pull" $
+          testCommitsToPull TMUX customConfigLocalCommits @?=
+          "2#[fg=magenta]pull#[fg=default] "
+
+      , testCase "TMUX: commits to push" $
+          testCommitsToPush TMUX customConfigLocalCommits @?=
+          "2#[fg=cyan]push#[fg=default] "
+
+      , testCase "TMUX: commits to pull and to push" $
+          testCommitsToPushAndPull TMUX customConfigLocalCommits @?=
+          "4#[fg=white]push-pull#[fg=default]4 "
       ]
   ]
 
@@ -407,6 +502,9 @@ testAddRepoState = testGroup "#addRepoState"
           , testCase "ZSH: with Renamed Changes" $
             testRenamedChange ZSH defaultConfig @?= "2%{\x1b[1;32m%}R%{\x1b[0;39m%} "
 
+          , testCase "ZSH: with every kind of Changes" $
+            testEveryRepoChange ZSH defaultConfig @?= "6%{\x1b[1;32m%}A%{\x1b[0;39m%}8%{\x1b[1;32m%}D%{\x1b[0;39m%}7%{\x1b[1;32m%}M%{\x1b[0;39m%}1%{\x1b[1;32m%}R%{\x1b[0;39m%} 5%{\x1b[1;31m%}D%{\x1b[0;39m%}4%{\x1b[1;31m%}M%{\x1b[0;39m%} 3%{\x1b[1;37m%}A%{\x1b[0;39m%} 2%{\x1b[1;32m%}C%{\x1b[0;39m%} "
+
           , testCase "Other: with Local Add Changes" $
             testLocalAddChange Other defaultConfig @?= "2\x1b[1;37mA\x1b[0;39m "
 
@@ -431,11 +529,35 @@ testAddRepoState = testGroup "#addRepoState"
           , testCase "Other: with Renamed Changes" $
             testRenamedChange Other defaultConfig @?= "2\x1b[1;32mR\x1b[0;39m "
 
-          , testCase "ZSH: with every kind of Changes" $
-            testEveryRepoChange ZSH defaultConfig @?= "6%{\x1b[1;32m%}A%{\x1b[0;39m%}8%{\x1b[1;32m%}D%{\x1b[0;39m%}7%{\x1b[1;32m%}M%{\x1b[0;39m%}1%{\x1b[1;32m%}R%{\x1b[0;39m%} 5%{\x1b[1;31m%}D%{\x1b[0;39m%}4%{\x1b[1;31m%}M%{\x1b[0;39m%} 3%{\x1b[1;37m%}A%{\x1b[0;39m%} 2%{\x1b[1;32m%}C%{\x1b[0;39m%} "
-
           , testCase "Other: with every kind of Changes" $
             testEveryRepoChange Other defaultConfig @?= "6\x1b[1;32mA\x1b[0;39m8\x1b[1;32mD\x1b[0;39m7\x1b[1;32mM\x1b[0;39m1\x1b[1;32mR\x1b[0;39m 5\x1b[1;31mD\x1b[0;39m4\x1b[1;31mM\x1b[0;39m 3\x1b[1;37mA\x1b[0;39m 2\x1b[1;32mC\x1b[0;39m "
+
+          , testCase "TMUX: with Local Add Changes" $
+            testLocalAddChange TMUX defaultConfig @?= "2#[fg=brightwhite]A#[fg=default] "
+
+          , testCase "TMUX: with Local Mod Changes" $
+            testLocalModChange TMUX defaultConfig @?= "2#[fg=brightred]M#[fg=default] "
+
+          , testCase "TMUX: with Local Del Changes" $
+            testLocalDelChange TMUX defaultConfig @?= "2#[fg=brightred]D#[fg=default] "
+
+          , testCase "TMUX: with Index Add Changes" $
+            testIndexAddChange TMUX defaultConfig @?= "2#[fg=brightgreen]A#[fg=default] "
+
+          , testCase "TMUX: with Index Mod Changes" $
+            testIndexModChange TMUX defaultConfig @?= "2#[fg=brightgreen]M#[fg=default] "
+
+          , testCase "TMUX: with Index Del Changes" $
+            testIndexDelChange TMUX defaultConfig @?= "2#[fg=brightgreen]D#[fg=default] "
+
+          , testCase "TMUX: with Conflicted Changes" $
+            testConflictedChange TMUX defaultConfig @?= "2#[fg=brightgreen]C#[fg=default] "
+
+          , testCase "TMUX: with Renamed Changes" $
+            testRenamedChange TMUX defaultConfig @?= "2#[fg=brightgreen]R#[fg=default] "
+
+          , testCase "TMUX: with every kind of Changes" $
+            testEveryRepoChange TMUX defaultConfig @?= "6#[fg=brightgreen]A#[fg=default]8#[fg=brightgreen]D#[fg=default]7#[fg=brightgreen]M#[fg=default]1#[fg=brightgreen]R#[fg=default] 5#[fg=brightred]D#[fg=default]4#[fg=brightred]M#[fg=default] 3#[fg=brightwhite]A#[fg=default] 2#[fg=brightgreen]C#[fg=default] "
         ]
     , testGroup "Custom Config"
         [ testCase "ZSH: with Local Add Changes" $
@@ -462,6 +584,9 @@ testAddRepoState = testGroup "#addRepoState"
           , testCase "ZSH: with Renamed Changes" $
             testRenamedChange ZSH customChangeConfig @?= "2%{\x1b[36m%}S%{\x1b[0;39m%} "
 
+          , testCase "ZSH: with every kind of Changes" $
+            testEveryRepoChange ZSH customChangeConfig @?= "6%{\x1b[36m%}B%{\x1b[0;39m%}8%{\x1b[36m%}E%{\x1b[0;39m%}7%{\x1b[36m%}N%{\x1b[0;39m%}1%{\x1b[36m%}S%{\x1b[0;39m%} 5%{\x1b[34m%}E%{\x1b[0;39m%}4%{\x1b[34m%}N%{\x1b[0;39m%} 3%{\x1b[35m%}B%{\x1b[0;39m%} 2%{\x1b[36m%}D%{\x1b[0;39m%} "
+
           , testCase "Other: with Local Add Changes" $
             testLocalAddChange Other customChangeConfig @?= "2\x1b[35mB\x1b[0;39m "
 
@@ -486,11 +611,35 @@ testAddRepoState = testGroup "#addRepoState"
           , testCase "Other: with Renamed Changes" $
             testRenamedChange Other customChangeConfig @?= "2\x1b[36mS\x1b[0;39m "
 
-          , testCase "ZSH: with every kind of Changes" $
-            testEveryRepoChange ZSH customChangeConfig @?= "6%{\x1b[36m%}B%{\x1b[0;39m%}8%{\x1b[36m%}E%{\x1b[0;39m%}7%{\x1b[36m%}N%{\x1b[0;39m%}1%{\x1b[36m%}S%{\x1b[0;39m%} 5%{\x1b[34m%}E%{\x1b[0;39m%}4%{\x1b[34m%}N%{\x1b[0;39m%} 3%{\x1b[35m%}B%{\x1b[0;39m%} 2%{\x1b[36m%}D%{\x1b[0;39m%} "
-
           , testCase "Other: with every kind of Changes" $
             testEveryRepoChange Other customChangeConfig @?= "6\x1b[36mB\x1b[0;39m8\x1b[36mE\x1b[0;39m7\x1b[36mN\x1b[0;39m1\x1b[36mS\x1b[0;39m 5\x1b[34mE\x1b[0;39m4\x1b[34mN\x1b[0;39m 3\x1b[35mB\x1b[0;39m 2\x1b[36mD\x1b[0;39m "
+
+          , testCase "TMUX: with Local Add Changes" $
+            testLocalAddChange TMUX customChangeConfig @?= "2#[fg=magenta]B#[fg=default] "
+
+          , testCase "TMUX: with Local Mod Changes" $
+            testLocalModChange TMUX customChangeConfig @?= "2#[fg=blue]N#[fg=default] "
+
+          , testCase "TMUX: with Local Del Changes" $
+            testLocalDelChange TMUX customChangeConfig @?= "2#[fg=blue]E#[fg=default] "
+
+          , testCase "TMUX: with Index Add Changes" $
+            testIndexAddChange TMUX customChangeConfig @?= "2#[fg=cyan]B#[fg=default] "
+
+          , testCase "TMUX: with Index Mod Changes" $
+            testIndexModChange TMUX customChangeConfig @?= "2#[fg=cyan]N#[fg=default] "
+
+          , testCase "TMUX: with Index Del Changes" $
+            testIndexDelChange TMUX customChangeConfig @?= "2#[fg=cyan]E#[fg=default] "
+
+          , testCase "TMUX: with Conflicted Changes" $
+            testConflictedChange TMUX customChangeConfig @?= "2#[fg=cyan]D#[fg=default] "
+
+          , testCase "TMUX: with Renamed Changes" $
+            testRenamedChange TMUX customChangeConfig @?= "2#[fg=cyan]S#[fg=default] "
+
+          , testCase "TMUX: with every kind of Changes" $
+            testEveryRepoChange TMUX customChangeConfig @?= "6#[fg=cyan]B#[fg=default]8#[fg=cyan]E#[fg=default]7#[fg=cyan]N#[fg=default]1#[fg=cyan]S#[fg=default] 5#[fg=blue]E#[fg=default]4#[fg=blue]N#[fg=default] 3#[fg=magenta]B#[fg=default] 2#[fg=cyan]D#[fg=default] "
         ]
   ]
 
@@ -513,6 +662,11 @@ testAddStashes = testGroup "#addStashes"
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
           @?= "2\x1b[1;32m\8801\x1b[0;39m "
+
+        , testCase "TMUX: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitStashCount = 2 }) defaultConfig) addStashes
+          @?= "2#[fg=brightgreen]\8801#[fg=default] "
       ]
   , testGroup "Custom Config"
       [ testCase "ZSH: hardcoded character" $
@@ -524,6 +678,11 @@ testAddStashes = testGroup "#addStashes"
           testWriterWithConfig
             (buildOutputConfig Other (zeroGitRepoState { gitStashCount = 2 }) customStashConfig) addStashes
           @?= "2\x1b[36mstash\x1b[0;39m "
+
+        , testCase "TMUX: hardcoded character" $
+          testWriterWithConfig
+            (buildOutputConfig TMUX (zeroGitRepoState { gitStashCount = 2 }) customStashConfig) addStashes
+          @?= "2#[fg=cyan]stash#[fg=default] "
       ]
   ]
 
