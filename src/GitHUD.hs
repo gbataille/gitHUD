@@ -43,6 +43,7 @@ getShell :: [String]
 getShell ("zsh":_) = ZSH
 getShell ("bash":_) = BASH
 getShell ("tmux":_) = TMUX
+getShell ("none":_) = NONE
 getShell _ = Other
 
 getAppConfig :: IO Config

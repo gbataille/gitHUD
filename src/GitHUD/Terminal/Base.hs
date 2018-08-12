@@ -27,12 +27,14 @@ startColorMarker :: Color
                  -> String
 startColorMarker color intensity shell
   | shell == TMUX = tmuxStartCode color intensity
+  | shell == NONE = ""
   | otherwise = applyShellMarkers shell $ terminalStartCode color intensity
 
 endColorMarker :: Shell
                -> String
 endColorMarker shell
   | shell == TMUX = tmuxEndCode
+  | shell == NONE = ""
   | otherwise = applyShellMarkers shell $ terminalEndCode
 
 applyShellMarkers :: Shell

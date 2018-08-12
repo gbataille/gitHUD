@@ -196,6 +196,16 @@ cd $1 && /usr/local/bin/githud zsh
 
 and the executable at `/usr/local/bin/githud`
 
+#### NONE
+
+Proposed by @Thermatix
+
+You can get a raw text output (no special formatting) by calling
+
+```
+githud none
+```
+
 Configuration
 -------------
 
