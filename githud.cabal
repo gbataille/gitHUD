@@ -1,5 +1,5 @@
 name:                githud
-version:             2.0.2
+version:             2.1.0
 synopsis:            More efficient replacement to the great git-radar
 description:         Please see README.md (used to be gitHUD)
 homepage:            http://github.com/gbataille/gitHUD#readme
