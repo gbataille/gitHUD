@@ -1,3 +1,9 @@
+From v2.0.2
+-----------
+* Feat: Add support for TMUX with `githud tmux`. You can now use tmux inside the status bar or the
+  pane title of TMUX for example
+* Feat: Add support for no output formatting with `githud none`.
+
 From v2.0.1
 -----------
 * Fix: Properly reset "normal" styling after displaying "Bold" characters (#13)

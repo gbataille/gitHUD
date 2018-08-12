@@ -25,13 +25,17 @@ startColorMarker :: Color
                  -> ColorIntensity
                  -> Shell
                  -> String
-startColorMarker color intensity shell =
-  applyShellMarkers shell $ terminalStartCode color intensity
+startColorMarker color intensity shell
+  | shell == TMUX = tmuxStartCode color intensity
+  | shell == NONE = ""
+  | otherwise = applyShellMarkers shell $ terminalStartCode color intensity
 
 endColorMarker :: Shell
                -> String
-endColorMarker shell =
-  applyShellMarkers shell $ terminalEndCode
+endColorMarker shell
+  | shell == TMUX = tmuxEndCode
+  | shell == NONE = ""
+  | otherwise = applyShellMarkers shell $ terminalEndCode
 
 applyShellMarkers :: Shell
                   -> String
@@ -71,3 +75,27 @@ terminalStartCode  NoColor  _      = terminalEndCode
 
 terminalEndCode :: String
 terminalEndCode = "\x1b[0;39m"
+
+tmuxStartCode :: Color
+              -> ColorIntensity
+              -> String
+tmuxStartCode  Black    Vivid  = "#[fg=brightblack]"
+tmuxStartCode  Red      Vivid  = "#[fg=brightred]"
+tmuxStartCode  Green    Vivid  = "#[fg=brightgreen]"
+tmuxStartCode  Yellow   Vivid  = "#[fg=brightyellow]"
+tmuxStartCode  Blue     Vivid  = "#[fg=brightblue]"
+tmuxStartCode  Magenta  Vivid  = "#[fg=brightmagenta]"
+tmuxStartCode  Cyan     Vivid  = "#[fg=brightcyan]"
+tmuxStartCode  White    Vivid  = "#[fg=brightwhite]"
+tmuxStartCode  Black    Dull   = "#[fg=black]"
+tmuxStartCode  Red      Dull   = "#[fg=red]"
+tmuxStartCode  Green    Dull   = "#[fg=green]"
+tmuxStartCode  Yellow   Dull   = "#[fg=yellow]"
+tmuxStartCode  Blue     Dull   = "#[fg=blue]"
+tmuxStartCode  Magenta  Dull   = "#[fg=magenta]"
+tmuxStartCode  Cyan     Dull   = "#[fg=cyan]"
+tmuxStartCode  White    Dull   = "#[fg=white]"
+tmuxStartCode  NoColor  _      = tmuxEndCode
+
+tmuxEndCode :: String
+tmuxEndCode = "#[fg=default]"

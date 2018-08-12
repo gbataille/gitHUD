@@ -176,6 +176,36 @@ function fish_prompt
 end
 ```
 
+#### TMUX
+
+Proposed by @Thermatix
+
+```
+githud tmux
+```
+
+Putting it together in my `.tmux.conf`, I have the following `status-right` variable with
+```
+set -g status-right '#{pane_current_command} #(~/.zsh/bin/githud_status "#{pane_current_path}")'
+```
+which necessitates a small script `~/.zsh/bin/githud_status`
+```
+#!/usr/local/bin/zsh -f
+cd $1 && /usr/local/bin/githud zsh
+```
+
+and the executable at `/usr/local/bin/githud`
+
+#### NONE
+
+Proposed by @Thermatix
+
+You can get a raw text output (no special formatting) by calling
+
+```
+githud none
+```
+
 Configuration
 -------------
 
