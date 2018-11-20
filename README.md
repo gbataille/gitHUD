@@ -4,7 +4,10 @@
 [![Hackage](https://img.shields.io/hackage-deps/v/githud.svg)](https://hackage.haskell.org/package/githud)
 
 As you might have guessed from its name, githud is a heads up display for the
-command line that will show git information
+command line that will show git information. The focus is on information and performance.
+
+If you are as crazy as I am about your prompt, you might want to check my somewhat related project
+[envstatus](https://github.com/gbataille/envstatus)
 
 ![Example]
 See [Prompt explained](docs/PROMPT_EXPLAINED.md) for a detailled element by element description of what
