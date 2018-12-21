@@ -2,5 +2,5 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
-extra-deps: [cabal-helper-0.6.3.1]
-resolver: lts-3.19
+extra-deps: []
+resolver: lts-12.24

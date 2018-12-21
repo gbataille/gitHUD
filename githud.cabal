@@ -1,9 +1,10 @@
+cabal-version:       2.2
 name:                githud
 version:             2.1.0
 synopsis:            More efficient replacement to the great git-radar
 description:         Please see README.md (used to be gitHUD)
 homepage:            http://github.com/gbataille/gitHUD#readme
-license:             BSD3
+license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Grégory Bataille
 maintainer:          gregory.bataille@gmail.com
@@ -11,7 +12,6 @@ copyright:           Grégory Bataille 2015-2016
 category:            Development
 build-type:          Simple
 -- extra-source-files:
-cabal-version:       >=1.10
 
 library
   hs-source-dirs:     src
@@ -30,10 +30,10 @@ library
                     , GitHUD.Terminal.Prompt
                     , GitHUD.Terminal.Types
                     , GitHUD.Types
-  build-depends:      base >= 4.7 && < 5
+  build-depends:      base >= 4.11 && < 5
                     , process
-                    , parsec >= 3.1.9 && < 4
-                    , mtl >= 2.2.1 && < 3
+                    , parsec >= 3.1.13 && < 4
+                    , mtl >= 2.2.2 && < 3
                     , text >= 1.2 && < 1.3
                     , unix >= 2.7 && < 3
   default-language:   Haskell2010
@@ -51,12 +51,12 @@ test-suite githud-test
   hs-source-dirs:     test
   main-is:            Spec.hs
   build-depends:      base
-                    , tasty >= 0.10 && < 0.12
-                    , tasty-hunit >= 0.9 && < 0.10
+                    , tasty >= 1.1.0 && < 1.2
+                    , tasty-hunit >= 0.10 && < 0.11
                     , tasty-smallcheck >= 0.8 && < 0.9
-                    , tasty-quickcheck >= 0.8 && < 0.9
-                    , parsec >= 3.1.9 && < 4
-                    , mtl >= 2.2.1 && < 3
+                    , tasty-quickcheck >= 0.10 && < 0.11
+                    , parsec >= 3.1.13 && < 4
+                    , mtl >= 2.2.2 && < 3
                     , githud
   ghc-options:        -threaded -rtsopts -with-rtsopts=-N
   default-language:   Haskell2010
