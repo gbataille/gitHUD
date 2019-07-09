@@ -8,4 +8,4 @@
 # Copy these contents into the root directory of your Github project in a file
 # named .travis.yml
 language: nix
-script: nix-shell --run "cabal update; cabal new-build --enable-tests exe:githud && cabal new-test --enable-tests"
+script: nix-shell --run "cabal v2-update; cabal v2-test --enable-tests"
