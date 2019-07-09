@@ -87,23 +87,21 @@ stack install githud
 githud is available on hackage. Therefore just get it as usual
 
 ```
-cabal install githud
+cabal v2-install exe:githud
 ```
 
-### From sources, with Stack
+You can then update your path to include your installation directory (typically `~/.cabal/bin`) or
+copy the installed executable to a common location like `/usr/local/bin`
 
-* Install stack. 1 command install [here](https://docs.haskellstack.org/en/stable/README/)  
-`wget -qO- https://get.haskellstack.org/ | sh`
-* Get the source  
-`git clone https://github.com/gbataille/gitHUD.git`
-* `cd` into the githud source directory
-* Configure stack (this will create a sandbox for this project, like virtualenv or rvm)  
-`stack setup`
-* Install  
-`stack install`
+#### With cabal and Nix
 
-The executable path is going to be visible on the console, typically `~/.local/bin/githud`
+A Nix config is maintained in compatibility with the cabal file. So to be sure to use a compatible
+ghc version, and corresponding libraries, just
 
+```sh
+nix-shell
+cabal new-install
+```
 
 Setup
 -----
