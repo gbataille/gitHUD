@@ -1,12 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module GitHUD (
-    githud
+    githud,
+    githudd
     ) where
 
 import Control.Monad (when)
 import Control.Monad.Reader (runReader)
+import Data.Default ( def )
+import Data.Maybe (fromMaybe)
 import Data.Text
+import System.Daemon (ensureDaemonRunning, runClient)
 import System.Environment (getArgs)
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
@@ -54,3 +58,21 @@ getAppConfig = do
   if configFilePresent
     then parseConfigFile configFilePath
     else return defaultConfig
+
+githudd :: IO()
+githudd = do
+  mArg <- processDaemonArguments <$> getArgs
+  config <- getAppConfig
+  ensureDaemonRunning "githudd" def fun
+  res <- runClient "localhost" 5000 mArg
+  putStrLn $ fromMaybe "default" res
+
+processDaemonArguments :: [String]
+                       -> Maybe String
+processDaemonArguments [] = Nothing
+processDaemonArguments (fst:_) = Just fst
+
+fun :: Maybe String
+    -> IO String
+fun Nothing = return ""
+fun (Just mPath) = return mPath
