@@ -31,6 +31,8 @@ library
                     , GitHUD.Terminal.Types
                     , GitHUD.Types
   build-depends:      base >= 4.11 && < 5
+                    , daemons >= 0.2.1 && < 0.3
+                    , data-default >= 0.7 && < 0.8
                     , process
                     , parsec >= 3.1.13 && < 4
                     , mtl >= 2.2.2 && < 3
@@ -44,6 +46,14 @@ executable githud
   ghc-options:        -threaded -rtsopts -with-rtsopts=-N -Wall -fno-warn-unused-do-bind
   build-depends:      base
                     , githud
+  default-language:   Haskell2010
+
+executable githudd
+  hs-source-dirs:     githudd
+  main-is:            Main.hs
+  ghc-options:        -threaded -rtsopts -with-rtsopts=-N -Wall -fno-warn-unused-do-bind
+  build-depends:      base
+                      , githud
   default-language:   Haskell2010
 
 test-suite githud-test
