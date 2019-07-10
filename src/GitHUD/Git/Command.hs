@@ -9,11 +9,12 @@ module GitHUD.Git.Command (
   , gitCmdStashCount
   , gitCmdCommitShortSHA
   , gitCmdCommitTag
+  , gitCmdFetch
   , checkInGitDirectory
   ) where
 
 import Control.Concurrent.MVar (MVar, putMVar)
-import System.Process (readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
+import System.Process (readCreateProcess, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 import GHC.IO.Handle (hGetLine)
 import System.Exit (ExitCode(ExitSuccess))
 
@@ -96,3 +97,9 @@ gitCmdCommitTag :: MVar String
 gitCmdCommitTag out = do
   tag <- readProcessWithIgnoreExitCode "git" ["describe", "--exact-match", "--tags"] ""
   putMVar out tag
+
+gitCmdFetch :: IO ()
+gitCmdFetch = do
+  let fetch_proc = (proc "git" ["fetch"]) { cwd = Just "/Users/gbataille/Documents/Prog/Perso/gitHUD" }
+  readCreateProcess fetch_proc ""
+  return ()

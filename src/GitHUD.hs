@@ -75,4 +75,6 @@ processDaemonArguments (fst:_) = Just fst
 fun :: Maybe String
     -> IO String
 fun Nothing = return ""
-fun (Just mPath) = return mPath
+fun (Just mPath) = do
+  gitCmdFetch
+  return mPath
