@@ -14,9 +14,11 @@ module GitHUD.Git.Command (
   ) where
 
 import Control.Concurrent.MVar (MVar, putMVar)
-import System.Process (readCreateProcess, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 import GHC.IO.Handle (hGetLine)
+import System.Directory (doesDirectoryExist)
 import System.Exit (ExitCode(ExitSuccess))
+import System.IO (hClose, hPutStrLn, openFile, IOMode(WriteMode))
+import System.Process (readCreateProcess, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 
 import GitHUD.Process (readProcessWithIgnoreExitCode)
 import GitHUD.Git.Common
@@ -98,8 +100,20 @@ gitCmdCommitTag out = do
   tag <- readProcessWithIgnoreExitCode "git" ["describe", "--exact-match", "--tags"] ""
   putMVar out tag
 
-gitCmdFetch :: IO ()
-gitCmdFetch = do
-  let fetch_proc = (proc "git" ["fetch"]) { cwd = Just "/Users/gbataille/Documents/Prog/Perso/gitHUD" }
-  readCreateProcess fetch_proc ""
-  return ()
+gitCmdFetch :: String
+            -> IO ()
+gitCmdFetch path = do
+  -- TODO: gbataille - code org
+  isDir <- doesDirectoryExist path
+  stdout <- openFile "/tmp/out" WriteMode
+  stderr <- openFile "/tmp/err" WriteMode
+  if isDir
+    then do
+      let fetch_proc = (proc "git" ["fetch"]) { cwd = Just path, std_out = UseHandle stdout, std_err = UseHandle stderr }
+      readCreateProcess fetch_proc ""
+      return ()
+    else do
+      hPutStrLn stderr ("Folder" ++ path ++ " does not exist")
+      return ()
+  hClose stdout
+  hClose stderr
