@@ -5,13 +5,19 @@ module GitHUD (
     githudd
     ) where
 
-import Control.Monad (when)
+import Control.Concurrent.Delay (delaySeconds)
+import Control.Concurrent.MVar (MVar, tryReadMVar, newMVar)
+import Control.Monad (when, forever)
 import Control.Monad.Reader (runReader)
+import Control.Monad.State (StateT, evalStateT, get, lift)
+import Control.Monad.Trans (liftIO)
 import Data.Default ( def )
 import Data.Maybe (fromMaybe)
 import Data.Text
 import System.Daemon (ensureDaemonRunning, runClient)
 import System.Environment (getArgs)
+import System.IO (hClose, hPutStrLn, openFile, IOMode(WriteMode))
+import System.Posix.Daemon (isRunning, runDetached, Redirection(ToFile))
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
 
@@ -63,18 +69,25 @@ githudd :: IO()
 githudd = do
   mArg <- processDaemonArguments <$> getArgs
   config <- getAppConfig
-  ensureDaemonRunning "githudd" def fun
-  res <- runClient "localhost" 5000 mArg
-  putStrLn $ fromMaybe "default" res
+  let pidFilePath = "/tmp/githudd.pid"
+  running <- isRunning pidFilePath
+  when (not running) $
+    runDetached (Just pidFilePath) (ToFile "/tmp/subprocess.out") (daemon $ fromMaybe "default" mArg)
 
 processDaemonArguments :: [String]
                        -> Maybe String
 processDaemonArguments [] = Nothing
 processDaemonArguments (fst:_) = Just fst
 
-fun :: Maybe String
-    -> IO String
-fun Nothing = return ""
-fun (Just path) = do
-  gitCmdFetch path
-  return path
+daemon :: FilePath
+       -> IO ()
+daemon path = forever $
+  evalStateT (fetcher path) "/tmp/foo"
+
+fetcher :: FilePath
+        -> StateT FilePath IO ()
+fetcher path = do
+  sPath <- get
+  liftIO $ putStrLn $ "fetching state " ++ sPath ++ ", param " ++ path
+  liftIO $ delaySeconds 5
+  return ()
