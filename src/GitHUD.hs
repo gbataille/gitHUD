@@ -70,9 +70,10 @@ githudd = do
   mArg <- processDaemonArguments <$> getArgs
   config <- getAppConfig
   let pidFilePath = "/tmp/githudd.pid"
+  let socketFile = "/tmp/githudd.sock"
   running <- isRunning pidFilePath
   when (not running) $
-    runDetached (Just pidFilePath) (ToFile "/tmp/subprocess.out") (daemon $ fromMaybe "default" mArg)
+    runDetached (Just pidFilePath) (ToFile "/tmp/subprocess.out") (daemon (fromMaybe "default" mArg) socketFile)
 
 processDaemonArguments :: [String]
                        -> Maybe String
@@ -80,14 +81,13 @@ processDaemonArguments [] = Nothing
 processDaemonArguments (fst:_) = Just fst
 
 daemon :: FilePath
+       -> FilePath
        -> IO ()
-daemon path = forever $
-  evalStateT (fetcher path) "/tmp/foo"
+daemon path socket = forever $ fetcher path
 
 fetcher :: FilePath
-        -> StateT FilePath IO ()
+        -> IO ()
 fetcher path = do
-  sPath <- get
-  liftIO $ putStrLn $ "fetching state " ++ sPath ++ ", param " ++ path
-  liftIO $ delaySeconds 5
+  putStrLn $ "fetching state " ++ path
+  delaySeconds 5
   return ()
