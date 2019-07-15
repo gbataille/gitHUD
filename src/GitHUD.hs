@@ -1,22 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 module GitHUD (
     githud,
     githudd
     ) where
 
-import Control.Concurrent.Delay (delaySeconds)
-import Control.Concurrent.MVar (MVar, tryReadMVar, newMVar)
-import Control.Monad (when, forever)
+import Control.Concurrent (forkFinally, forkIO, threadDelay)
+import Control.Concurrent.MVar (MVar, readMVar, newMVar, swapMVar)
+import qualified Control.Exception as E
+import Control.Monad (when, forever, void, unless)
 import Control.Monad.Reader (runReader)
-import Control.Monad.State (StateT, evalStateT, get, lift)
-import Control.Monad.Trans (liftIO)
-import Data.Default ( def )
+import qualified Data.ByteString as S
+import qualified Data.ByteString.UTF8 as BSU
 import Data.Maybe (fromMaybe)
 import Data.Text
-import System.Daemon (ensureDaemonRunning, runClient)
+import Network.Socket (Family(AF_UNIX), socket, defaultProtocol, SocketType(Stream), close, listen, accept, bind, SockAddr(SockAddrUnix), connect)
+import Network.Socket.ByteString (recv, sendAll)
+import System.Directory (removeFile)
 import System.Environment (getArgs)
-import System.IO (hClose, hPutStrLn, openFile, IOMode(WriteMode))
 import System.Posix.Daemon (isRunning, runDetached, Redirection(ToFile))
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
@@ -69,11 +71,30 @@ githudd :: IO()
 githudd = do
   mArg <- processDaemonArguments <$> getArgs
   config <- getAppConfig
-  let pidFilePath = "/tmp/githudd.pid"
-  let socketFile = "/tmp/githudd.sock"
   running <- isRunning pidFilePath
-  when (not running) $
+  when (not running) $ do
+    socketExists <- fileExist socketFile
+    when socketExists (removeFile socketFile)
     runDetached (Just pidFilePath) (ToFile "/tmp/subprocess.out") (daemon (fromMaybe "default" mArg) socketFile)
+  E.bracket open mClose mTalk
+  where
+    pidFilePath = "/tmp/githudd.pid"
+    socketFile = "/tmp/githudd.sock"
+    open = do
+        socketExists <- fileExist socketFile
+        if socketExists
+          then do
+            putStrLn "Opening client socket"
+            sock <- socket AF_UNIX Stream defaultProtocol
+            connect sock (SockAddrUnix socketFile)
+            return $ Just sock
+          else return Nothing
+    mClose = maybe (return ()) close
+    mTalk = maybe (return ()) talk
+    talk sock = do
+      mArg <- processDaemonArguments <$> getArgs
+      putStrLn "Sending on client socket"
+      sendAll sock $ BSU.fromString (fromMaybe "default" mArg)
 
 processDaemonArguments :: [String]
                        -> Maybe String
@@ -83,11 +104,36 @@ processDaemonArguments (fst:_) = Just fst
 daemon :: FilePath
        -> FilePath
        -> IO ()
-daemon path socket = forever $ fetcher path
+daemon path socket = do
+  pathToPoll <- newMVar path
+  forkIO $ socketClient socket pathToPoll
+  forever $ fetcher socket pathToPoll
+
+socketClient :: FilePath
+             -> MVar String
+             -> IO ()
+socketClient socketPath mvar = E.bracket open close loop
+  where
+    open = do
+        putStrLn "Opening server socket"
+        sock <- socket AF_UNIX Stream defaultProtocol
+        bind sock (SockAddrUnix socketPath)
+        listen sock 1
+        return sock
+    loop sock = forever $ do
+        (conn, peer) <- accept sock
+        void $ forkFinally (talk conn) (\_ -> close conn)
+    talk conn = do
+        msg <- recv conn 1024
+        unless (S.null msg) $ do
+          swapMVar mvar $ BSU.toString msg
+          talk conn
 
 fetcher :: FilePath
+        -> MVar String
         -> IO ()
-fetcher path = do
-  putStrLn $ "fetching state " ++ path
-  delaySeconds 5
+fetcher socketPath mvar = do
+  path <- readMVar mvar
+  putStrLn $ "fetching " ++ path
+  threadDelay 5_000_000
   return ()
