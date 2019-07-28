@@ -3,7 +3,15 @@ module GitHUD.Config.Types (
   , defaultConfig
   ) where
 
+import System.Posix.Daemon (Redirection(DevNull, ToFile))
+
 import GitHUD.Terminal.Types
+
+instance Eq Redirection where
+  (==) DevNull DevNull = True
+  (==) _ DevNull = False
+  (==) DevNull _ = False
+  (==) (ToFile a) (ToFile b) = a == b
 
 data Config = Config {
     confShowPartRepoIndicator :: Bool
@@ -74,6 +82,13 @@ data Config = Config {
   , confStashSuffix :: String
   , confStashSuffixColor :: Color
   , confStashSuffixIntensity :: ColorIntensity
+
+  , confRunFetcherDaemon :: Bool
+  , confGithuddSleepSeconds :: Int
+  , confGithuddPidFilePath :: FilePath
+  , confGithuddSocketFilePath :: FilePath
+
+  , confGithuddLogFilePath :: Redirection
 } deriving (Eq, Show)
 
 defaultConfig :: Config
@@ -146,4 +161,11 @@ defaultConfig = Config {
   , confStashSuffix = "≡"
   , confStashSuffixColor = Green
   , confStashSuffixIntensity = Vivid
+
+  , confRunFetcherDaemon = True
+  , confGithuddSleepSeconds = 5
+  , confGithuddPidFilePath = "/var/run/githudd.pid"
+  , confGithuddSocketFilePath = "/var/run/githudd.socket"
+
+  , confGithuddLogFilePath = DevNull
 }

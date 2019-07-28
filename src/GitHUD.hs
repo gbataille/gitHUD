@@ -65,4 +65,3 @@ processDaemonArguments :: [String]
                        -> Maybe String
 processDaemonArguments [] = Nothing
 processDaemonArguments (fst:_) = Just fst
-

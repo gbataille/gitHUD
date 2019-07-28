@@ -12,7 +12,7 @@ import Data.Maybe (fromMaybe)
 import Network.Socket (Family(AF_UNIX), socket, defaultProtocol, SocketType(Stream), close, listen, accept, bind, SockAddr(SockAddrUnix), connect)
 import Network.Socket.ByteString (recv, sendAll)
 import System.Directory (removeFile)
-import System.Posix.Daemon (isRunning, runDetached, Redirection(ToFile))
+import System.Posix.Daemon (isRunning, runDetached, Redirection(DevNull, ToFile))
 import System.Posix.Files (fileExist)
 
 import GitHUD.Config.Types
@@ -22,32 +22,43 @@ runDaemon :: Config
           -> Maybe String
           -> IO ()
 runDaemon config mArg = do
-  let pathToPoll = (fromMaybe "default" mArg)
-  ensureDaemonRunning socketFile pathToPoll
+  let pathToPoll = (fromMaybe "/" mArg)
+  ensureDaemonRunning config socketFile pathToPoll
   void $ sendOnSocket socketFile pathToPoll
   where
-    socketFile = "/tmp/githudd.sock"
+    socketFile = confGithuddSocketFilePath config
 
-ensureDaemonRunning :: FilePath
+ensureDaemonRunning :: Config
+                    -> FilePath
                     -> FilePath
                     -> IO ()
-ensureDaemonRunning socketPath pathToPoll = do
+ensureDaemonRunning config socketPath pathToPoll = do
   running <- isRunning pidFilePath
   unless running $ do
     socketExists <- fileExist socketPath
     when socketExists (removeFile socketPath)
-    runDetached (Just pidFilePath) (ToFile stdoutFile) (daemon pathToPoll socketPath)
+    removeLogFile stdoutFile
+    runDetached (Just pidFilePath) stdoutFile (daemon delaySec pathToPoll socketPath)
   where
-    stdoutFile = "/tmp/subprocess.out"
-    pidFilePath = "/tmp/githudd.pid"
+    stdoutFile = confGithuddLogFilePath config
+    pidFilePath = confGithuddPidFilePath config
+    delaySec = confGithuddSleepSeconds config
 
-daemon :: FilePath
+removeLogFile :: Redirection
+              -> IO ()
+removeLogFile DevNull = return ()
+removeLogFile (ToFile file) = do
+    debugFileExists <- fileExist file
+    when debugFileExists (removeFile file)
+
+daemon :: Int
+       -> FilePath
        -> FilePath
        -> IO ()
-daemon path socket = do
+daemon delaySec path socket = do
   pathToPoll <- newMVar path
   forkIO $ socketClient socket pathToPoll
-  forever $ fetcher socket pathToPoll
+  forever $ fetcher delaySec socket pathToPoll
 
 socketClient :: FilePath
              -> MVar String
@@ -59,11 +70,12 @@ socketClient socketPath mvar =
         putStrLn $ "callback with " ++ msg
         swapMVar mvar msg
 
-fetcher :: FilePath
+fetcher :: Int
+        -> FilePath
         -> MVar String
         -> IO ()
-fetcher socketPath mvar = do
+fetcher delaySec socketPath mvar = do
   path <- readMVar mvar
   putStrLn $ "fetching " ++ path
-  threadDelay 5_000_000
+  threadDelay $ delaySec * 1_000_000
   return ()

@@ -8,11 +8,15 @@ module GitHUD.Config.Parse (
   , colorConfigToColor
   , intensityConfigToIntensity
   , stringConfigToStringList
+  , redirectionParser
+  , strConfigToRedirection
+  , boolConfigToBool
   ) where
 
 import Control.Monad (void, when)
+import System.Posix.Daemon (Redirection(ToFile, DevNull))
 import Text.Parsec (parse)
-import Text.Parsec.Char (anyChar, char, newline, noneOf, letter, spaces, string)
+import Text.Parsec.Char (anyChar, char, digit, newline, noneOf, letter, spaces, string)
 import Text.Parsec.Combinator (choice, eof, many1, manyTill, optional, sepBy)
 import Text.Parsec.Prim (many, try, unexpected, (<|>), (<?>))
 import Text.Parsec.String (parseFromFile, Parser)
@@ -204,6 +208,17 @@ configItemsFolder conf (Item "stash_suffix_color" value) =
 configItemsFolder conf (Item "stash_suffix_intensity" value) =
   conf { confStashSuffixIntensity = intensityConfigToIntensity value }
 
+configItemsFolder conf (Item "run_fetcher_daemon" value) =
+  conf { confRunFetcherDaemon = boolConfigToBool value }
+configItemsFolder conf (Item "githudd_sleep_seconds" value) =
+  conf { confGithuddSleepSeconds = intConfigToInt value }
+configItemsFolder conf (Item "githudd_pid_file_path" value) =
+  conf { confGithuddPidFilePath = value }
+configItemsFolder conf (Item "githudd_socket_file_path" value) =
+  conf { confGithuddSocketFilePath = value }
+configItemsFolder conf (Item "githudd_log_file_path" value) =
+  conf { confGithuddLogFilePath = strConfigToRedirection value }
+
 configItemsFolder conf _ = conf
 
 colorConfigToColor :: String -> Color
@@ -268,6 +283,16 @@ stripedBranchName = do
   spaces
   return branchName
 
+intParser :: Parser Int
+intParser = read <$> many1 digit
+
+intConfigToInt :: String -> Int
+intConfigToInt str =
+  either
+    (const 5)
+    id
+    (parse intParser "" str)
+
 boolParser :: Parser Bool
 boolParser = choice [
     string "False" >> return False
@@ -287,3 +312,24 @@ boolParser = choice [
   , string "yes" >> return True
   , string "y" >> return True
   ] <?> "bool"
+
+boolConfigToBool :: String -> Bool
+boolConfigToBool str =
+  either
+    (const False)
+    id
+    (parse boolParser "" str)
+
+strConfigToRedirection :: String -> Redirection
+strConfigToRedirection str =
+  either
+    (const DevNull)
+    id
+    (parse redirectionParser "" str)
+
+redirectionParser :: Parser Redirection
+redirectionParser =
+  choice [
+    try (string "/dev/null") >> return DevNull
+  , ToFile <$> many1 anyChar
+  ] <?> "Redirection"
