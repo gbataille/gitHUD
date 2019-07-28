@@ -41,7 +41,7 @@ mTalkOnClientSocket msg (Just sock) = do
 fromSocket :: FilePath
            -> (String -> IO m)
            -> IO ()
-fromSocket socketPath withMessage = E.bracket open close loop
+fromSocket socketPath withMessageCb = E.bracket open close loop
   where
     open = do
       putStrLn "Opening server socket"
@@ -52,14 +52,9 @@ fromSocket socketPath withMessage = E.bracket open close loop
     loop sock = forever $ do
       (conn, peer) <- accept sock
       void $ forkFinally (talk conn) (\_ -> close conn)
-    talk conn = (readPacket conn "") >>= withMessage
+    talk conn = (readPacket conn "") >>= withMessageCb
     readPacket conn acc = do
       msg <- recv conn 1024
-      putStrLn $ "received packet " ++ (BSU.toString msg)
       if (S.null msg)
-        then do
-          putStrLn $ "returning " ++ acc
-          return acc
-        else do
-          putStrLn $ "looping with " ++ (acc ++ (BSU.toString msg))
-          readPacket conn (acc ++ (BSU.toString msg))
+        then return acc
+        else readPacket conn (acc ++ (BSU.toString msg))

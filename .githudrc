@@ -115,3 +115,15 @@
 # stash_suffix=≡
 # stash_suffix_color=Green
 # stash_suffix_intensity=Vivid
+#
+# -------------------------------------------------------------------------------------------
+# The following config controls the background fetcher daemon behavior called githudd
+# -------------------------------------------------------------------------------------------
+# run_fetcher_daemon=True
+# githudd_sleep_seconds=5       # how long does the daemon sleep between cycles
+# githudd_pid_file_path=/usr/local/var/run/githudd.pid
+# githudd_socket_file_path=/usr/local/var/run/githudd.socket
+#
+# # Githudd logs can be verbose. They are here for debugging only. It is not advised that you
+# # activate them
+# githudd_log_file_path=/dev/null
