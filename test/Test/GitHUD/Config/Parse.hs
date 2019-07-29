@@ -5,6 +5,7 @@ module Test.GitHUD.Config.Parse (
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import System.Posix.Daemon (Redirection(DevNull))
 import Text.Parsec (parse)
 import Text.Parsec.String (Parser)
 
@@ -443,19 +444,49 @@ testConfigItemFolder = testGroup "#configItemFolder"
           toBeInField confStashSuffixIntensity $
             forConfigItemKey "stash_suffix_intensity" $
               withValue "Dull"
+
+    , testCase "Key: run_fetcher_daemon" $
+        expectValue True $
+          toBeInField confRunFetcherDaemon $
+            forConfigItemKey "run_fetcher_daemon" $
+              withValue "True"
+
+    , testCase "Key: githudd_sleep_seconds" $
+        expectValue 5 $
+          toBeInField confGithuddSleepSeconds $
+            forConfigItemKey "githudd_sleep_seconds" $
+              withValue "5"
+
+    , testCase "Key: githudd_pid_file_path" $
+        expectValue "/tmp" $
+          toBeInField confGithuddPidFilePath $
+            forConfigItemKey "githudd_pid_file_path" $
+              withValue "/tmp"
+
+    , testCase "Key: githudd_socket_file_path" $
+        expectValue "/tmp" $
+          toBeInField confGithuddSocketFilePath $
+            forConfigItemKey "githudd_socket_file_path" $
+              withValue "/tmp"
+
+    , testCase "Key: githudd_log_file_path" $
+        expectValue DevNull $
+          toBeInField confGithuddLogFilePath $
+            forConfigItemKey "githudd_log_file_path" $
+              withValue "/dev/null"
   ]
 
 expectValue :: (Eq a, Show a) => a -> a -> Assertion
 expectValue expected actual = actual @?= expected
 
 toBeInField :: (Config -> a) -> Config -> a
-toBeInField accessor config = accessor config
+toBeInField = id
 
 forConfigItemKey :: String -> String -> Config
 forConfigItemKey key value =
   configItemsFolder defaultConfig (Item key value)
 
-withValue :: a -> a
+withValue :: String -> String
 withValue = id
 
 utilConfigItemParser :: Parser ConfigItem -> String -> ConfigItem
