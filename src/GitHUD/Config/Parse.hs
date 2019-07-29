@@ -274,7 +274,7 @@ stringListParser = do
   return $ filter noEmptyStringFilter branchNameList
 
 noEmptyStringFilter :: String -> Bool
-noEmptyStringFilter str = not (str == "")
+noEmptyStringFilter = (/=) ""
 
 stripedBranchName :: Parser String
 stripedBranchName = do
