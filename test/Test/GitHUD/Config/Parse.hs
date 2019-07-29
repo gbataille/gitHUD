@@ -5,7 +5,7 @@ module Test.GitHUD.Config.Parse (
 import Test.Tasty
 import Test.Tasty.HUnit
 
-import System.Posix.Daemon (Redirection(DevNull))
+import System.Posix.Daemon (Redirection(DevNull, ToFile))
 import Text.Parsec (parse)
 import Text.Parsec.String (Parser)
 
@@ -21,6 +21,9 @@ configParserTests = testGroup "Config Parser Test"
     , testColorConfigToColor
     , testIntensityConfigToIntensity
     , testStringConfigToStringList
+    , testStringConfigToRedirection
+    , testBoolConfigToBool
+    , testIntConfigToInt
   ]
 
 testItemParser :: TestTree
@@ -520,9 +523,47 @@ testStringConfigToStringList = testGroup "#stringConfigToStringList"
         stringConfigToStringList "foo,bar" @?= ["foo", "bar"]
 
     , testCase "valid string list, comma separated, spaces" $
-      stringConfigToStringList "foo, bar ,  baz " @?= ["foo", "bar", "baz"]
+        stringConfigToStringList "foo, bar ,  baz " @?= ["foo", "bar", "baz"]
 
     , testCase "valid string list, comma separated, finish with comma" $
         stringConfigToStringList "foo,bar, " @?= ["foo", "bar"]
   ]
 
+testStringConfigToRedirection :: TestTree
+testStringConfigToRedirection = testGroup "#strConfigToRedirection"
+  [   testCase "dev null" $
+        strConfigToRedirection "/dev/null" @?= DevNull
+
+    , testCase "other path" $
+        strConfigToRedirection "/foo/bar" @?= ToFile "/foo/bar"
+  ]
+
+testBoolConfigToBool :: TestTree
+testBoolConfigToBool = testGroup "#boolConfigToBool"
+  [   testCase "True" $
+        boolConfigToBool "True" @?= True
+
+    , testCase "true" $
+        boolConfigToBool "true" @?= True
+
+    , testCase "yes" $
+        boolConfigToBool "yes" @?= True
+
+    , testCase "False" $
+        boolConfigToBool "False" @?= False
+
+    , testCase "Defaults to False on failed parsing" $
+        boolConfigToBool "foo" @?= False
+  ]
+
+testIntConfigToInt :: TestTree
+testIntConfigToInt = testGroup "#intConfigToInt"
+  [   testCase "standard valid int" $
+        intConfigToInt "12" @?= 12
+
+    , testCase "Cuts to the integer part found" $
+        intConfigToInt "12.5" @?= 12
+
+    , testCase "any bad value defaults to 5" $
+        intConfigToInt "foo" @?= 5
+  ]

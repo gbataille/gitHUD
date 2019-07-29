@@ -11,6 +11,7 @@ module GitHUD.Config.Parse (
   , redirectionParser
   , strConfigToRedirection
   , boolConfigToBool
+  , intConfigToInt
   ) where
 
 import Control.Monad (void, when)
