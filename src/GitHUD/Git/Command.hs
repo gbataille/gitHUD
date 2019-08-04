@@ -17,7 +17,6 @@ import Control.Concurrent.MVar (MVar, putMVar)
 import GHC.IO.Handle (hGetLine)
 import System.Directory (doesDirectoryExist)
 import System.Exit (ExitCode(ExitSuccess))
-import System.IO (hClose, hPutStrLn, openFile, IOMode(WriteMode))
 import System.Process (readCreateProcess, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 
 import GitHUD.Process (readProcessWithIgnoreExitCode)
@@ -103,17 +102,12 @@ gitCmdCommitTag out = do
 gitCmdFetch :: String
             -> IO ()
 gitCmdFetch path = do
-  -- TODO: gbataille - code org
   isDir <- doesDirectoryExist path
-  stdout <- openFile "/tmp/out" WriteMode
-  stderr <- openFile "/tmp/err" WriteMode
   if isDir
     then do
-      let fetch_proc = (proc "git" ["fetch"]) { cwd = Just path, std_out = UseHandle stdout, std_err = UseHandle stderr }
+      let fetch_proc = (proc "git" ["fetch"]) { cwd = Just path }
       readCreateProcess fetch_proc ""
       return ()
     else do
-      hPutStrLn stderr ("Folder" ++ path ++ " does not exist")
+      putStrLn ("Folder" ++ path ++ " does not exist")
       return ()
-  hClose stdout
-  hClose stderr

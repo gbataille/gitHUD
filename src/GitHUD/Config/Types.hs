@@ -163,7 +163,7 @@ defaultConfig = Config {
   , confStashSuffixIntensity = Vivid
 
   , confRunFetcherDaemon = True
-  , confGithuddSleepSeconds = 5
+  , confGithuddSleepSeconds = 30
   , confGithuddPidFilePath = "/usr/local/var/run/githudd.pid"
   , confGithuddSocketFilePath = "/usr/local/var/run/githudd.socket"
 

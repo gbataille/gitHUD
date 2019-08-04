@@ -120,7 +120,7 @@
 # The following config controls the background fetcher daemon behavior called githudd
 # -------------------------------------------------------------------------------------------
 # run_fetcher_daemon=True
-# githudd_sleep_seconds=5       # how long does the daemon sleep between cycles
+# githudd_sleep_seconds=30       # how long does the daemon sleep between cycles
 # githudd_pid_file_path=/usr/local/var/run/githudd.pid
 # githudd_socket_file_path=/usr/local/var/run/githudd.socket
 #
