@@ -14,6 +14,7 @@ import System.Posix.Daemon (isRunning, runDetached, Redirection(DevNull, ToFile)
 import System.Posix.Files (fileExist)
 
 import GitHUD.Config.Types
+import GitHUD.Git.Command
 import GitHUD.Daemon.Network
 
 runDaemon :: Config
@@ -65,7 +66,7 @@ socketClient socketPath mvar =
   fromSocket socketPath withMessage
     where
       withMessage msg = do
-        putStrLn $ "callback with " ++ msg
+        putStrLn $ "Switching to poll " ++ msg
         swapMVar mvar msg
 
 fetcher :: Int
@@ -74,6 +75,6 @@ fetcher :: Int
         -> IO ()
 fetcher delaySec socketPath mvar = do
   path <- readMVar mvar
-  putStrLn $ "fetching " ++ path
+  gitCmdFetch path
   threadDelay $ delaySec * 1_000_000
   return ()

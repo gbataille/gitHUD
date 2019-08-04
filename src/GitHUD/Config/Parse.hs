@@ -290,7 +290,7 @@ intParser = read <$> many1 digit
 intConfigToInt :: String -> Int
 intConfigToInt str =
   either
-    (const 5)
+    (const 30)
     id
     (parse intParser "" str)
 
