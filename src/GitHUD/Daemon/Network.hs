@@ -5,7 +5,7 @@ module GitHUD.Daemon.Network (
 
 import Control.Concurrent (forkFinally)
 import qualified Control.Exception as E
-import Control.Monad (forever, void, unless)
+import Control.Monad (forever, void)
 import qualified Data.ByteString as S
 import qualified Data.ByteString.UTF8 as BSU
 import Network.Socket (Family(AF_UNIX), socket, defaultProtocol, Socket, SocketType(Stream), close, listen, accept, bind, SockAddr(SockAddrUnix), connect)
@@ -22,7 +22,6 @@ sendOnSocket socketPath msg =
         socketExists <- fileExist socketPath
         if socketExists
           then do
-            putStrLn "Opening client socket"
             sock <- socket AF_UNIX Stream defaultProtocol
             connect sock (SockAddrUnix socketPath)
             return $ Just sock
@@ -34,7 +33,6 @@ mTalkOnClientSocket :: String
                     -> IO Bool
 mTalkOnClientSocket _ Nothing = return False
 mTalkOnClientSocket msg (Just sock) = do
-    putStrLn "Sending on client socket"
     sendAll sock $ BSU.fromString msg
     return True
 
@@ -44,7 +42,6 @@ fromSocket :: FilePath
 fromSocket socketPath withMessageCb = E.bracket open close loop
   where
     open = do
-      putStrLn "Opening server socket"
       sock <- socket AF_UNIX Stream defaultProtocol
       bind sock (SockAddrUnix socketPath)
       listen sock 1

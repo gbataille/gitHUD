@@ -164,8 +164,8 @@ defaultConfig = Config {
 
   , confRunFetcherDaemon = True
   , confGithuddSleepSeconds = 5
-  , confGithuddPidFilePath = "/var/run/githudd.pid"
-  , confGithuddSocketFilePath = "/var/run/githudd.socket"
+  , confGithuddPidFilePath = "/usr/local/var/run/githudd.pid"
+  , confGithuddSocketFilePath = "/usr/local/var/run/githudd.socket"
 
   , confGithuddLogFilePath = DevNull
 }
