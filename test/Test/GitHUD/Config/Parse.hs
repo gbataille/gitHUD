@@ -564,6 +564,6 @@ testIntConfigToInt = testGroup "#intConfigToInt"
     , testCase "Cuts to the integer part found" $
         intConfigToInt "12.5" @?= 12
 
-    , testCase "any bad value defaults to 5" $
-        intConfigToInt "foo" @?= 5
+    , testCase "any bad value defaults to 30" $
+        intConfigToInt "foo" @?= 30
   ]
