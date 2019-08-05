@@ -119,11 +119,18 @@
 # -------------------------------------------------------------------------------------------
 # The following config controls the background fetcher daemon behavior called githudd
 # -------------------------------------------------------------------------------------------
+# # Whether githud will launch the background daemon
 # run_fetcher_daemon=True
-# githudd_sleep_seconds=30       # how long does the daemon sleep between cycles
+# # How long does the daemon sleep between cycles
+# githudd_sleep_seconds=30
+# # Path where the githudd pid file will be stored. Needs to exist and be accessible by the current
+# # user
 # githudd_pid_file_path=/usr/local/var/run/githudd.pid
+# # Path where the githudd socket file will be stored. Needs to exist and be accessible by the current
+# # user
 # githudd_socket_file_path=/usr/local/var/run/githudd.socket
-#
+# # Path where the githudd stdout/stderr capture logfile will be store.
 # # Githudd logs can be verbose. They are here for debugging only. It is not advised that you
 # # activate them
+# # Use the value /dev/null to disable the logs
 # githudd_log_file_path=/dev/null

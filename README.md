@@ -226,6 +226,41 @@ wget https://raw.githubusercontent.com/gbataille/gitHUD/master/.githudrc
 You can control which section of the output are shown (if you want to mask
 some) with the configuration keys starting with "show\_part\_"
 
+#### The fetcher daemon
+
+`githud` includes a companion daemon called `githudd`. This daemon will start the first time
+`githud` is invoked and will run forever.
+
+This daemon will simply execute a `git fetch` periodically in the last git repository in which
+`githud` was executed. In the standard installation where you use `githud` in your prompt, this
+means that the daemon executes `git fetch` in the last git repository visited.
+
+The `.githudrc` configuration file can contain the following configuration for the daemon (default
+values given here)
+```ini
+# Whether githud will launch the background daemon
+run_fetcher_daemon=True
+# How long does the daemon sleep between cycles
+githudd_sleep_seconds=30
+# Path where the githudd pid file will be stored. Needs to exist and be accessible by the current
+# user
+githudd_pid_file_path=/usr/local/var/run/githudd.pid
+# Path where the githudd socket file will be stored. Needs to exist and be accessible by the current
+# user
+githudd_socket_file_path=/usr/local/var/run/githudd.socket
+# Path where the githudd stdout/stderr capture logfile will be store.
+# Githudd logs can be verbose. They are here for debugging only. It is not advised that you
+# activate them
+# Use the value /dev/null to disable the logs
+githudd_log_file_path=/dev/null
+```
+
+To stop the daemon, you can simply do
+```bash
+pkill githudd
+```
+
+
 Understanding the githud prompt
 -------------------------------
 
