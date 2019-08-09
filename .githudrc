@@ -120,7 +120,7 @@
 # The following config controls the background fetcher daemon behavior called githudd
 # -------------------------------------------------------------------------------------------
 # # Whether githud will launch the background daemon
-# run_fetcher_daemon=True
+# run_fetcher_daemon=False
 # # How long does the daemon sleep between cycles
 # githudd_sleep_seconds=30
 # # Path where the githudd pid file will be stored. Needs to exist and be accessible by the current

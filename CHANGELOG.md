@@ -1,3 +1,10 @@
+3.0.1
+-----
+
+* Fix: Disable `githudd` by default. Seems that due to the socket communication I have made it
+  unstable resulting in `githud` not displaying anything. Let's say that `githudd` is **Beta**. I'll
+work on making it recover on failure
+
 3.0.0
 -----
 * Feat: Add a daemon called `githudd` that will continuously fetch the last git folder where
