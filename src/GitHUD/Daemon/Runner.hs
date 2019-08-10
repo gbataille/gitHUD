@@ -56,13 +56,13 @@ daemon :: Int
        -> IO ()
 daemon delaySec path socket = do
   pathToPoll <- newMVar path
-  forkIO $ socketClient socket pathToPoll
+  forkIO $ socketServer socket pathToPoll
   forever $ fetcher delaySec pathToPoll
 
-socketClient :: FilePath
+socketServer :: FilePath
              -> MVar String
              -> IO ()
-socketClient socketPath mvar =
+socketServer socketPath mvar =
   fromSocket socketPath withMessage
     where
       withMessage msg = do

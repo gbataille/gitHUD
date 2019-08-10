@@ -5,14 +5,14 @@ module GitHUD (
     githudd
     ) where
 
-import Control.Monad (when)
+import Control.Monad (when, void)
 import Control.Monad.Reader (runReader)
 import Data.Text
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
-import System.Process (callProcess)
+import System.Process (spawnProcess)
 
 import GitHUD.Config.Parse
 import GitHUD.Config.Types
@@ -31,7 +31,7 @@ githud = do
     shell <- processArguments getArgs
     config <- getAppConfig
     curDir <- getCurrentDirectory
-    when (confRunFetcherDaemon config) (callProcess "githudd" [curDir])
+    when (confRunFetcherDaemon config) (void $ spawnProcess "githudd" [curDir])
     repoState <- getGitRepoState
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
 
