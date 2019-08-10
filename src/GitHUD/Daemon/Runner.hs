@@ -57,7 +57,7 @@ daemon :: Int
 daemon delaySec path socket = do
   pathToPoll <- newMVar path
   forkIO $ socketClient socket pathToPoll
-  forever $ fetcher delaySec socket pathToPoll
+  forever $ fetcher delaySec pathToPoll
 
 socketClient :: FilePath
              -> MVar String
@@ -70,10 +70,9 @@ socketClient socketPath mvar =
         swapMVar mvar msg
 
 fetcher :: Int
-        -> FilePath
         -> MVar String
         -> IO ()
-fetcher delaySec socketPath mvar = do
+fetcher delaySec mvar = do
   path <- readMVar mvar
   gitCmdFetch path
   threadDelay $ delaySec * 1_000_000
