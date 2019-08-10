@@ -23,7 +23,7 @@ runDaemon :: Config
 runDaemon config mArg = do
   let pathToPoll = (fromMaybe "/" mArg)
   ensureDaemonRunning config socketFile pathToPoll
-  void $ sendOnSocket socketFile pathToPoll
+  sendOnSocket socketFile pathToPoll
   where
     socketFile = confGithuddSocketFilePath config
 
