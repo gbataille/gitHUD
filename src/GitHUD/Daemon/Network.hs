@@ -14,7 +14,7 @@ import System.Posix.Files (fileExist)
 
 sendOnSocket :: FilePath
              -> String
-             -> IO Bool
+             -> IO ()
 sendOnSocket socketPath msg =
   E.bracket open mClose (mTalkOnClientSocket msg)
   where
@@ -30,11 +30,9 @@ sendOnSocket socketPath msg =
 
 mTalkOnClientSocket :: String
                     -> Maybe Socket
-                    -> IO Bool
-mTalkOnClientSocket _ Nothing = return False
-mTalkOnClientSocket msg (Just sock) = do
-    sendAll sock $ BSU.fromString msg
-    return True
+                    -> IO ()
+mTalkOnClientSocket _ Nothing = return ()
+mTalkOnClientSocket msg (Just sock) = sendAll sock $ BSU.fromString msg
 
 fromSocket :: FilePath
            -> (String -> IO m)
