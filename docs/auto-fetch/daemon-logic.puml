@@ -1,26 +1,30 @@
 @startuml
-start
-if (\nPID file AND\nsocket file AND\nprocess with PID running\n) then (yes)
-  :Read command from script parameters;
-  :Send command on socket;
-  stop
-else (no)
-  :Save current process PID in the PID file;
-  :Open a file socket;
-  :Read command from script parameters;
-  while (command not stop/quit)
-    :Move to git repo;
-    :Execute git command;
-    :Sleep X seconds;
-    :Read new-command from socket (non-blocking);
-    if (new-command found?) then (yes)
-      :command = new-command;
-    else (no)
-      :continue with same command;
-    endif
-  endwhile
-  :Close the socket;
-  :Unlink the PID file;
-  stop
-endif
+control githudd
+control fetcher
+database MVar
+control listener
+control reader
+
+-> githudd : CLI invocation
+githudd -> githudd : parse arguments
+githudd -> githudd : get Config
+
+alt Fetcher not running
+  githudd -> fetcher : Launch
+  fetcher -> MVar : Create MVar\nPut current path in it
+  fetcher -> listener : Open socket
+  group forever
+    listener -> listener : Accept
+  end
+else standard
+  githudd -> listener : Post message on socket
+  listener -> reader : Create
+  reader -> reader : Read socket
+  reader -> MVar : Update MVar
+end
+
+group forever
+  MVar -> fetcher : Read MVar for path
+  fetcher -> : git fetch path
+end
 @enduml
