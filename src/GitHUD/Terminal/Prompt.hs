@@ -34,13 +34,13 @@ buildPrompt = do
   repoState <- askRepoState
   let branch = gitLocalBranch repoState
   resetPromptAtBeginning
-  when (confShowPartRepoIndicator config) $ addGitRepoIndicator
-  when (showMergeBranchIndicator branch config) $ addNoTrackedUpstreamIndicator
-  when (showMergeBranchIndicator branch config) $ addMergeBranchCommits
-  when (confShowPartLocalBranch config) $ addLocalBranchName
-  when (confShowPartCommitsToOrigin config) $ addLocalCommits
-  when (confShowPartLocalChangesState config) $ addRepoState
-  when (confShowPartStashes config) $ addStashes
+  when (confShowPartRepoIndicator config) addGitRepoIndicator
+  when (showMergeBranchIndicator branch config) addNoTrackedUpstreamIndicator
+  when (showMergeBranchIndicator branch config) addMergeBranchCommits
+  when (confShowPartLocalBranch config) addLocalBranchName
+  when (confShowPartCommitsToOrigin config) addLocalCommits
+  when (confShowPartLocalChangesState config) addRepoState
+  when (confShowPartStashes config) addStashes
   return ()
 
 showMergeBranchIndicator :: String -> Config -> Bool

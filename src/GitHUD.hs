@@ -5,14 +5,15 @@ module GitHUD (
     githudd
     ) where
 
-import Control.Monad (when, void)
+import Control.Monad (unless, void, when)
 import Control.Monad.Reader (runReader)
 import Data.Text
 import System.Directory (getCurrentDirectory)
 import System.Environment (getArgs)
+import System.Exit (ExitCode(ExitSuccess))
 import System.Posix.Files (fileExist)
 import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
-import System.Process (spawnProcess)
+import System.Process (readProcessWithExitCode)
 
 import GitHUD.Config.Parse
 import GitHUD.Config.Types
@@ -31,12 +32,17 @@ githud = do
     shell <- processArguments getArgs
     config <- getAppConfig
     curDir <- getCurrentDirectory
-    when (confRunFetcherDaemon config) (void $ spawnProcess "githudd" [curDir])
+    runFetcherDaemon curDir
     repoState <- getGitRepoState
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
 
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
     putStrLn $ unpack (strip (pack prompt))
+
+    where
+      runFetcherDaemon dir = do
+        (code, out, err) <- readProcessWithExitCode "githudd" [dir] ""
+        unless (Prelude.null err) (putStrLn $ "Issue with githudd: " ++ err)
 
 processArguments :: IO [String]
                  -> IO Shell
