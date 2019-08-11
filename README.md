@@ -260,6 +260,11 @@ To stop the daemon, you can simply do
 pkill githudd
 ```
 
+Note that due to instability, the daemon is currently disabled by default
+
+The health of the `githudd` daemon is indicated by a red hearth (broken when unhealthy) at the start
+of the prompt (only when the daemon is activated)
+
 
 Understanding the githud prompt
 -------------------------------
