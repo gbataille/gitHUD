@@ -14,10 +14,11 @@ module GitHUD.Git.Command (
   ) where
 
 import Control.Concurrent.MVar (MVar, putMVar)
+import Control.Monad (void)
 import GHC.IO.Handle (hGetLine)
 import System.Directory (doesDirectoryExist)
 import System.Exit (ExitCode(ExitSuccess))
-import System.Process (readCreateProcess, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
+import System.Process (readCreateProcessWithExitCode, readProcessWithExitCode, proc, StdStream(CreatePipe, UseHandle), createProcess, CreateProcess(..))
 
 import GitHUD.Process (readProcessWithIgnoreExitCode)
 import GitHUD.Git.Common
@@ -106,8 +107,6 @@ gitCmdFetch path = do
   if isDir
     then do
       let fetch_proc = (proc "git" ["fetch"]) { cwd = Just path }
-      readCreateProcess fetch_proc ""
-      return ()
-    else do
+      void $ readCreateProcessWithExitCode fetch_proc ""
+    else
       putStrLn ("Folder" ++ path ++ " does not exist")
-      return ()
