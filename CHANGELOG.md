@@ -1,6 +1,7 @@
 3.0.2
 -----
 
+* Fix: `githudd` to restart from scratch if there is an issue with the pid file / background process
 * Fix: `githudd` to ignore failing `git fetch` return code
 
 3.0.2
