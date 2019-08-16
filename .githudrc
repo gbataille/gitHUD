@@ -11,7 +11,7 @@
 # Lines that are not understood by githud are silently ignored
 #
 # Colors are from [Black, Red, Green, Yellow, Blue, Magenta, Cyan, White, NoColor]
-# NoColor is a special keyword to remove any specific color and use the 
+# NoColor is a special keyword to remove any specific color and use the
 # terminal foreground color
 #
 # Intensities are from [Vivid, Dull]
@@ -23,7 +23,7 @@
 # Uncomment one and change it to obtain a different prompt
 #
 #
-# The following character is a better repo indicator to me but needs the 
+# The following character is a better repo indicator to me but needs the
 # powerline patched font https://github.com/powerline/fonts
 # it's not a default anymore
 # Don't use it unless it displays a nice fork symbol
@@ -120,7 +120,7 @@
 # The following config controls the background fetcher daemon behavior called githudd
 # -------------------------------------------------------------------------------------------
 # # Whether githud will launch the background daemon
-# run_fetcher_daemon=False
+# run_fetcher_daemon=True
 # # How long does the daemon sleep between cycles
 # githudd_sleep_seconds=30
 # # Path where the githudd pid file will be stored. Needs to exist and be accessible by the current

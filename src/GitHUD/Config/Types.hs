@@ -162,7 +162,7 @@ defaultConfig = Config {
   , confStashSuffixColor = Green
   , confStashSuffixIntensity = Vivid
 
-  , confRunFetcherDaemon = False
+  , confRunFetcherDaemon = True
   , confGithuddSleepSeconds = 30
   , confGithuddPidFilePath = "/usr/local/var/run/githudd.pid"
   , confGithuddSocketFilePath = "/usr/local/var/run/githudd.socket"

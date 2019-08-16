@@ -1,3 +1,11 @@
+3.1.0
+-----
+
+* Fix: everything that was wrong with 3.0 :)
+  Been running this version locally for a week without issues. Everything seems to recover properly
+on error and I get my background refresh
+* Config: Re-enable `githudd` background fetcher by default
+
 3.0.2
 -----
 
