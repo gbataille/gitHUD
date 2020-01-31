@@ -1,3 +1,12 @@
+3.2.0
+-----
+
+* Fix ([#21](https://github.com/gbataille/gitHUD/issues/21)): use the system defined temp location
+  as default for the PID and socket location rather than an hardcoded path that does not exist on
+  all systems
+* Feat: Do not display background server error/restart on STDERR by default. Only display it if the
+  env variable `GITHUD_DEBUG` is set to `TRUE`
+
 3.1.0
 -----
 
