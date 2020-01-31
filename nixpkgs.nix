@@ -1,6 +1,6 @@
 let
-  rev = "88d9f776091";
-  sha256 = "0z8a0g69fmbbzi77jhvhwafv73dn5fg3gsr0q828lss6j5qpx995";
+  rev = "40be1827ee6";
+  sha256 = "094vm2sl4cs5pl8s644lfz0rf5khw20mjwqd3s0myr198z6mwp0j";
 in
 import (fetchTarball {
   inherit sha256;
