@@ -3,6 +3,8 @@ module GitHUD.Config.Types (
   , defaultConfig
   ) where
 
+import System.IO.Temp (getCanonicalTemporaryDirectory)
+import System.IO.Unsafe (unsafePerformIO)
 import System.Posix.Daemon (Redirection(DevNull, ToFile))
 
 import GitHUD.Terminal.Types
@@ -91,6 +93,9 @@ data Config = Config {
   , confGithuddLogFilePath :: Redirection
 } deriving (Eq, Show)
 
+tempDir :: String
+tempDir = unsafePerformIO getCanonicalTemporaryDirectory
+
 defaultConfig :: Config
 defaultConfig = Config {
     confShowPartRepoIndicator = True
@@ -164,8 +169,8 @@ defaultConfig = Config {
 
   , confRunFetcherDaemon = True
   , confGithuddSleepSeconds = 30
-  , confGithuddPidFilePath = "/usr/local/var/run/githudd.pid"
-  , confGithuddSocketFilePath = "/usr/local/var/run/githudd.socket"
+  , confGithuddPidFilePath = tempDir ++ "/githudd.pid"
+  , confGithuddSocketFilePath = tempDir ++ "/githudd.socket"
 
   , confGithuddLogFilePath = DevNull
 }
