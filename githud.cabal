@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                githud
-version:             3.2.0
+version:             3.2.1
 synopsis:            Heads up, and you see your GIT context
 description:         GIT Heads Up Display for your terminal prompt. More efficient replacement to the great git-radar. Please see README.md for more info
 homepage:            http://github.com/gbataille/gitHUD#readme
