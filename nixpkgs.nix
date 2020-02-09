@@ -1,6 +1,10 @@
+# To upgrade
+# - Find latest commit on howoldis.herokuapp.com
+# - execute nix-prefetch-url --unpack https://github.com/nixos/nixpkgs/archive/SHORT_COMMIT.tar.gz
+# - replace below rev with the SHORT_COMMIT and sha256 by the hash output by the previous command
 let
-  rev = "40be1827ee6";
-  sha256 = "094vm2sl4cs5pl8s644lfz0rf5khw20mjwqd3s0myr198z6mwp0j";
+  rev = "0c960262d15";
+  sha256 = "0d7ms4dxbxvd6f8zrgymr6njvka54fppph1mrjjlcan7y0dhi5rb";
 in
 import (fetchTarball {
   inherit sha256;
