@@ -88,6 +88,7 @@ data Config = Config {
   , confRunFetcherDaemon :: Bool
   , confGithuddSleepSeconds :: Int
   , confGithuddPidFilePath :: FilePath
+  , confGithuddLockFilePath :: FilePath
   , confGithuddSocketFilePath :: FilePath
 
   , confGithuddLogFilePath :: Redirection
@@ -170,6 +171,7 @@ defaultConfig = Config {
   , confRunFetcherDaemon = True
   , confGithuddSleepSeconds = 30
   , confGithuddPidFilePath = tempDir ++ "/githudd.pid"
+  , confGithuddLockFilePath = tempDir ++ "/githudd.lock"
   , confGithuddSocketFilePath = tempDir ++ "/githudd.socket"
 
   , confGithuddLogFilePath = DevNull
