@@ -1,3 +1,9 @@
+3.2.2
+-----
+
+* Fix ([#27](https://github.com/gbataille/gitHUD/issues/27): Concurrency issue starting many `githudd`
+  daemon that would never be cleaned up
+
 3.2.0
 -----
 
