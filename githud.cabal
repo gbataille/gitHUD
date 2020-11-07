@@ -8,7 +8,7 @@ license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Grégory Bataille
 maintainer:          gregory.bataille@gmail.com
-copyright:           Grégory Bataille 2015-2019
+copyright:           Grégory Bataille 2015-2020
 category:            Development
 build-type:          Simple
 -- extra-source-files:
