@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                githud
-version:             3.2.1
+version:             3.2.2
 synopsis:            Heads up, and you see your GIT context
 description:         GIT Heads Up Display for your terminal prompt. More efficient replacement to the great git-radar. Please see README.md for more info
 homepage:            http://github.com/gbataille/gitHUD#readme
@@ -38,6 +38,7 @@ library
                     , daemons >= 0.3 && < 0.4
                     , data-default >= 0.7 && < 0.8
                     , directory >= 1.3 && < 1.4
+                    , filelock >= 0.1.1.4 && < 0.1.2.0
                     , mtl >= 2.2.2 && < 3
                     , network >=  2.8 && < 3.0
                     , parsec >= 3.1.13 && < 4

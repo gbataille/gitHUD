@@ -1,28 +1,29 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GitHUD (
-    githud,
-    githudd
-    ) where
+module GitHUD
+  ( githud,
+    githudd,
+  )
+where
 
 import Control.Monad (unless, void, when)
 import Control.Monad.Reader (runReader)
 import Data.Text
-import System.Directory (getCurrentDirectory)
-import System.Environment (getArgs)
-import System.Exit (ExitCode(ExitSuccess))
-import System.Posix.Files (fileExist)
-import System.Posix.User (getRealUserID, getUserEntryForID, UserEntry(..))
-import System.Process (readProcessWithExitCode)
-
 import GitHUD.Config.Parse
 import GitHUD.Config.Types
 import GitHUD.Daemon.Runner
+import GitHUD.Git.Command
+import GitHUD.Git.Parse.Base
 import GitHUD.Terminal.Prompt
 import GitHUD.Terminal.Types
-import GitHUD.Git.Parse.Base
-import GitHUD.Git.Command
 import GitHUD.Types
+import System.Directory (getCurrentDirectory)
+import System.Environment (getArgs)
+import System.Exit (ExitCode (ExitSuccess))
+import System.FileLock (SharedExclusive (Exclusive), withTryFileLock)
+import System.Posix.Files (fileExist)
+import System.Posix.User (UserEntry (..), getRealUserID, getUserEntryForID)
+import System.Process (readProcessWithExitCode)
 
 githud :: IO ()
 githud = do
@@ -32,28 +33,35 @@ githud = do
     shell <- processArguments getArgs
     config <- getAppConfig
     curDir <- getCurrentDirectory
-    runFetcherDaemon curDir
+    tryRunFetcherDaemon curDir
     repoState <- getGitRepoState
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
-
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
     putStrLn $ unpack (strip (pack prompt))
 
-    where
-      runFetcherDaemon dir = do
-        (code, out, err) <- readProcessWithExitCode "githudd" [dir] ""
-        unless (Prelude.null err) (putStrLn $ "Issue with githudd: " ++ err)
+tryRunFetcherDaemon ::
+  String ->
+  IO ()
+tryRunFetcherDaemon dir = do
+  withTryFileLock "/tmp/githud.lock" Exclusive (\f -> runFetcherDaemon dir)
+  return ()
+  where
+    runFetcherDaemon dir = do
+      (code, out, err) <- readProcessWithExitCode "githudd" [dir] ""
+      unless (Prelude.null err) (putStrLn $ "Issue with githudd: " ++ err)
 
-processArguments :: IO [String]
-                 -> IO Shell
+processArguments ::
+  IO [String] ->
+  IO Shell
 processArguments args = getShell <$> args
 
-getShell :: [String]
-         -> Shell
-getShell ("zsh":_) = ZSH
-getShell ("bash":_) = BASH
-getShell ("tmux":_) = TMUX
-getShell ("none":_) = NONE
+getShell ::
+  [String] ->
+  Shell
+getShell ("zsh" : _) = ZSH
+getShell ("bash" : _) = BASH
+getShell ("tmux" : _) = TMUX
+getShell ("none" : _) = NONE
 getShell _ = Other
 
 getAppConfig :: IO Config
@@ -65,13 +73,14 @@ getAppConfig = do
     then parseConfigFile configFilePath
     else return defaultConfig
 
-githudd :: IO()
+githudd :: IO ()
 githudd = do
   mArg <- processDaemonArguments <$> getArgs
   config <- getAppConfig
   runDaemon config mArg
 
-processDaemonArguments :: [String]
-                       -> Maybe String
+processDaemonArguments ::
+  [String] ->
+  Maybe String
 processDaemonArguments [] = Nothing
-processDaemonArguments (fst:_) = Just fst
+processDaemonArguments (fst : _) = Just fst
