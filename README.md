@@ -244,6 +244,9 @@ githudd_sleep_seconds=30
 # Path where the githudd pid file will be stored. Needs to exist and be accessible by the current
 # user
 githudd_pid_file_path=/usr/local/var/run/githudd.pid
+# Path where the githudd lock file will be stored. Needs to exist and be accessible by the current
+# user
+githudd_lock_file_path=/$TMPDIR/githudd.lock
 # Path where the githudd socket file will be stored. Needs to exist and be accessible by the current
 # user
 githudd_socket_file_path=/usr/local/var/run/githudd.socket
