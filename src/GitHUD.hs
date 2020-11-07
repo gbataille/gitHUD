@@ -33,7 +33,7 @@ githud = do
     shell <- processArguments getArgs
     config <- getAppConfig
     curDir <- getCurrentDirectory
-    tryRunFetcherDaemon curDir
+    tryRunFetcherDaemon curDir (confGithuddLockFilePath config)
     repoState <- getGitRepoState
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
@@ -41,9 +41,10 @@ githud = do
 
 tryRunFetcherDaemon ::
   String ->
+  FilePath ->
   IO ()
-tryRunFetcherDaemon dir = do
-  withTryFileLock "/tmp/githud.lock" Exclusive (\f -> runFetcherDaemon dir)
+tryRunFetcherDaemon dir lockPath = do
+  withTryFileLock lockPath Exclusive (\f -> runFetcherDaemon dir)
   return ()
   where
     runFetcherDaemon dir = do

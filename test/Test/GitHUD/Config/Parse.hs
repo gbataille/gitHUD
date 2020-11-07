@@ -466,6 +466,12 @@ testConfigItemFolder = testGroup "#configItemFolder"
             forConfigItemKey "githudd_pid_file_path" $
               withValue "/tmp"
 
+    , testCase "Key: githudd_lock_file_path" $
+        expectValue "/tmp" $
+          toBeInField confGithuddLockFilePath $
+            forConfigItemKey "githudd_lock_file_path" $
+              withValue "/tmp"
+
     , testCase "Key: githudd_socket_file_path" $
         expectValue "/tmp" $
           toBeInField confGithuddSocketFilePath $
