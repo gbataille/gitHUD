@@ -57,23 +57,18 @@ brew tap gbataille/homebrew-gba
 brew install githud
 ```
 
-### Arch Linux
-There is a [gitHUD package](https://aur.archlinux.org/packages/githud) available in the Arch User Repository.
-Note that it is called "githud" instead of "gitHUD" in compliance with [Arch Linux
-Guidelines](https://wiki.archlinux.org/index.php/PKGBUILD#pkgname)
-
 ### With Stack
 
 Stack is a haskell package manager. 1 command install can be found
 [here](https://docs.haskellstack.org/en/stable/README/)
 
-githud is available on hackage, but not in the stack list of curated packages.
-to install it with stack, you need to add it to the extra-deps in your
-stack.yml file
+githud is available on hackage, but some dependencies have to be explicited.
+You need to add the following to the extra-deps in your stack.yml file
 
-``` ~/.stack/global/stack.yaml
+``` ./.stack/global-project/stack.yaml
 extra-deps:
-- githud-2.0.0
+- daemons-0.3.0
+- network-2.8.0.1
 ```
 
 then you can run
