@@ -45,6 +45,8 @@ Whichever way you install githud, don't forget to complete the [Setup](#setup)
 
 ### Mac OSX with brew
 
+_(Maintained on each release)_
+
 * link my tap
 
 ```
@@ -57,7 +59,25 @@ brew tap gbataille/homebrew-gba
 brew install githud
 ```
 
+#### Binary packages on linux
+
+_Looking for contributor to provide a recipe (in github actions form?)_
+
+### With cabal and Nix
+
+_(Used in the development process, therefore it is maintained and up-to-date)_
+
+A Nix config is maintained in compatibility with the cabal file. So to be sure to use a compatible
+ghc version, and corresponding libraries, just
+
+```sh
+nix-shell
+cabal v2-install
+```
+
 ### With Stack
+
+_(Not maintained. Dev happens using Nix + Cabal. Don't hesitate to contribute)_
 
 Stack is a haskell package manager. 1 command install can be found
 [here](https://docs.haskellstack.org/en/stable/README/)
@@ -79,6 +99,8 @@ stack install githud
 
 ### With Cabal
 
+_(Not maintained. Dev happens using Nix + Cabal. Don't hesitate to contribute)_
+
 githud is available on hackage. Therefore just get it as usual
 
 ```
@@ -87,16 +109,6 @@ cabal v2-install exe:githud
 
 You can then update your path to include your installation directory (typically `~/.cabal/bin`) or
 copy the installed executable to a common location like `/usr/local/bin`
-
-#### With cabal and Nix
-
-A Nix config is maintained in compatibility with the cabal file. So to be sure to use a compatible
-ghc version, and corresponding libraries, just
-
-```sh
-nix-shell
-cabal new-install
-```
 
 Setup
 -----
