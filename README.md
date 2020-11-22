@@ -159,7 +159,7 @@ the executable at `/usr/local/bin/githud`
 
 ```
 setopt PROMPT_SUBST
-export PROMPT='%{$fg_bold[white]%}%T%{$reset_color%}%{$fg[cyan]%} %n%{$reset_color%} $(/usr/local/bin/githud zsh) $'
+export PROMPT='%F{white}%T%F{cyan} %n%{$reset_color%} $(/usr/local/bin/githud zsh) $'
 ```
 
 _(it has a lot more things into it, including the current directory, the
