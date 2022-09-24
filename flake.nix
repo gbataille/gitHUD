@@ -36,5 +36,12 @@
       in
       {
         packages.default = pkgs.githud;
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+              (pkgs.haskell.lib.justStaticExecutables pkgs.haskellPackages.ghcid)
+              (pkgs.cabal-install)
+            ];
+          inputsFrom = [ self.packages.${system}.default.env ];
+        };
       });
 }
