@@ -30,26 +30,31 @@ tryRunDaemon :: Int
              -> Maybe String
              -> IO ()
 tryRunDaemon attempt config mArg = do
-  let pathToPoll = (fromMaybe "/" mArg)
-  -- If there are exception trying to access the pid file or the socket,
-  -- we just kill the process and start again
-  success <- E.try @E.SomeException $ do
-    ensureDaemonRunning config socketFile pathToPoll
-    sendOnSocket socketFile pathToPoll
-  restartIfNeeded attempt success
-  where
-    socketFile = confGithuddSocketFilePath config
-    pidFilePath = confGithuddPidFilePath config
-    restartIfNeeded 0 _ = void exitFailure
-    restartIfNeeded _ (Right _) = return ()
-    restartIfNeeded attempt (Left e) = do
-      debugOnStderr $ show e
-      debugOnStderr "Error on client. Restarting daemon"
-      E.try @E.SomeException (brutalKill pidFilePath)   -- ignore possible errors
-      threadDelay 100_000
-      pidFileExists <- fileExist pidFilePath
-      when pidFileExists (removeFile pidFilePath)
-      tryRunDaemon (attempt - 1) config mArg
+  -- The daemon can be deactivated through the config
+  if (confRunFetcherDaemon config)
+    then do
+      let pathToPoll = (fromMaybe "/" mArg)
+      -- If there are exception trying to access the pid file or the socket,
+      -- we just kill the process and start again
+      success <- E.try @E.SomeException $ do
+        ensureDaemonRunning config socketFile pathToPoll
+        sendOnSocket socketFile pathToPoll
+      restartIfNeeded attempt success
+      where
+        socketFile = confGithuddSocketFilePath config
+        pidFilePath = confGithuddPidFilePath config
+        restartIfNeeded 0 _ = void exitFailure
+        restartIfNeeded _ (Right _) = return ()
+        restartIfNeeded attempt (Left e) = do
+          debugOnStderr $ show e
+          debugOnStderr "Error on client. Restarting daemon"
+          E.try @E.SomeException (brutalKill pidFilePath)   -- ignore possible errors
+          threadDelay 100_000
+          pidFileExists <- fileExist pidFilePath
+          when pidFileExists (removeFile pidFilePath)
+          tryRunDaemon (attempt - 1) config mArg
+
+    else return
 
 ensureDaemonRunning :: Config
                     -> FilePath
