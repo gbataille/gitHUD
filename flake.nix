@@ -7,17 +7,34 @@
   };
 
   outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
+    let
+      overlay = final: prev: {
+        haskell = prev.haskell // {
+          packageOverrides = hfinal: hprev:
+            prev.haskell.packageOverrides hfinal hprev // {
+              githud =
+                let
+                  src = builtins.path {
+                    name = "githud-src";
+                    path = ./.;
+                  };
+                in
+                hfinal.callCabal2nix "githud" src { };
+            };
+        };
+        githud = final.haskell.lib.justStaticExecutables final.haskellPackages.githud;
+      };
+    in
+    {
+      overlays.default = overlay;
+    } // flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
+          overlays = [ self.overlays.default ];
         };
       in
       {
-        defaultPackage =
-          pkgs.haskellPackages.developPackage {
-            root = ./.;
-            name = "githud";
-          };
+        packages.default = pkgs.githud;
       });
 }
