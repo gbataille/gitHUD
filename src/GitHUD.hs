@@ -33,7 +33,8 @@ githud = do
     shell <- processArguments getArgs
     config <- getAppConfig
     curDir <- getCurrentDirectory
-    tryRunFetcherDaemon curDir (confGithuddLockFilePath config)
+    when (confRunFetcherDaemon config) $
+      tryRunFetcherDaemon curDir (confGithuddLockFilePath config)
     repoState <- getGitRepoState
     let prompt = runReader buildPromptWithConfig $ buildOutputConfig shell repoState config
     -- Necessary to use putStrLn to properly terminate the output (needs the CR)
