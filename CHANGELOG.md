@@ -1,3 +1,10 @@
+3.3.0
+-----
+Contributed from https://github.com/voidus
+
+* Fix ([#28](https://github.com/gbataille/gitHUD/issues/28): The `run_fetcher_daemon` option was not taken into account.
+* [DEV] upgrading the dev environment to use nix flake and the latest nix distribution
+
 3.2.2
 -----
 
