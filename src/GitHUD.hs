@@ -22,7 +22,7 @@ import System.Environment (getArgs)
 import System.Exit (ExitCode (ExitSuccess))
 import System.FileLock (SharedExclusive (Exclusive), withTryFileLock)
 import System.Posix.Files (fileExist)
-import System.Posix.User (UserEntry (..), getRealUserID, getUserEntryForID)
+import System.Posix.User (getRealUserID, getUserEntryForID, homeDirectory)
 import System.Process (readProcessWithExitCode)
 
 githud :: IO ()

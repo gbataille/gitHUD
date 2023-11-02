@@ -22,7 +22,7 @@
                 hfinal.callCabal2nix "githud" src { };
             };
         };
-        githud = final.haskell.lib.justStaticExecutables final.haskellPackages.githud;
+        githud = final.haskell.lib.justStaticExecutables final.haskell.packages.ghc96.githud;
       };
     in
     {

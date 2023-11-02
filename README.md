@@ -87,7 +87,7 @@ You need to add the following to the extra-deps in your stack.yml file
 
 ``` ./.stack/global-project/stack.yaml
 extra-deps:
-- daemons-0.3.0
+- daemons-0.4.0
 - network-2.8.0.1
 ```
 
