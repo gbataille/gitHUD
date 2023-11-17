@@ -2,7 +2,7 @@
   description = "githud flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -22,7 +22,7 @@
                 hfinal.callCabal2nix "githud" src { };
             };
         };
-        githud = final.haskell.lib.justStaticExecutables final.haskell.packages.ghc96.githud;
+        githud = final.haskell.lib.justStaticExecutables final.haskellPackages.githud;
       };
     in
     {
@@ -38,9 +38,9 @@
         packages.default = pkgs.githud;
         devShells.default = pkgs.mkShell {
           buildInputs = [
-              (pkgs.haskell.lib.justStaticExecutables pkgs.haskellPackages.ghcid)
-              (pkgs.cabal-install)
-            ];
+            (pkgs.haskell.lib.justStaticExecutables pkgs.haskellPackages.ghcid)
+            (pkgs.cabal-install)
+          ];
           inputsFrom = [ self.packages.${system}.default.env ];
         };
       });
