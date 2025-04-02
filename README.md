@@ -4,8 +4,12 @@
 [![Hackage](https://img.shields.io/hackage-deps/v/githud.svg)](https://hackage.haskell.org/package/githud)
 
 Unmaintained!
+-------------
 Although this application still works (for now), I don't intend to maintain it anymore.
 I have moved my workflow to `jj` (which I highly recommend, whatever the rest of your team does). Because `jj` works in detached head and does not have stashes or an index, `githud` has become useless to me.
+
+Description
+-----------
 
 As you might have guessed from its name, githud is a heads up display for the
 command line that will show git information. The focus is on information and performance.
