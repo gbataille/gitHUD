@@ -8,6 +8,8 @@ Unmaintained!
 Although this application still works (for now), I don't intend to maintain it anymore.
 I have moved my workflow to `jj` (which I highly recommend, whatever the rest of your team does). Because `jj` works in detached head and does not have stashes or an index, `githud` has become useless to me.
 
+There is a somewhat maintained fork at https://github.com/voidus/gitHUD
+
 Description
 -----------
 
